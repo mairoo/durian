@@ -1,6 +1,8 @@
 package kr.co.pincoin.api.infra.auth.entity.phone;
 
 import jakarta.persistence.*;
+import kr.co.pincoin.api.domain.auth.model.phone.enums.Domestic;
+import kr.co.pincoin.api.domain.auth.model.phone.enums.Gender;
 import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
 import kr.co.pincoin.api.infra.common.BaseDateTime;
 import lombok.*;
@@ -47,11 +49,13 @@ public class PhoneVerificationLogEntity extends BaseDateTime {
     @Column(name = "date_of_birth")
     private String dateOfBirth;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "gender")
-    private Integer gender;
+    private Gender gender;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "domestic")
-    private Integer domestic;
+    private Domestic domestic;
 
     @Column(name = "telecom")
     private String telecom;

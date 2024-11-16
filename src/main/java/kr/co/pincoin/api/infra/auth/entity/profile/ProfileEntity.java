@@ -1,6 +1,9 @@
 package kr.co.pincoin.api.infra.auth.entity.profile;
 
 import jakarta.persistence.*;
+import kr.co.pincoin.api.domain.auth.model.phone.enums.Domestic;
+import kr.co.pincoin.api.domain.auth.model.phone.enums.Gender;
+import kr.co.pincoin.api.domain.auth.model.phone.enums.PhoneVerifiedStatus;
 import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
 import kr.co.pincoin.api.infra.common.BaseDateTime;
 import lombok.*;
@@ -8,7 +11,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
 
 @Entity
 @Table(name = "member_profile")
@@ -31,8 +33,9 @@ public class ProfileEntity extends BaseDateTime {
     @Column(name = "phone_verified")
     private Boolean phoneVerified;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "phone_verified_status")
-    private Integer phoneVerifiedStatus;
+    private PhoneVerifiedStatus phoneVerifiedStatus;
 
     @Column(name = "document_verified")
     private Boolean documentVerified;
@@ -82,11 +85,13 @@ public class ProfileEntity extends BaseDateTime {
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "gender")
-    private Integer gender;
+    private Gender gender;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "domestic")
-    private Integer domestic;
+    private Domestic domestic;
 
     @Column(name = "telecom")
     private String telecom;

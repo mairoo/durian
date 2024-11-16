@@ -1,6 +1,5 @@
 package kr.co.pincoin.api.infra.auth.mapper.user;
 
-
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
 import org.springframework.stereotype.Component;

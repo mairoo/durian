@@ -114,6 +114,10 @@ public class User {
                 .build();
     }
 
+    public void updateUsername(String username) {
+        this.username = username;
+    }
+
     public void updatePassword(String newPassword) {
         this.password = newPassword;
     }
@@ -122,10 +126,13 @@ public class User {
         this.lastLogin = LocalDateTime.now();
     }
 
-    public void updateProfile(String firstName, String lastName, String email) {
+    public void updateEmail(String email) {
+        this.email = email;
+    }
+
+    public void updateProfile(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
     }
 
     public void activate() {
