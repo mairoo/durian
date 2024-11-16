@@ -1,10 +1,9 @@
 package kr.co.pincoin.api.infrastructure.auth.entity;
 
 import jakarta.persistence.*;
+import kr.co.pincoin.api.domain.common.BaseDateTime;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "member_loginlog")
@@ -13,17 +12,11 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Slf4j
-public class LoginLogEntity {
+public class LoginLogEntity extends BaseDateTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-
-    @Column(name = "created")
-    private LocalDateTime created;
-
-    @Column(name = "modified")
-    private LocalDateTime modified;
 
     @Column(name = "ip_address")
     private String ipAddress;
