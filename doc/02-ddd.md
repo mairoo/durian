@@ -1,0 +1,21 @@
+# 최상단 패키지 구조
+
+- domain: 순수한 비즈니스 로직
+- infrastructure:
+    - persistence: 데이터 접근 관련
+- application: 응용프로그램
+    - controller: 컨트롤러
+- global: 전역 설정
+    - config
+        - JpaConfig
+        - WebConfig
+        - SecurityConfig
+        - RedisConfig
+    - response
+    - security
+- external
+    - aligo
+    - billgate
+    - mailgun
+    - paypal
+    - s3
