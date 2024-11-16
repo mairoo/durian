@@ -1,7 +1,7 @@
 package kr.co.pincoin.api.infrastructure.auth.entity;
 
 import jakarta.persistence.*;
-import kr.co.pincoin.api.domain.common.BaseRemovalDateTime;
+import kr.co.pincoin.api.infrastructure.common.BaseRemovalDateTime;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 

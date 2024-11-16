@@ -1,4 +1,4 @@
-package kr.co.pincoin.api.domain.common;
+package kr.co.pincoin.api.infrastructure.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
