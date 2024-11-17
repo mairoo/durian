@@ -1,6 +1,7 @@
 package kr.co.pincoin.api.domain.shop.model.product;
 
 import kr.co.pincoin.api.domain.shop.model.store.Store;
+import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -93,6 +94,34 @@ public class Product {
 
         validatePrices();
         validateStockLevels();
+    }
+
+    public ProductEntity toEntity() {
+        return ProductEntity.builder()
+                .id(this.getId())
+                .name(this.getName())
+                .subtitle(this.getSubtitle())
+                .code(this.getCode())
+                .listPrice(this.getListPrice())
+                .sellingPrice(this.getSellingPrice())
+                .pg(this.getPg())
+                .pgSellingPrice(this.getPgSellingPrice())
+                .description(this.getDescription())
+                .position(this.getPosition())
+                .status(this.getStatus())
+                .stockQuantity(this.getStockQuantity())
+                .stock(this.getStock())
+                .minimumStockLevel(this.getMinimumStockLevel())
+                .maximumStockLevel(this.getMaximumStockLevel())
+                .reviewCount(this.getReviewCount())
+                .reviewCountPg(this.getReviewCountPg())
+                .naverPartner(this.getNaverPartner())
+                .naverPartnerTitle(this.getNaverPartnerTitle())
+                .naverPartnerTitlePg(this.getNaverPartnerTitlePg())
+                .naverAttribute(this.getNaverAttribute())
+                .category(this.getCategory().toEntity())
+                .store(this.getStore().toEntity())
+                .build();
     }
 
     public static Product of(String name,

@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.product;
 
+import kr.co.pincoin.api.infra.shop.entity.product.VoucherEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -30,6 +31,17 @@ public class Voucher {
         this.isRemoved = isRemoved;
 
         validateCode();
+    }
+
+    public VoucherEntity toEntity() {
+
+        return VoucherEntity.builder()
+                .id(this.getId())
+                .code(this.getCode())
+                .remarks(this.getRemarks())
+                .status(this.getStatus())
+                .product(this.getProduct().toEntity())
+                .build();
     }
 
     public static Voucher of(String code, Product product) {

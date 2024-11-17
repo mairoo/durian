@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.order;
 
+import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -60,6 +61,19 @@ public class OrderProduct {
                 .sellingPrice(sellingPrice)
                 .quantity(quantity)
                 .order(order)
+                .build();
+    }
+
+    public OrderProductEntity toEntity() {
+        return OrderProductEntity.builder()
+                .id(this.getId())
+                .name(this.getName())
+                .subtitle(this.getSubtitle())
+                .code(this.getCode())
+                .listPrice(this.getListPrice())
+                .sellingPrice(this.getSellingPrice())
+                .quantity(this.getQuantity())
+                .order(this.getOrder().toEntity())
                 .build();
     }
 

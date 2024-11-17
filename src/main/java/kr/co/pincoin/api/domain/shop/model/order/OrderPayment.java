@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.order;
 
+import kr.co.pincoin.api.infra.shop.entity.order.OrderPaymentEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -54,6 +55,17 @@ public class OrderPayment {
                 .order(order)
                 .account(account)
                 .amount(amount)
+                .build();
+    }
+
+    public OrderPaymentEntity toEntity() {
+        return OrderPaymentEntity.builder()
+                .id(this.getId())
+                .account(this.getAccount())
+                .amount(this.getAmount())
+                .balance(this.getBalance())
+                .received(this.getReceived())
+                .order(this.getOrder().toEntity())
                 .build();
     }
 

@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.support.inquiry;
 
+import kr.co.pincoin.api.infra.shop.entity.support.inquiry.CustomerQuestionAnswerEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,6 +27,14 @@ public class CustomerQuestionAnswer {
         this.modified = modified;
 
         validateAnswer();
+    }
+
+    public CustomerQuestionAnswerEntity toEntity() {
+        return CustomerQuestionAnswerEntity.builder()
+                .id(this.getId())
+                .content(this.getContent())
+                .question(this.getQuestion().toEntity())
+                .build();
     }
 
     public static CustomerQuestionAnswer of(String content,

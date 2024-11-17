@@ -1,6 +1,7 @@
 package kr.co.pincoin.api.domain.shop.model.order;
 
 import kr.co.pincoin.api.domain.shop.model.product.Voucher;
+import kr.co.pincoin.api.infra.shop.entity.order.OrderProductVoucherEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -34,6 +35,17 @@ public class OrderProductVoucher {
         this.isRemoved = isRemoved;
 
         validateCode();
+    }
+
+    public OrderProductVoucherEntity toEntity() {
+        return OrderProductVoucherEntity.builder()
+                .id(this.getId())
+                .code(this.getCode())
+                .revoked(this.getRevoked())
+                .remarks(this.getRemarks())
+                .orderProduct(this.getOrderProduct().toEntity())
+                .voucher(this.getVoucher().toEntity())
+                .build();
     }
 
     public static OrderProductVoucher of(String code, OrderProduct orderProduct,

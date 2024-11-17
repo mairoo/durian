@@ -2,6 +2,7 @@ package kr.co.pincoin.api.domain.shop.model.support.message;
 
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
+import kr.co.pincoin.api.infra.shop.entity.support.message.FaqMessageEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -45,6 +46,20 @@ public class FaqMessage {
         this.isRemoved = isRemoved;
 
         validateFaq();
+    }
+
+    public FaqMessageEntity toEntity() {
+        return FaqMessageEntity.builder()
+                .id(this.getId())
+                .title(this.getTitle())
+                .description(this.getDescription())
+                .keywords(String.join(",", this.getKeywords())) // Set<String>을 comma-separated string으로 변환
+                .content(this.getContent())
+                .category(this.getCategory())
+                .position(this.getPosition())
+                .owner(this.getOwner().toEntity())
+                .store(this.getStore().toEntity())
+                .build();
     }
 
     public static FaqMessage of(String title,

@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.support.message;
 
+import kr.co.pincoin.api.infra.shop.entity.support.message.SmsEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -32,6 +33,16 @@ public class Sms {
         this.modified = modified;
 
         validateSms();
+    }
+
+    public SmsEntity toEntity() {
+        return SmsEntity.builder()
+                .id(this.getId())
+                .phoneFrom(this.getPhoneFrom())
+                .phoneTo(this.getPhoneTo())
+                .content(this.getContent())
+                .success(this.getSuccess())
+                .build();
     }
 
     public static Sms of(String phoneFrom, String phoneTo, String content) {

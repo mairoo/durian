@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.support.review;
 
+import kr.co.pincoin.api.infra.shop.entity.support.review.TestimonialAnswerEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,6 +27,14 @@ public class TestimonialAnswer {
         this.modified = modified;
 
         validateAnswer();
+    }
+
+    public TestimonialAnswerEntity toEntity() {
+        return TestimonialAnswerEntity.builder()
+                .id(this.getId())
+                .content(this.getContent())
+                .testimonial(this.getTestimonial().toEntity())
+                .build();
     }
 
     public static TestimonialAnswer of(String content,

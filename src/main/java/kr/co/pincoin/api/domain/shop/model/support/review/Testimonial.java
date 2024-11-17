@@ -2,6 +2,7 @@ package kr.co.pincoin.api.domain.shop.model.support.review;
 
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
+import kr.co.pincoin.api.infra.shop.entity.support.review.TestimonialEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -50,6 +51,18 @@ public class Testimonial {
         this.answerCount = 0;
 
         validateTestimonial();
+    }
+
+    public TestimonialEntity toEntity() {
+        return TestimonialEntity.builder()
+                .id(this.getId())
+                .title(this.getTitle())
+                .description(this.getDescription())
+                .keywords(String.join(",", this.getKeywords())) // Set<String>을 comma-separated string으로 변환
+                .content(this.getContent())
+                .owner(this.getOwner().toEntity())
+                .store(this.getStore().toEntity())
+                .build();
     }
 
     public static Testimonial of(String title,

@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.product;
 
+import kr.co.pincoin.api.infra.shop.entity.product.ProductListMembershipEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -19,6 +20,15 @@ public class ProductListMembership {
         this.productList = productList;
 
         validateMembership();
+    }
+
+    public ProductListMembershipEntity toEntity() {
+        return ProductListMembershipEntity.builder()
+                .id(this.getId())
+                .position(this.getPosition())
+                .product(this.getProduct().toEntity())
+                .productList(this.getProductList().toEntity())
+                .build();
     }
 
     public static ProductListMembership of(Product product, ProductList productList) {

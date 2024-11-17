@@ -1,6 +1,7 @@
 package kr.co.pincoin.api.domain.shop.model.product;
 
 import kr.co.pincoin.api.domain.shop.model.store.Store;
+import kr.co.pincoin.api.infra.shop.entity.product.CategoryEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -73,6 +74,35 @@ public class Category {
         this.modified = modified;
 
         validateCategory();
+    }
+
+    public CategoryEntity toEntity() {
+        CategoryEntity parentEntity = null;
+
+        if (this.parent != null) {
+            parentEntity = this.parent.toEntity();
+        }
+
+        return CategoryEntity.builder()
+                .id(this.getId())
+                .title(this.getTitle())
+                .slug(this.getSlug())
+                .thumbnail(this.getThumbnail())
+                .description(this.getDescription())
+                .description1(this.getDescription1())
+                .discountRate(this.getDiscountRate())
+                .pg(this.getPg())
+                .pgDiscountRate(this.getPgDiscountRate())
+                .naverSearchTag(this.getNaverSearchTag())
+                .naverBrandName(this.getNaverBrandName())
+                .naverMakerName(this.getNaverMakerName())
+                .lft(this.getLft())
+                .rght(this.getRght())
+                .treeId(this.getTreeId())
+                .level(this.getLevel())
+                .parent(parentEntity)
+                .store(this.getStore().toEntity())
+                .build();
     }
 
     public static Category of(String title, String slug,

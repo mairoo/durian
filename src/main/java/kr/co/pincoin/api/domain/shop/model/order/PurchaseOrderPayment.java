@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.order;
 
+import kr.co.pincoin.api.infra.shop.entity.order.PurchaseOrderPaymentEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -29,6 +30,15 @@ public class PurchaseOrderPayment {
         this.isRemoved = isRemoved;
 
         validatePayment();
+    }
+
+    public PurchaseOrderPaymentEntity toEntity() {
+        return PurchaseOrderPaymentEntity.builder()
+                .id(this.getId())
+                .account(this.getAccount())
+                .amount(this.getAmount())
+                .order(this.getOrder().toEntity())
+                .build();
     }
 
     public static PurchaseOrderPayment of(Integer account, BigDecimal amount,

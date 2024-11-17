@@ -1,6 +1,7 @@
 package kr.co.pincoin.api.domain.shop.model.product;
 
 import kr.co.pincoin.api.domain.shop.model.store.Store;
+import kr.co.pincoin.api.infra.shop.entity.product.ProductListEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -26,6 +27,15 @@ public class ProductList {
         this.modified = modified;
 
         validateProductList();
+    }
+
+    public ProductListEntity toEntity() {
+        return ProductListEntity.builder()
+                .id(this.getId())
+                .name(this.getName())
+                .code(this.getCode())
+                .store(this.getStore().toEntity())
+                .build();
     }
 
     public static ProductList of(String name, String code, Store store) {

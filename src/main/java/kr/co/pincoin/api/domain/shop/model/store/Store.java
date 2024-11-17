@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.store;
 
+import kr.co.pincoin.api.infra.shop.entity.store.StoreEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -47,6 +48,24 @@ public class Store {
         this.modified = modified;
 
         validateStore();
+    }
+
+    public StoreEntity toEntity() {
+        return StoreEntity.builder()
+                .id(this.getId())
+                .name(this.getName())
+                .code(this.getCode())
+                .theme(this.getTheme())
+                .phone(this.getPhone())
+                .phone1(this.getPhone1())
+                .kakao(this.getKakao())
+                .bankAccount(this.getBankAccount())
+                .escrowAccount(this.getEscrowAccount())
+                .chunkSize(this.getChunkSize())
+                .blockSize(this.getBlockSize())
+                .signupOpen(this.getSignupOpen())
+                .underAttack(this.getUnderAttack())
+                .build();
     }
 
     public static Store of(String name, String code, String theme,

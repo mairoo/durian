@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.order;
 
+import kr.co.pincoin.api.infra.shop.entity.order.PurchaseOrderEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -34,6 +35,17 @@ public class PurchaseOrder {
         this.isRemoved = isRemoved;
 
         validatePurchaseOrder();
+    }
+
+    public PurchaseOrderEntity toEntity() {
+        return PurchaseOrderEntity.builder()
+                .id(this.getId())
+                .title(this.getTitle())
+                .content(this.getContent())
+                .paid(this.getPaid())
+                .bankAccount(this.getBankAccount())
+                .amount(this.getAmount())
+                .build();
     }
 
     public static PurchaseOrder of(String title, String content,

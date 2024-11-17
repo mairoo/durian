@@ -3,6 +3,7 @@ package kr.co.pincoin.api.domain.shop.model.support.inquiry;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
+import kr.co.pincoin.api.infra.shop.entity.support.inquiry.CustomerQuestionEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -56,6 +57,20 @@ public class CustomerQuestion {
         this.answerCount = 0;
 
         validateQuestion();
+    }
+
+    public CustomerQuestionEntity toEntity() {
+        return CustomerQuestionEntity.builder()
+                .id(this.getId())
+                .title(this.getTitle())
+                .description(this.getDescription())
+                .keywords(String.join(",", this.getKeywords())) // Set<String>을 comma-separated string으로 변환
+                .content(this.getContent())
+                .category(this.getCategory())
+                .owner(this.getOwner().toEntity())
+                .order(this.getOrder().toEntity())
+                .store(this.getStore().toEntity())
+                .build();
     }
 
     public static CustomerQuestion of(String title, String content,
