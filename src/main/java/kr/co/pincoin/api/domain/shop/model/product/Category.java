@@ -1,8 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.product;
 
 import kr.co.pincoin.api.domain.shop.model.store.Store;
-import kr.co.pincoin.api.infra.shop.entity.product.CategoryEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -32,47 +30,27 @@ public class Category {
     private Integer treeId;
     private Integer level;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private Category(String title, String slug, String thumbnail,
-                     String description, String description1,
-                     BigDecimal discountRate, Boolean pg,
+    @Builder
+    private Category(Long id,
+                     String title,
+                     String slug,
+                     String thumbnail,
+                     String description,
+                     String description1,
+                     BigDecimal discountRate,
+                     Boolean pg,
                      BigDecimal pgDiscountRate,
-                     String naverSearchTag, String naverBrandName,
-                     String naverMakerName, Category parent, Store store) {
-        this.id = null;
-        this.title = title;
-        this.slug = slug;
-        this.thumbnail = thumbnail;
-        this.description = description;
-        this.description1 = description1;
-        this.discountRate = discountRate;
-        this.pg = pg;
-        this.pgDiscountRate = pgDiscountRate;
-        this.naverSearchTag = naverSearchTag;
-        this.naverBrandName = naverBrandName;
-        this.naverMakerName = naverMakerName;
-        this.lft = 1;
-        this.rght = 2;
-        this.treeId = 1;
-        this.level = parent != null ? parent.getLevel() + 1 : 0;
-        this.parent = parent;
-        this.store = store;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-
-        validateCategory();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
-    private Category(Long id, String title, String slug, String thumbnail,
-                     String description, String description1,
-                     BigDecimal discountRate, Boolean pg,
-                     BigDecimal pgDiscountRate,
-                     String naverSearchTag, String naverBrandName,
+                     String naverSearchTag,
+                     String naverBrandName,
                      String naverMakerName,
-                     Integer lft, Integer rght, Integer treeId, Integer level,
-                     Category parent, Store store,
-                     LocalDateTime created, LocalDateTime modified) {
+                     Integer lft,
+                     Integer rght,
+                     Integer treeId,
+                     Integer level,
+                     Category parent,
+                     Store store,
+                     LocalDateTime created,
+                     LocalDateTime modified) {
         this.id = id;
         this.title = title;
         this.slug = slug;
@@ -101,7 +79,7 @@ public class Category {
                               BigDecimal discountRate, Boolean pg,
                               BigDecimal pgDiscountRate,
                               Category parent, Store store) {
-        return Category.instanceBuilder()
+        return Category.builder()
                 .title(title)
                 .slug(slug)
                 .discountRate(discountRate)
@@ -109,31 +87,6 @@ public class Category {
                 .pgDiscountRate(pgDiscountRate)
                 .parent(parent)
                 .store(store)
-                .build();
-    }
-
-    public static Category from(CategoryEntity entity) {
-        return Category.jpaBuilder()
-                .id(entity.getId())
-                .title(entity.getTitle())
-                .slug(entity.getSlug())
-                .thumbnail(entity.getThumbnail())
-                .description(entity.getDescription())
-                .description1(entity.getDescription1())
-                .discountRate(entity.getDiscountRate())
-                .pg(entity.getPg())
-                .pgDiscountRate(entity.getPgDiscountRate())
-                .naverSearchTag(entity.getNaverSearchTag())
-                .naverBrandName(entity.getNaverBrandName())
-                .naverMakerName(entity.getNaverMakerName())
-                .lft(entity.getLft())
-                .rght(entity.getRght())
-                .treeId(entity.getTreeId())
-                .level(entity.getLevel())
-                .parent(entity.getParent() != null ? Category.from(entity.getParent()) : null)
-                .store(Store.from(entity.getStore()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
                 .build();
     }
 

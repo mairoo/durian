@@ -1,7 +1,5 @@
 package kr.co.pincoin.api.domain.shop.model.support.message;
 
-import kr.co.pincoin.api.infra.shop.entity.support.message.SmsEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,23 +15,14 @@ public class Sms {
     private final LocalDateTime modified;
     private Boolean success;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private Sms(String phoneFrom, String phoneTo, String content) {
-        this.id = null;
-        this.phoneFrom = phoneFrom;
-        this.phoneTo = phoneTo;
-        this.content = content;
-        this.success = false;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-
-        validateSms();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
-    private Sms(Long id, String phoneFrom, String phoneTo,
-                String content, Boolean success,
-                LocalDateTime created, LocalDateTime modified) {
+    @Builder
+    private Sms(Long id,
+                String phoneFrom,
+                String phoneTo,
+                String content,
+                Boolean success,
+                LocalDateTime created,
+                LocalDateTime modified) {
         this.id = id;
         this.phoneFrom = phoneFrom;
         this.phoneTo = phoneTo;
@@ -46,22 +35,10 @@ public class Sms {
     }
 
     public static Sms of(String phoneFrom, String phoneTo, String content) {
-        return Sms.instanceBuilder()
+        return Sms.builder()
                 .phoneFrom(phoneFrom)
                 .phoneTo(phoneTo)
                 .content(content)
-                .build();
-    }
-
-    public static Sms from(SmsEntity entity) {
-        return Sms.jpaBuilder()
-                .id(entity.getId())
-                .phoneFrom(entity.getPhoneFrom())
-                .phoneTo(entity.getPhoneTo())
-                .content(entity.getContent())
-                .success(entity.getSuccess())
-                .created(entity.getCreated())
-                .modified(entity.getModified())
                 .build();
     }
 

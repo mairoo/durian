@@ -1,7 +1,5 @@
 package kr.co.pincoin.api.domain.shop.model.support.review;
 
-import kr.co.pincoin.api.infra.shop.entity.support.review.TestimonialAnswerEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,20 +13,12 @@ public class TestimonialAnswer {
     private final LocalDateTime modified;
     private String content;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private TestimonialAnswer(String content, Testimonial testimonial) {
-        this.id = null;
-        this.content = content;
-        this.testimonial = testimonial;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-
-        validateAnswer();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
-    private TestimonialAnswer(Long id, String content, Testimonial testimonial,
-                              LocalDateTime created, LocalDateTime modified) {
+    @Builder
+    private TestimonialAnswer(Long id,
+                              String content,
+                              Testimonial testimonial,
+                              LocalDateTime created,
+                              LocalDateTime modified) {
         this.id = id;
         this.content = content;
         this.testimonial = testimonial;
@@ -38,20 +28,11 @@ public class TestimonialAnswer {
         validateAnswer();
     }
 
-    public static TestimonialAnswer of(String content, Testimonial testimonial) {
-        return TestimonialAnswer.instanceBuilder()
+    public static TestimonialAnswer of(String content,
+                                       Testimonial testimonial) {
+        return TestimonialAnswer.builder()
                 .content(content)
                 .testimonial(testimonial)
-                .build();
-    }
-
-    public static TestimonialAnswer from(TestimonialAnswerEntity entity) {
-        return TestimonialAnswer.jpaBuilder()
-                .id(entity.getId())
-                .content(entity.getContent())
-                .testimonial(Testimonial.from(entity.getTestimonial()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
                 .build();
     }
 

@@ -1,8 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.order;
 
 import kr.co.pincoin.api.domain.shop.model.product.Voucher;
-import kr.co.pincoin.api.infra.shop.entity.order.OrderProductVoucherEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,22 +18,7 @@ public class OrderProductVoucher {
     private String remarks;
     private Boolean isRemoved;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private OrderProductVoucher(String code, OrderProduct orderProduct, Voucher voucher) {
-        this.id = null;
-        this.code = code;
-        this.revoked = false;
-        this.remarks = null;
-        this.orderProduct = orderProduct;
-        this.voucher = voucher;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-        this.isRemoved = false;
-
-        validateCode();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private OrderProductVoucher(Long id, String code, Boolean revoked,
                                 String remarks, OrderProduct orderProduct,
                                 Voucher voucher, LocalDateTime created,
@@ -55,24 +38,10 @@ public class OrderProductVoucher {
 
     public static OrderProductVoucher of(String code, OrderProduct orderProduct,
                                          Voucher voucher) {
-        return OrderProductVoucher.instanceBuilder()
+        return OrderProductVoucher.builder()
                 .code(code)
                 .orderProduct(orderProduct)
                 .voucher(voucher)
-                .build();
-    }
-
-    public static OrderProductVoucher from(OrderProductVoucherEntity entity) {
-        return OrderProductVoucher.jpaBuilder()
-                .id(entity.getId())
-                .code(entity.getCode())
-                .revoked(entity.getRevoked())
-                .remarks(entity.getRemarks())
-                .orderProduct(OrderProduct.from(entity.getOrderProduct()))
-                .voucher(Voucher.from(entity.getVoucher()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
                 .build();
     }
 

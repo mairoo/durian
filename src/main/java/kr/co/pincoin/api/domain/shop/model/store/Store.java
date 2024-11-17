@@ -1,7 +1,5 @@
 package kr.co.pincoin.api.domain.shop.model.store;
 
-import kr.co.pincoin.api.infra.shop.entity.store.StoreEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -25,31 +23,7 @@ public class Store {
     private Boolean signupOpen;
     private Boolean underAttack;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private Store(String name, String code, String theme,
-                  String phone, String phone1, String kakao,
-                  String bankAccount, String escrowAccount,
-                  Integer chunkSize, Integer blockSize) {
-        this.id = null;
-        this.name = name;
-        this.code = code;
-        this.theme = theme;
-        this.phone = phone;
-        this.phone1 = phone1;
-        this.kakao = kakao;
-        this.bankAccount = bankAccount;
-        this.escrowAccount = escrowAccount;
-        this.chunkSize = chunkSize != null ? chunkSize : 10;
-        this.blockSize = blockSize != null ? blockSize : 10;
-        this.signupOpen = true;
-        this.underAttack = false;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-
-        validateStore();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private Store(Long id, String name, String code, String theme,
                   String phone, String phone1, String kakao,
                   String bankAccount, String escrowAccount,
@@ -79,7 +53,7 @@ public class Store {
                            String phone, String phone1, String kakao,
                            String bankAccount, String escrowAccount,
                            Integer chunkSize, Integer blockSize) {
-        return Store.instanceBuilder()
+        return Store.builder()
                 .name(name)
                 .code(code)
                 .theme(theme)
@@ -90,26 +64,6 @@ public class Store {
                 .escrowAccount(escrowAccount)
                 .chunkSize(chunkSize)
                 .blockSize(blockSize)
-                .build();
-    }
-
-    public static Store from(StoreEntity entity) {
-        return Store.jpaBuilder()
-                .id(entity.getId())
-                .name(entity.getName())
-                .code(entity.getCode())
-                .theme(entity.getTheme())
-                .phone(entity.getPhone())
-                .phone1(entity.getPhone1())
-                .kakao(entity.getKakao())
-                .bankAccount(entity.getBankAccount())
-                .escrowAccount(entity.getEscrowAccount())
-                .chunkSize(entity.getChunkSize())
-                .blockSize(entity.getBlockSize())
-                .signupOpen(entity.getSignupOpen())
-                .underAttack(entity.getUnderAttack())
-                .created(entity.getCreated())
-                .modified(entity.getModified())
                 .build();
     }
 

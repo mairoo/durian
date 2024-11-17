@@ -2,8 +2,6 @@ package kr.co.pincoin.api.domain.shop.model.support.message;
 
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
-import kr.co.pincoin.api.infra.shop.entity.support.message.FaqMessageEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -27,27 +25,7 @@ public class FaqMessage {
     private Integer position;
     private Boolean isRemoved;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private FaqMessage(String title, String description, String keywords,
-                       String content, Integer category, Integer position,
-                       User owner, Store store) {
-        this.id = null;
-        this.title = title;
-        this.description = description;
-        this.keywords = parseKeywords(keywords);
-        this.content = content;
-        this.category = category;
-        this.position = position != null ? position : 0;
-        this.owner = owner;
-        this.store = store;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-        this.isRemoved = false;
-
-        validateFaq();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private FaqMessage(Long id, String title, String description,
                        String keywords, String content, Integer category,
                        Integer position, User owner, Store store,
@@ -69,31 +47,17 @@ public class FaqMessage {
         validateFaq();
     }
 
-    public static FaqMessage of(String title, String content,
-                                Integer category, User owner, Store store) {
-        return FaqMessage.instanceBuilder()
+    public static FaqMessage of(String title,
+                                String content,
+                                Integer category,
+                                User owner,
+                                Store store) {
+        return FaqMessage.builder()
                 .title(title)
                 .content(content)
                 .category(category)
                 .owner(owner)
                 .store(store)
-                .build();
-    }
-
-    public static FaqMessage from(FaqMessageEntity entity) {
-        return FaqMessage.jpaBuilder()
-                .id(entity.getId())
-                .title(entity.getTitle())
-                .description(entity.getDescription())
-                .keywords(entity.getKeywords())
-                .content(entity.getContent())
-                .category(entity.getCategory())
-                .position(entity.getPosition())
-                .owner(User.from(entity.getOwner()))
-                .store(Store.from(entity.getStore()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
                 .build();
     }
 

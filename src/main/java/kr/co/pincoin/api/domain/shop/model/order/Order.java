@@ -4,7 +4,6 @@ import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -40,10 +39,6 @@ public class Order {
 
     private final User user;
 
-    private final LocalDateTime created;
-
-    private final LocalDateTime modified;
-
     private Integer status;
 
     private Integer visible;
@@ -52,42 +47,13 @@ public class Order {
 
     private Boolean suspicious;
 
+    private final LocalDateTime created;
+
+    private final LocalDateTime modified;
+
     private Boolean removed;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private Order(User user,
-                  String orderNo,
-                  String fullname,
-                  String userAgent,
-                  String acceptLanguage,
-                  String ipAddress,
-                  Integer paymentMethod,
-                  BigDecimal totalListPrice,
-                  BigDecimal totalSellingPrice,
-                  String currency) {
-        this.id = null;
-        this.orderNo = orderNo;
-        this.fullname = fullname;
-        this.userAgent = userAgent;
-        this.acceptLanguage = acceptLanguage;
-        this.ipAddress = ipAddress;
-        this.paymentMethod = paymentMethod;
-        this.transactionId = null;
-        this.status = OrderStatus.PENDING.getValue();
-        this.visible = OrderVisibility.VISIBLE.getValue();
-        this.totalListPrice = totalListPrice;
-        this.totalSellingPrice = totalSellingPrice;
-        this.currency = currency;
-        this.message = null;
-        this.suspicious = false;
-        this.parent = null;
-        this.user = user;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-        this.removed = null;
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private Order(Long id,
                   String orderNo,
                   String fullname,
@@ -140,7 +106,7 @@ public class Order {
                            BigDecimal totalListPrice,
                            BigDecimal totalSellingPrice,
                            String currency) {
-        return Order.instanceBuilder()
+        return Order.builder()
                 .user(user)
                 .orderNo(orderNo)
                 .fullname(fullname)
@@ -151,31 +117,6 @@ public class Order {
                 .totalListPrice(totalListPrice)
                 .totalSellingPrice(totalSellingPrice)
                 .currency(currency)
-                .build();
-    }
-
-    public static Order from(OrderEntity entity) {
-        return Order.jpaBuilder()
-                .id(entity.getId())
-                .orderNo(entity.getOrderNo())
-                .fullname(entity.getFullname())
-                .userAgent(entity.getUserAgent())
-                .acceptLanguage(entity.getAcceptLanguage())
-                .ipAddress(entity.getIpAddress())
-                .paymentMethod(entity.getPaymentMethod())
-                .transactionId(entity.getTransactionId())
-                .status(entity.getStatus())
-                .visible(entity.getVisible())
-                .totalListPrice(entity.getTotalListPrice())
-                .totalSellingPrice(entity.getTotalSellingPrice())
-                .currency(entity.getCurrency())
-                .message(entity.getMessage())
-                .suspicious(entity.getSuspicious())
-                .parent(entity.getParent() != null ? Order.from(entity.getParent()) : null)
-                .user(User.from(entity.getUser()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
-                .removed(entity.getIsRemoved())
                 .build();
     }
 

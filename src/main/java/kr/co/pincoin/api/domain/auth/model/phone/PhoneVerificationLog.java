@@ -4,7 +4,6 @@ import kr.co.pincoin.api.domain.auth.model.phone.enums.Domestic;
 import kr.co.pincoin.api.domain.auth.model.phone.enums.Gender;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.infra.auth.entity.phone.PhoneVerificationLogEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -50,34 +49,7 @@ public class PhoneVerificationLog {
 
     private final LocalDateTime modified;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private PhoneVerificationLog(String token,
-                                 String code,
-                                 String reason,
-                                 String cellphone,
-                                 User owner) {
-        this.id = null;
-        this.token = token;
-        this.code = code;
-        this.reason = reason;
-        this.resultCode = null;
-        this.message = null;
-        this.transactionId = null;
-        this.di = null;
-        this.ci = null;
-        this.fullname = null;
-        this.dateOfBirth = null;
-        this.gender = null;
-        this.domestic = null;
-        this.telecom = null;
-        this.cellphone = cellphone;
-        this.returnMessage = null;
-        this.owner = owner;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private PhoneVerificationLog(Long id,
                                  String token,
                                  String code,
@@ -123,7 +95,7 @@ public class PhoneVerificationLog {
                                           String reason,
                                           String cellphone,
                                           User owner) {
-        return PhoneVerificationLog.instanceBuilder()
+        return PhoneVerificationLog.builder()
                 .token(token)
                 .code(code)
                 .reason(reason)
@@ -132,27 +104,25 @@ public class PhoneVerificationLog {
                 .build();
     }
 
-    public static PhoneVerificationLog from(PhoneVerificationLogEntity entity) {
-        return PhoneVerificationLog.jpaBuilder()
-                .id(entity.getId())
-                .token(entity.getToken())
-                .code(entity.getCode())
-                .reason(entity.getReason())
-                .resultCode(entity.getResultCode())
-                .message(entity.getMessage())
-                .transactionId(entity.getTransactionId())
-                .di(entity.getDi())
-                .ci(entity.getCi())
-                .fullname(entity.getFullname())
-                .dateOfBirth(entity.getDateOfBirth())
-                .gender(entity.getGender())
-                .domestic(entity.getDomestic())
-                .telecom(entity.getTelecom())
-                .cellphone(entity.getCellphone())
-                .returnMessage(entity.getReturnMessage())
-                .owner(User.from(entity.getOwner()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
+    public PhoneVerificationLogEntity toEntity() {
+        return PhoneVerificationLogEntity.builder()
+                .id(this.getId())
+                .token(this.getToken())
+                .code(this.getCode())
+                .reason(this.getReason())
+                .resultCode(this.getResultCode())
+                .message(this.getMessage())
+                .transactionId(this.getTransactionId())
+                .di(this.getDi())
+                .ci(this.getCi())
+                .fullname(this.getFullname())
+                .dateOfBirth(this.getDateOfBirth())
+                .gender(this.getGender())
+                .domestic(this.getDomestic())
+                .telecom(this.getTelecom())
+                .cellphone(this.getCellphone())
+                .returnMessage(this.getReturnMessage())
+                .owner(this.getOwner().toEntity())
                 .build();
     }
 

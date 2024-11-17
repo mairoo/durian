@@ -16,7 +16,7 @@ public class LoginLogEntity extends BaseDateTime {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "ip_address")
+    @Column(name = "ip_address", columnDefinition = "CHAR(39)")
     private String ipAddress;
 
     @ManyToOne(fetch = FetchType.LAZY)

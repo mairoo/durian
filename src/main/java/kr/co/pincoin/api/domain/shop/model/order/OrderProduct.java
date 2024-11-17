@@ -1,7 +1,5 @@
 package kr.co.pincoin.api.domain.shop.model.order;
 
-import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -23,31 +21,17 @@ public class OrderProduct {
     private Integer quantity;
     private Boolean isRemoved;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private OrderProduct(String name, String subtitle, String code,
-                         BigDecimal listPrice, BigDecimal sellingPrice,
-                         Integer quantity, Order order) {
-        this.id = null;
-        this.name = name;
-        this.subtitle = subtitle;
-        this.code = code;
-        this.listPrice = listPrice;
-        this.sellingPrice = sellingPrice;
-        this.quantity = quantity;
-        this.order = order;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-        this.isRemoved = false;
-
-        validatePrices();
-        validateQuantity();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
-    private OrderProduct(Long id, String name, String subtitle, String code,
-                         BigDecimal listPrice, BigDecimal sellingPrice,
-                         Integer quantity, Order order,
-                         LocalDateTime created, LocalDateTime modified,
+    @Builder
+    private OrderProduct(Long id,
+                         String name,
+                         String subtitle,
+                         String code,
+                         BigDecimal listPrice,
+                         BigDecimal sellingPrice,
+                         Integer quantity,
+                         Order order,
+                         LocalDateTime created,
+                         LocalDateTime modified,
                          Boolean isRemoved) {
         this.id = id;
         this.name = name;
@@ -68,7 +52,7 @@ public class OrderProduct {
     public static OrderProduct of(String name, String subtitle, String code,
                                   BigDecimal listPrice, BigDecimal sellingPrice,
                                   Integer quantity, Order order) {
-        return OrderProduct.instanceBuilder()
+        return OrderProduct.builder()
                 .name(name)
                 .subtitle(subtitle)
                 .code(code)
@@ -76,22 +60,6 @@ public class OrderProduct {
                 .sellingPrice(sellingPrice)
                 .quantity(quantity)
                 .order(order)
-                .build();
-    }
-
-    public static OrderProduct from(OrderProductEntity entity) {
-        return OrderProduct.jpaBuilder()
-                .id(entity.getId())
-                .name(entity.getName())
-                .subtitle(entity.getSubtitle())
-                .code(entity.getCode())
-                .listPrice(entity.getListPrice())
-                .sellingPrice(entity.getSellingPrice())
-                .quantity(entity.getQuantity())
-                .order(Order.from(entity.getOrder()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
                 .build();
     }
 

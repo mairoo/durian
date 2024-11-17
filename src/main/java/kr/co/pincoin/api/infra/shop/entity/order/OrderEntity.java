@@ -31,7 +31,7 @@ public class OrderEntity extends BaseRemovalDateTime {
     @Column(name = "accept_language")
     private String acceptLanguage;
 
-    @Column(name = "ip_address")
+    @Column(name = "ip_address", columnDefinition = "CHAR(39)")
     private String ipAddress;
 
     @Column(name = "payment_method")

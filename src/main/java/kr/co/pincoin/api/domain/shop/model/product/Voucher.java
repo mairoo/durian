@@ -1,7 +1,5 @@
 package kr.co.pincoin.api.domain.shop.model.product;
 
-import kr.co.pincoin.api.infra.shop.entity.product.VoucherEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,21 +16,7 @@ public class Voucher {
     private Integer status;
     private Boolean isRemoved;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private Voucher(String code, Product product) {
-        this.id = null;
-        this.code = code;
-        this.remarks = null;
-        this.status = VoucherStatus.AVAILABLE.getValue();
-        this.product = product;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-        this.isRemoved = false;
-
-        validateCode();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private Voucher(Long id, String code, String remarks, Integer status,
                     Product product, LocalDateTime created,
                     LocalDateTime modified, Boolean isRemoved) {
@@ -49,22 +33,9 @@ public class Voucher {
     }
 
     public static Voucher of(String code, Product product) {
-        return Voucher.instanceBuilder()
+        return Voucher.builder()
                 .code(code)
                 .product(product)
-                .build();
-    }
-
-    public static Voucher from(VoucherEntity entity) {
-        return Voucher.jpaBuilder()
-                .id(entity.getId())
-                .code(entity.getCode())
-                .remarks(entity.getRemarks())
-                .status(entity.getStatus())
-                .product(Product.from(entity.getProduct()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
                 .build();
     }
 

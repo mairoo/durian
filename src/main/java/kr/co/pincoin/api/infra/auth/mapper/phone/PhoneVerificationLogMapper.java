@@ -20,7 +20,27 @@ public class PhoneVerificationLogMapper {
             return null;
         }
 
-        return PhoneVerificationLog.from(entity);
+        return PhoneVerificationLog.builder()
+                .id(entity.getId())
+                .token(entity.getToken())
+                .code(entity.getCode())
+                .reason(entity.getReason())
+                .resultCode(entity.getResultCode())
+                .message(entity.getMessage())
+                .transactionId(entity.getTransactionId())
+                .di(entity.getDi())
+                .ci(entity.getCi())
+                .fullname(entity.getFullname())
+                .dateOfBirth(entity.getDateOfBirth())
+                .gender(entity.getGender())
+                .domestic(entity.getDomestic())
+                .telecom(entity.getTelecom())
+                .cellphone(entity.getCellphone())
+                .returnMessage(entity.getReturnMessage())
+                .owner(userMapper.toModel(entity.getOwner()))
+                .created(entity.getCreated())
+                .modified(entity.getModified())
+                .build();
     }
 
     public PhoneVerificationLogEntity toEntity(PhoneVerificationLog model) {
@@ -28,25 +48,7 @@ public class PhoneVerificationLogMapper {
             return null;
         }
 
-        return PhoneVerificationLogEntity.builder()
-                .id(model.getId())
-                .token(model.getToken())
-                .code(model.getCode())
-                .reason(model.getReason())
-                .resultCode(model.getResultCode())
-                .message(model.getMessage())
-                .transactionId(model.getTransactionId())
-                .di(model.getDi())
-                .ci(model.getCi())
-                .fullname(model.getFullname())
-                .dateOfBirth(model.getDateOfBirth())
-                .gender(model.getGender())
-                .domestic(model.getDomestic())
-                .telecom(model.getTelecom())
-                .cellphone(model.getCellphone())
-                .returnMessage(model.getReturnMessage())
-                .owner(userMapper.toEntity(model.getOwner()))
-                .build();
+        return model.toEntity();
     }
 
     public List<PhoneVerificationLog> toModelList(List<PhoneVerificationLogEntity> entities) {

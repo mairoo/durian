@@ -15,7 +15,13 @@ public class BannedEmailMapper {
             return null;
         }
 
-        return BannedEmail.from(entity);
+        return BannedEmail.builder()
+                .id(entity.getId())
+                .email(entity.getEmail())
+                .created(entity.getCreated())
+                .modified(entity.getModified())
+                .isRemoved(entity.getIsRemoved())
+                .build();
     }
 
     public BannedEmailEntity toEntity(BannedEmail model) {
@@ -23,10 +29,7 @@ public class BannedEmailMapper {
             return null;
         }
 
-        return BannedEmailEntity.builder()
-                .id(model.getId())
-                .email(model.getEmail())
-                .build();
+        return model.toEntity();
     }
 
     public List<BannedEmail> toModelList(List<BannedEmailEntity> entities) {

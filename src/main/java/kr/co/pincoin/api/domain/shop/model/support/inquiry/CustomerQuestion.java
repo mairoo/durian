@@ -3,8 +3,6 @@ package kr.co.pincoin.api.domain.shop.model.support.inquiry;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
-import kr.co.pincoin.api.infra.shop.entity.support.inquiry.CustomerQuestionEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -30,32 +28,18 @@ public class CustomerQuestion {
 
     private int answerCount;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private CustomerQuestion(String title, String description, String keywords,
-                             String content, Integer category,
-                             User owner, Order order, Store store) {
-        this.id = null;
-        this.title = title;
-        this.description = description;
-        this.keywords = parseKeywords(keywords);
-        this.content = content;
-        this.category = category;
-        this.owner = owner;
-        this.order = order;
-        this.store = store;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-        this.isRemoved = false;
-        this.answerCount = 0;
-
-        validateQuestion();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
-    private CustomerQuestion(Long id, String title, String description,
-                             String keywords, String content, Integer category,
-                             User owner, Order order, Store store,
-                             LocalDateTime created, LocalDateTime modified,
+    @Builder
+    private CustomerQuestion(Long id,
+                             String title,
+                             String description,
+                             String keywords,
+                             String content,
+                             Integer category,
+                             User owner,
+                             Order order,
+                             Store store,
+                             LocalDateTime created,
+                             LocalDateTime modified,
                              Boolean isRemoved) {
         this.id = id;
         this.title = title;
@@ -76,29 +60,12 @@ public class CustomerQuestion {
 
     public static CustomerQuestion of(String title, String content,
                                       Integer category, User owner, Store store) {
-        return CustomerQuestion.instanceBuilder()
+        return CustomerQuestion.builder()
                 .title(title)
                 .content(content)
                 .category(category)
                 .owner(owner)
                 .store(store)
-                .build();
-    }
-
-    public static CustomerQuestion from(CustomerQuestionEntity entity) {
-        return CustomerQuestion.jpaBuilder()
-                .id(entity.getId())
-                .title(entity.getTitle())
-                .description(entity.getDescription())
-                .keywords(entity.getKeywords())
-                .content(entity.getContent())
-                .category(entity.getCategory())
-                .owner(User.from(entity.getOwner()))
-                .order(entity.getOrder() != null ? Order.from(entity.getOrder()) : null)
-                .store(Store.from(entity.getStore()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
                 .build();
     }
 

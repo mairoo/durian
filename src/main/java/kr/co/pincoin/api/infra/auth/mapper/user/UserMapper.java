@@ -15,7 +15,19 @@ public class UserMapper {
             return null;
         }
 
-        return User.from(entity);
+        return User.builder()
+                .id(entity.getId())
+                .password(entity.getPassword())
+                .lastLogin(entity.getLastLogin())
+                .isSuperuser(entity.getIsSuperuser())
+                .username(entity.getUsername())
+                .firstName(entity.getFirstName())
+                .lastName(entity.getLastName())
+                .email(entity.getEmail())
+                .isStaff(entity.getIsStaff())
+                .isActive(entity.getIsActive())
+                .dateJoined(entity.getDateJoined())
+                .build();
     }
 
     public UserEntity toEntity(User model) {

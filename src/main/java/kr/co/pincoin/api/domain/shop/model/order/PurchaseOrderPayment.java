@@ -1,7 +1,5 @@
 package kr.co.pincoin.api.domain.shop.model.order;
 
-import kr.co.pincoin.api.infra.shop.entity.order.PurchaseOrderPaymentEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,20 +16,7 @@ public class PurchaseOrderPayment {
     private final LocalDateTime modified;
     private Boolean isRemoved;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private PurchaseOrderPayment(Integer account, BigDecimal amount, PurchaseOrder order) {
-        this.id = null;
-        this.account = account;
-        this.amount = amount;
-        this.order = order;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-        this.isRemoved = false;
-
-        validatePayment();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private PurchaseOrderPayment(Long id, Integer account, BigDecimal amount,
                                  PurchaseOrder order, LocalDateTime created,
                                  LocalDateTime modified, Boolean isRemoved) {
@@ -48,22 +33,10 @@ public class PurchaseOrderPayment {
 
     public static PurchaseOrderPayment of(Integer account, BigDecimal amount,
                                           PurchaseOrder order) {
-        return PurchaseOrderPayment.instanceBuilder()
+        return PurchaseOrderPayment.builder()
                 .account(account)
                 .amount(amount)
                 .order(order)
-                .build();
-    }
-
-    public static PurchaseOrderPayment from(PurchaseOrderPaymentEntity entity) {
-        return PurchaseOrderPayment.jpaBuilder()
-                .id(entity.getId())
-                .account(entity.getAccount())
-                .amount(entity.getAmount())
-                .order(PurchaseOrder.from(entity.getOrder()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
                 .build();
     }
 

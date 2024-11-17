@@ -15,7 +15,13 @@ public class BannedPhoneMapper {
             return null;
         }
 
-        return BannedPhone.from(entity);
+        return BannedPhone.builder()
+                .id(entity.getId())
+                .phone(entity.getPhone())
+                .created(entity.getCreated())
+                .modified(entity.getModified())
+                .isRemoved(entity.getIsRemoved())
+                .build();
     }
 
     public BannedPhoneEntity toEntity(BannedPhone model) {
@@ -23,10 +29,7 @@ public class BannedPhoneMapper {
             return null;
         }
 
-        return BannedPhoneEntity.builder()
-                .id(model.getId())
-                .phone(model.getPhone())
-                .build();
+        return model.toEntity();
     }
 
     public List<BannedPhone> toModelList(List<BannedPhoneEntity> entities) {

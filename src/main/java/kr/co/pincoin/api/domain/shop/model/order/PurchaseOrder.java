@@ -1,7 +1,5 @@
 package kr.co.pincoin.api.domain.shop.model.order;
 
-import kr.co.pincoin.api.infra.shop.entity.order.PurchaseOrderEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,22 +18,7 @@ public class PurchaseOrder {
     private String bankAccount;
     private Boolean isRemoved;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private PurchaseOrder(String title, String content, String bankAccount, BigDecimal amount) {
-        this.id = null;
-        this.title = title;
-        this.content = content;
-        this.paid = false;
-        this.bankAccount = bankAccount;
-        this.amount = amount;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-        this.isRemoved = false;
-
-        validatePurchaseOrder();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private PurchaseOrder(Long id, String title, String content,
                           Boolean paid, String bankAccount, BigDecimal amount,
                           LocalDateTime created, LocalDateTime modified,
@@ -55,25 +38,11 @@ public class PurchaseOrder {
 
     public static PurchaseOrder of(String title, String content,
                                    String bankAccount, BigDecimal amount) {
-        return PurchaseOrder.instanceBuilder()
+        return PurchaseOrder.builder()
                 .title(title)
                 .content(content)
                 .bankAccount(bankAccount)
                 .amount(amount)
-                .build();
-    }
-
-    public static PurchaseOrder from(PurchaseOrderEntity entity) {
-        return PurchaseOrder.jpaBuilder()
-                .id(entity.getId())
-                .title(entity.getTitle())
-                .content(entity.getContent())
-                .paid(entity.getPaid())
-                .bankAccount(entity.getBankAccount())
-                .amount(entity.getAmount())
-                .created(entity.getCreated())
-                .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
                 .build();
     }
 

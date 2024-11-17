@@ -1,7 +1,6 @@
 package kr.co.pincoin.api.domain.auth.model.phone;
 
 import kr.co.pincoin.api.infra.auth.entity.phone.BannedPhoneEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,7 +10,7 @@ import java.time.LocalDateTime;
 public class BannedPhone {
     private final Long id;
 
-    private String phone;
+    private final String phone;
 
     private final LocalDateTime created;
 
@@ -19,16 +18,7 @@ public class BannedPhone {
 
     private boolean isRemoved;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private BannedPhone(String phone) {
-        this.id = null;
-        this.phone = phone;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-        this.isRemoved = false;
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private BannedPhone(Long id,
                         String phone,
                         LocalDateTime created,
@@ -42,18 +32,15 @@ public class BannedPhone {
     }
 
     public static BannedPhone of(String phone) {
-        return BannedPhone.instanceBuilder()
+        return BannedPhone.builder()
                 .phone(phone)
                 .build();
     }
 
-    public static BannedPhone from(BannedPhoneEntity entity) {
-        return BannedPhone.jpaBuilder()
-                .id(entity.getId())
-                .phone(entity.getPhone())
-                .created(entity.getCreated())
-                .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
+    public BannedPhoneEntity toEntity() {
+        return BannedPhoneEntity.builder()
+                .id(this.getId())
+                .phone(this.getPhone())
                 .build();
     }
 
@@ -64,11 +51,7 @@ public class BannedPhone {
     public void restore() {
         this.isRemoved = false;
     }
-
-    public void updatePhone(String phone) {
-        this.phone = phone;
-    }
-
+    
     public boolean isActive() {
         return !this.isRemoved;
     }

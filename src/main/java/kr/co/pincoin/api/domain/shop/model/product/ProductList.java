@@ -1,8 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.product;
 
 import kr.co.pincoin.api.domain.shop.model.store.Store;
-import kr.co.pincoin.api.infra.shop.entity.product.ProductListEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,19 +15,7 @@ public class ProductList {
     private final LocalDateTime created;
     private final LocalDateTime modified;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private ProductList(String name, String code, Store store) {
-        this.id = null;
-        this.name = name;
-        this.code = code;
-        this.store = store;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-
-        validateProductList();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private ProductList(Long id, String name, String code, Store store,
                         LocalDateTime created, LocalDateTime modified) {
         this.id = id;
@@ -43,21 +29,10 @@ public class ProductList {
     }
 
     public static ProductList of(String name, String code, Store store) {
-        return ProductList.instanceBuilder()
+        return ProductList.builder()
                 .name(name)
                 .code(code)
                 .store(store)
-                .build();
-    }
-
-    public static ProductList from(ProductListEntity entity) {
-        return ProductList.jpaBuilder()
-                .id(entity.getId())
-                .name(entity.getName())
-                .code(entity.getCode())
-                .store(Store.from(entity.getStore()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
                 .build();
     }
 

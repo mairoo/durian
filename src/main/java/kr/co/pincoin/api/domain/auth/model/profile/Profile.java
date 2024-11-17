@@ -5,7 +5,6 @@ import kr.co.pincoin.api.domain.auth.model.phone.enums.Gender;
 import kr.co.pincoin.api.domain.auth.model.phone.enums.PhoneVerifiedStatus;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.infra.auth.entity.profile.ProfileEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -71,24 +70,9 @@ public class Profile {
 
     private final LocalDateTime modified;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private Profile(User user) {
-        this.id = null;
-        this.user = user;
-        this.phoneVerified = false;
-        this.phoneVerifiedStatus = PhoneVerifiedStatus.UNVERIFIED;
-        this.documentVerified = false;
-        this.allowOrder = false;
-        this.totalOrderCount = 0;
-        this.totalListPrice = BigDecimal.ZERO;
-        this.totalSellingPrice = BigDecimal.ZERO;
-        this.mileage = BigDecimal.ZERO;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private Profile(Long id,
+                    User user,
                     String phone,
                     String address,
                     boolean phoneVerified,
@@ -112,14 +96,16 @@ public class Profile {
                     Gender gender,
                     Domestic domestic,
                     String telecom,
-                    User user,
                     LocalDateTime created,
                     LocalDateTime modified) {
         this.id = id;
+        this.user = user;
         this.phone = phone;
         this.address = address;
         this.phoneVerified = phoneVerified;
-        this.phoneVerifiedStatus = phoneVerifiedStatus;
+        this.phoneVerifiedStatus = phoneVerifiedStatus != null
+                ? phoneVerifiedStatus
+                : PhoneVerifiedStatus.UNVERIFIED;
         this.documentVerified = documentVerified;
         this.allowOrder = allowOrder;
         this.photoId = photoId;
@@ -130,55 +116,62 @@ public class Profile {
         this.notPurchasedMonths = notPurchasedMonths;
         this.repurchased = repurchased;
         this.maxPrice = maxPrice;
-        this.totalListPrice = totalListPrice;
-        this.totalSellingPrice = totalSellingPrice;
+        this.totalListPrice = totalListPrice != null
+                ? totalListPrice
+                : BigDecimal.ZERO;
+        this.totalSellingPrice = totalSellingPrice != null
+                ? totalSellingPrice
+                : BigDecimal.ZERO;
         this.averagePrice = averagePrice;
-        this.mileage = mileage != null ? mileage : BigDecimal.ZERO;
+        this.mileage = mileage != null
+                ? mileage
+                : BigDecimal.ZERO;
         this.memo = memo;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.domestic = domestic;
         this.telecom = telecom;
-        this.user = user;
-        this.created = created;
-        this.modified = modified;
+        this.created = created != null
+                ? created
+                : LocalDateTime.now();
+        this.modified = modified != null
+                ? modified
+                : LocalDateTime.now();
     }
 
     public static Profile of(User user) {
-        return Profile.instanceBuilder()
+        return Profile.builder()
                 .user(user)
                 .build();
     }
 
-    public static Profile from(ProfileEntity entity) {
-        return Profile.jpaBuilder()
-                .id(entity.getId())
-                .phone(entity.getPhone())
-                .address(entity.getAddress())
-                .phoneVerified(entity.getPhoneVerified())
-                .phoneVerifiedStatus(entity.getPhoneVerifiedStatus())
-                .documentVerified(entity.getDocumentVerified())
-                .allowOrder(entity.getAllowOrder())
-                .photoId(entity.getPhotoId())
-                .card(entity.getCard())
-                .totalOrderCount(entity.getTotalOrderCount())
-                .firstPurchased(entity.getFirstPurchased())
-                .lastPurchased(entity.getLastPurchased())
-                .notPurchasedMonths(entity.getNotPurchasedMonths())
-                .repurchased(entity.getRepurchased())
-                .maxPrice(entity.getMaxPrice())
-                .totalListPrice(entity.getTotalListPrice())
-                .totalSellingPrice(entity.getTotalSellingPrice())
-                .averagePrice(entity.getAveragePrice())
-                .mileage(entity.getMileage())
-                .memo(entity.getMemo())
-                .dateOfBirth(entity.getDateOfBirth())
-                .gender(entity.getGender())
-                .domestic(entity.getDomestic())
-                .telecom(entity.getTelecom())
-                .user(User.from(entity.getUser()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
+    public ProfileEntity toEntity() {
+        return ProfileEntity.builder()
+                .id(this.getId())
+                .phone(this.getPhone())
+                .address(this.getAddress())
+                .phoneVerified(this.isPhoneVerified())
+                .phoneVerifiedStatus(this.getPhoneVerifiedStatus())
+                .documentVerified(this.isDocumentVerified())
+                .allowOrder(this.isAllowOrder())
+                .photoId(this.getPhotoId())
+                .card(this.getCard())
+                .totalOrderCount(this.getTotalOrderCount())
+                .firstPurchased(this.getFirstPurchased())
+                .lastPurchased(this.getLastPurchased())
+                .notPurchasedMonths(this.isNotPurchasedMonths())
+                .repurchased(this.getRepurchased())
+                .maxPrice(this.getMaxPrice())
+                .totalListPrice(this.getTotalListPrice())
+                .totalSellingPrice(this.getTotalSellingPrice())
+                .averagePrice(this.getAveragePrice())
+                .mileage(this.getMileage())
+                .memo(this.getMemo())
+                .dateOfBirth(this.getDateOfBirth())
+                .gender(this.getGender())
+                .domestic(this.getDomestic())
+                .telecom(this.getTelecom())
+                .user(this.getUser().toEntity())
                 .build();
     }
 

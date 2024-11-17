@@ -1,7 +1,6 @@
 package kr.co.pincoin.api.domain.auth.model.user;
 
 import kr.co.pincoin.api.infra.auth.entity.user.LoginLogEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -19,17 +18,7 @@ public class LoginLog {
 
     private final LocalDateTime modified;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private LoginLog(String ipAddress,
-                     User user) {
-        this.id = null;
-        this.ipAddress = ipAddress;
-        this.user = user;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private LoginLog(Long id,
                      String ipAddress,
                      User user,
@@ -38,24 +27,26 @@ public class LoginLog {
         this.id = id;
         this.ipAddress = ipAddress;
         this.user = user;
-        this.created = created;
-        this.modified = modified;
+        this.created = created != null
+                ? created
+                : LocalDateTime.now();
+        this.modified = modified != null
+                ? modified
+                : LocalDateTime.now();
     }
 
     public static LoginLog of(String ipAddress, User user) {
-        return LoginLog.instanceBuilder()
+        return LoginLog.builder()
                 .ipAddress(ipAddress)
                 .user(user)
                 .build();
     }
 
-    public static LoginLog from(LoginLogEntity entity) {
-        return LoginLog.jpaBuilder()
-                .id(entity.getId())
-                .ipAddress(entity.getIpAddress())
-                .user(User.from(entity.getUser()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
+    public LoginLogEntity toEntity() {
+        return LoginLogEntity.builder()
+                .id(this.getId())
+                .ipAddress(this.getIpAddress())
+                .user(this.getUser().toEntity())
                 .build();
     }
 

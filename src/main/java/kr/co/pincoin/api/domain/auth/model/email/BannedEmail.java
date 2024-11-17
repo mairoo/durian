@@ -1,7 +1,6 @@
 package kr.co.pincoin.api.domain.auth.model.email;
 
 import kr.co.pincoin.api.infra.auth.entity.email.BannedEmailEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -19,16 +18,7 @@ public class BannedEmail {
 
     private boolean isRemoved;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private BannedEmail(String email) {
-        this.id = null; // id가 필수값처럼 보이지만 실제론 DB 저장 전까진 null
-        this.email = email;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-        this.isRemoved = false;
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private BannedEmail(Long id,
                         String email,
                         LocalDateTime created,
@@ -41,21 +31,16 @@ public class BannedEmail {
         this.isRemoved = isRemoved;
     }
 
-    // 새로운 차단 이메일 생성
     public static BannedEmail of(String email) {
-        return BannedEmail.instanceBuilder()
+        return BannedEmail.builder()
                 .email(email)
                 .build();
     }
 
-    // 엔티티로부터 도메인 모델 생성
-    public static BannedEmail from(BannedEmailEntity entity) {
-        return BannedEmail.jpaBuilder()
-                .id(entity.getId())
-                .email(entity.getEmail())
-                .created(entity.getCreated())
-                .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
+    public BannedEmailEntity toEntity() {
+        return BannedEmailEntity.builder()
+                .id(this.getId())
+                .email(this.getEmail())
                 .build();
     }
 

@@ -1,8 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.product;
 
 import kr.co.pincoin.api.domain.shop.model.store.Store;
-import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -39,56 +37,33 @@ public class Product {
     private Integer reviewCountPg;
     private Boolean isRemoved;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private Product(String name, String subtitle, String code,
-                    BigDecimal listPrice, BigDecimal sellingPrice,
-                    Boolean pg, BigDecimal pgSellingPrice, String description,
-                    Integer position, Integer minimumStockLevel, Integer maximumStockLevel,
-                    Boolean naverPartner, String naverPartnerTitle,
-                    String naverPartnerTitlePg, String naverAttribute,
-                    Category category, Store store) {
-        this.id = null;
-        this.name = name;
-        this.subtitle = subtitle;
-        this.code = code;
-        this.listPrice = listPrice;
-        this.sellingPrice = sellingPrice;
-        this.pg = pg;
-        this.pgSellingPrice = pgSellingPrice;
-        this.description = description;
-        this.position = position;
-        this.status = ProductStatus.DRAFT.getValue();
-        this.stockQuantity = 0;
-        this.stock = 0;
-        this.minimumStockLevel = minimumStockLevel;
-        this.maximumStockLevel = maximumStockLevel;
-        this.reviewCount = 0;
-        this.reviewCountPg = 0;
-        this.naverPartner = naverPartner;
-        this.naverPartnerTitle = naverPartnerTitle;
-        this.naverPartnerTitlePg = naverPartnerTitlePg;
-        this.naverAttribute = naverAttribute;
-        this.category = category;
-        this.store = store;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-        this.isRemoved = false;
-
-        validatePrices();
-        validateStockLevels();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
-    private Product(Long id, String name, String subtitle, String code,
-                    BigDecimal listPrice, BigDecimal sellingPrice,
-                    Boolean pg, BigDecimal pgSellingPrice, String description,
-                    Integer position, Integer status, Integer stockQuantity,
-                    Integer stock, Integer minimumStockLevel, Integer maximumStockLevel,
-                    Integer reviewCount, Integer reviewCountPg,
-                    Boolean naverPartner, String naverPartnerTitle,
-                    String naverPartnerTitlePg, String naverAttribute,
-                    Category category, Store store,
-                    LocalDateTime created, LocalDateTime modified, Boolean isRemoved) {
+    @Builder
+    private Product(Long id,
+                    String name,
+                    String subtitle,
+                    String code,
+                    BigDecimal listPrice,
+                    BigDecimal sellingPrice,
+                    Boolean pg,
+                    BigDecimal pgSellingPrice,
+                    String description,
+                    Integer position,
+                    Integer status,
+                    Integer stockQuantity,
+                    Integer stock,
+                    Integer minimumStockLevel,
+                    Integer maximumStockLevel,
+                    Integer reviewCount,
+                    Integer reviewCountPg,
+                    Boolean naverPartner,
+                    String naverPartnerTitle,
+                    String naverPartnerTitlePg,
+                    String naverAttribute,
+                    Category category,
+                    Store store,
+                    LocalDateTime created,
+                    LocalDateTime modified,
+                    Boolean isRemoved) {
         this.id = id;
         this.name = name;
         this.subtitle = subtitle;
@@ -120,12 +95,18 @@ public class Product {
         validateStockLevels();
     }
 
-    public static Product of(String name, String subtitle, String code,
-                             BigDecimal listPrice, BigDecimal sellingPrice,
-                             Boolean pg, BigDecimal pgSellingPrice,
-                             Integer minimumStockLevel, Integer maximumStockLevel,
-                             Category category, Store store) {
-        return Product.instanceBuilder()
+    public static Product of(String name,
+                             String subtitle,
+                             String code,
+                             BigDecimal listPrice,
+                             BigDecimal sellingPrice,
+                             Boolean pg,
+                             BigDecimal pgSellingPrice,
+                             Integer minimumStockLevel,
+                             Integer maximumStockLevel,
+                             Category category,
+                             Store store) {
+        return Product.builder()
                 .name(name)
                 .subtitle(subtitle)
                 .code(code)
@@ -137,37 +118,6 @@ public class Product {
                 .maximumStockLevel(maximumStockLevel)
                 .category(category)
                 .store(store)
-                .build();
-    }
-
-    public static Product from(ProductEntity entity) {
-        return Product.jpaBuilder()
-                .id(entity.getId())
-                .name(entity.getName())
-                .subtitle(entity.getSubtitle())
-                .code(entity.getCode())
-                .listPrice(entity.getListPrice())
-                .sellingPrice(entity.getSellingPrice())
-                .pg(entity.getPg())
-                .pgSellingPrice(entity.getPgSellingPrice())
-                .description(entity.getDescription())
-                .position(entity.getPosition())
-                .status(entity.getStatus())
-                .stockQuantity(entity.getStockQuantity())
-                .stock(entity.getStock())
-                .minimumStockLevel(entity.getMinimumStockLevel())
-                .maximumStockLevel(entity.getMaximumStockLevel())
-                .reviewCount(entity.getReviewCount())
-                .reviewCountPg(entity.getReviewCountPg())
-                .naverPartner(entity.getNaverPartner())
-                .naverPartnerTitle(entity.getNaverPartnerTitle())
-                .naverPartnerTitlePg(entity.getNaverPartnerTitlePg())
-                .naverAttribute(entity.getNaverAttribute())
-                .category(Category.from(entity.getCategory()))
-                .store(Store.from(entity.getStore()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
                 .build();
     }
 

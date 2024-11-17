@@ -1,7 +1,5 @@
 package kr.co.pincoin.api.domain.shop.model.support.inquiry;
 
-import kr.co.pincoin.api.infra.shop.entity.support.inquiry.CustomerQuestionAnswerEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,20 +13,12 @@ public class CustomerQuestionAnswer {
     private final LocalDateTime modified;
     private String content;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private CustomerQuestionAnswer(String content, CustomerQuestion question) {
-        this.id = null;
-        this.content = content;
-        this.question = question;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-
-        validateAnswer();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
-    private CustomerQuestionAnswer(Long id, String content, CustomerQuestion question,
-                                   LocalDateTime created, LocalDateTime modified) {
+    @Builder
+    private CustomerQuestionAnswer(Long id,
+                                   String content,
+                                   CustomerQuestion question,
+                                   LocalDateTime created,
+                                   LocalDateTime modified) {
         this.id = id;
         this.content = content;
         this.question = question;
@@ -38,20 +28,11 @@ public class CustomerQuestionAnswer {
         validateAnswer();
     }
 
-    public static CustomerQuestionAnswer of(String content, CustomerQuestion question) {
-        return CustomerQuestionAnswer.instanceBuilder()
+    public static CustomerQuestionAnswer of(String content,
+                                            CustomerQuestion question) {
+        return CustomerQuestionAnswer.builder()
                 .content(content)
                 .question(question)
-                .build();
-    }
-
-    public static CustomerQuestionAnswer from(CustomerQuestionAnswerEntity entity) {
-        return CustomerQuestionAnswer.jpaBuilder()
-                .id(entity.getId())
-                .content(entity.getContent())
-                .question(CustomerQuestion.from(entity.getQuestion()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
                 .build();
     }
 

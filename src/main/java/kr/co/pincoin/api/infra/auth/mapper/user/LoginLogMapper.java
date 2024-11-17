@@ -19,7 +19,13 @@ public class LoginLogMapper {
             return null;
         }
 
-        return LoginLog.from(entity);
+        return LoginLog.builder()
+                .id(entity.getId())
+                .ipAddress(entity.getIpAddress())
+                .user(userMapper.toModel(entity.getUser()))
+                .created(entity.getCreated())
+                .modified(entity.getModified())
+                .build();
     }
 
     public LoginLogEntity toEntity(LoginLog model) {
@@ -27,11 +33,7 @@ public class LoginLogMapper {
             return null;
         }
 
-        return LoginLogEntity.builder()
-                .id(model.getId())
-                .ipAddress(model.getIpAddress())
-                .user(userMapper.toEntity(model.getUser()))
-                .build();
+        return model.toEntity();
     }
 
     public List<LoginLog> toModelList(List<LoginLogEntity> entities) {

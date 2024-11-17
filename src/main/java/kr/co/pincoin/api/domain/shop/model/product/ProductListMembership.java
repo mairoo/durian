@@ -1,7 +1,5 @@
 package kr.co.pincoin.api.domain.shop.model.product;
 
-import kr.co.pincoin.api.infra.shop.entity.product.ProductListMembershipEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,17 +10,7 @@ public class ProductListMembership {
     private final ProductList productList;
     private Integer position;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private ProductListMembership(Integer position, Product product, ProductList productList) {
-        this.id = null;
-        this.position = position != null ? position : 0;
-        this.product = product;
-        this.productList = productList;
-
-        validateMembership();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private ProductListMembership(Long id, Integer position,
                                   Product product, ProductList productList) {
         this.id = id;
@@ -34,26 +22,17 @@ public class ProductListMembership {
     }
 
     public static ProductListMembership of(Product product, ProductList productList) {
-        return ProductListMembership.instanceBuilder()
+        return ProductListMembership.builder()
                 .product(product)
                 .productList(productList)
                 .build();
     }
 
     public static ProductListMembership of(Product product, ProductList productList, Integer position) {
-        return ProductListMembership.instanceBuilder()
+        return ProductListMembership.builder()
                 .product(product)
                 .productList(productList)
                 .position(position)
-                .build();
-    }
-
-    public static ProductListMembership from(ProductListMembershipEntity entity) {
-        return ProductListMembership.jpaBuilder()
-                .id(entity.getId())
-                .position(entity.getPosition())
-                .product(Product.from(entity.getProduct()))
-                .productList(ProductList.from(entity.getProductList()))
                 .build();
     }
 

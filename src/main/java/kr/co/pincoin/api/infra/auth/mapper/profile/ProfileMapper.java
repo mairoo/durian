@@ -20,7 +20,35 @@ public class ProfileMapper {
             return null;
         }
 
-        return Profile.from(entity);
+        return Profile.builder()
+                .id(entity.getId())
+                .user(userMapper.toModel(entity.getUser()))
+                .phone(entity.getPhone())
+                .address(entity.getAddress())
+                .phoneVerified(entity.getPhoneVerified())
+                .phoneVerifiedStatus(entity.getPhoneVerifiedStatus())
+                .documentVerified(entity.getDocumentVerified())
+                .allowOrder(entity.getAllowOrder())
+                .photoId(entity.getPhotoId())
+                .card(entity.getCard())
+                .totalOrderCount(entity.getTotalOrderCount())
+                .firstPurchased(entity.getFirstPurchased())
+                .lastPurchased(entity.getLastPurchased())
+                .notPurchasedMonths(entity.getNotPurchasedMonths())
+                .repurchased(entity.getRepurchased())
+                .maxPrice(entity.getMaxPrice())
+                .totalListPrice(entity.getTotalListPrice())
+                .totalSellingPrice(entity.getTotalSellingPrice())
+                .averagePrice(entity.getAveragePrice())
+                .mileage(entity.getMileage())
+                .memo(entity.getMemo())
+                .dateOfBirth(entity.getDateOfBirth())
+                .gender(entity.getGender())
+                .domestic(entity.getDomestic())
+                .telecom(entity.getTelecom())
+                .created(entity.getCreated())
+                .modified(entity.getModified())
+                .build();
     }
 
     public ProfileEntity toEntity(Profile model) {
@@ -28,33 +56,7 @@ public class ProfileMapper {
             return null;
         }
 
-        return ProfileEntity.builder()
-                .id(model.getId())
-                .phone(model.getPhone())
-                .address(model.getAddress())
-                .phoneVerified(model.isPhoneVerified())
-                .phoneVerifiedStatus(model.getPhoneVerifiedStatus())
-                .documentVerified(model.isDocumentVerified())
-                .allowOrder(model.isAllowOrder())
-                .photoId(model.getPhotoId())
-                .card(model.getCard())
-                .totalOrderCount(model.getTotalOrderCount())
-                .firstPurchased(model.getFirstPurchased())
-                .lastPurchased(model.getLastPurchased())
-                .notPurchasedMonths(model.isNotPurchasedMonths())
-                .repurchased(model.getRepurchased())
-                .maxPrice(model.getMaxPrice())
-                .totalListPrice(model.getTotalListPrice())
-                .totalSellingPrice(model.getTotalSellingPrice())
-                .averagePrice(model.getAveragePrice())
-                .mileage(model.getMileage())
-                .memo(model.getMemo())
-                .dateOfBirth(model.getDateOfBirth())
-                .gender(model.getGender())
-                .domestic(model.getDomestic())
-                .telecom(model.getTelecom())
-                .user(userMapper.toEntity(model.getUser()))
-                .build();
+        return model.toEntity();
     }
 
     public List<Profile> toModelList(List<ProfileEntity> entities) {

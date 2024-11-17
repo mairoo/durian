@@ -1,7 +1,5 @@
 package kr.co.pincoin.api.domain.shop.model.order;
 
-import kr.co.pincoin.api.infra.shop.entity.order.OrderPaymentEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -28,22 +26,7 @@ public class OrderPayment {
 
     private Boolean isRemoved;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private OrderPayment(Order order,
-                         Integer account,
-                         BigDecimal amount) {
-        this.id = null;
-        this.account = account;
-        this.amount = amount;
-        this.balance = BigDecimal.ZERO;
-        this.received = null;
-        this.order = order;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-        this.isRemoved = false;
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    @Builder
     private OrderPayment(Long id,
                          Integer account,
                          BigDecimal amount,
@@ -67,24 +50,10 @@ public class OrderPayment {
     public static OrderPayment of(Order order,
                                   Integer account,
                                   BigDecimal amount) {
-        return OrderPayment.instanceBuilder()
+        return OrderPayment.builder()
                 .order(order)
                 .account(account)
                 .amount(amount)
-                .build();
-    }
-
-    public static OrderPayment from(OrderPaymentEntity entity) {
-        return OrderPayment.jpaBuilder()
-                .id(entity.getId())
-                .account(entity.getAccount())
-                .amount(entity.getAmount())
-                .balance(entity.getBalance())
-                .received(entity.getReceived())
-                .order(Order.from(entity.getOrder()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
                 .build();
     }
 

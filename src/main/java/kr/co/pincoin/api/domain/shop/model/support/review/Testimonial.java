@@ -2,8 +2,6 @@ package kr.co.pincoin.api.domain.shop.model.support.review;
 
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
-import kr.co.pincoin.api.infra.shop.entity.support.review.TestimonialEntity;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -27,31 +25,16 @@ public class Testimonial {
     private Boolean isHidden;
     private Integer answerCount;
 
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
-    private Testimonial(String title, String description,
-                        String keywords, String content,
-                        User owner, Store store) {
-        this.id = null;
-        this.title = title;
-        this.description = description;
-        this.keywords = parseKeywords(keywords);
-        this.content = content;
-        this.owner = owner;
-        this.store = store;
-        this.created = LocalDateTime.now();
-        this.modified = LocalDateTime.now();
-        this.isRemoved = false;
-        this.isHidden = false;
-        this.answerCount = 0;
-
-        validateTestimonial();
-    }
-
-    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
-    private Testimonial(Long id, String title, String description,
-                        String keywords, String content,
-                        User owner, Store store,
-                        LocalDateTime created, LocalDateTime modified,
+    @Builder
+    private Testimonial(Long id,
+                        String title,
+                        String description,
+                        String keywords,
+                        String content,
+                        User owner,
+                        Store store,
+                        LocalDateTime created,
+                        LocalDateTime modified,
                         Boolean isRemoved) {
         this.id = id;
         this.title = title;
@@ -69,28 +52,15 @@ public class Testimonial {
         validateTestimonial();
     }
 
-    public static Testimonial of(String title, String content,
-                                 User owner, Store store) {
-        return Testimonial.instanceBuilder()
+    public static Testimonial of(String title,
+                                 String content,
+                                 User owner,
+                                 Store store) {
+        return Testimonial.builder()
                 .title(title)
                 .content(content)
                 .owner(owner)
                 .store(store)
-                .build();
-    }
-
-    public static Testimonial from(TestimonialEntity entity) {
-        return Testimonial.jpaBuilder()
-                .id(entity.getId())
-                .title(entity.getTitle())
-                .description(entity.getDescription())
-                .keywords(entity.getKeywords())
-                .content(entity.getContent())
-                .owner(User.from(entity.getOwner()))
-                .store(Store.from(entity.getStore()))
-                .created(entity.getCreated())
-                .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
                 .build();
     }
 
