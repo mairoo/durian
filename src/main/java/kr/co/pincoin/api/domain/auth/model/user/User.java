@@ -124,6 +124,22 @@ public class User {
                 .build();
     }
 
+    public UserEntity toEntity() {
+        return UserEntity.builder()
+                .id(this.getId())
+                .password(this.getPassword())
+                .lastLogin(this.getLastLogin())
+                .isSuperuser(this.isSuperuser())
+                .username(this.getUsername())
+                .firstName(this.getFirstName())
+                .lastName(this.getLastName())
+                .email(this.getEmail())
+                .isStaff(this.isStaff())
+                .isActive(this.isActive())
+                .dateJoined(this.getDateJoined())
+                .build();
+    }
+
     public void updateUsername(String username) {
         this.username = username;
     }

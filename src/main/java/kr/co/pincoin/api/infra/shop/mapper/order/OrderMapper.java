@@ -1,7 +1,7 @@
-package kr.co.pincoin.api.infra.auth.mapper.user;
-
+package kr.co.pincoin.api.infra.shop.mapper.order;
+import kr.co.pincoin.api.domain.shop.model.order.Order;
+import kr.co.pincoin.api.infra.shop.entity.order.OrderEntity;
 import kr.co.pincoin.api.domain.auth.model.user.User;
-import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -9,16 +9,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class UserMapper {
-    public User toModel(UserEntity entity) {
+public class OrderMapper {
+    public Order toModel(OrderEntity entity) {
         if (entity == null) {
             return null;
         }
 
-        return User.from(entity);
+        return Order.from(entity);
     }
 
-    public UserEntity toEntity(User model) {
+    public OrderEntity toEntity(Order model) {
         if (model == null) {
             return null;
         }
@@ -26,8 +26,7 @@ public class UserMapper {
         return model.toEntity();
     }
 
-    // 컬렉션 지원
-    public List<User> toModelList(List<UserEntity> entities) {
+    public List<Order> toModelList(List<OrderEntity> entities) {
         if (entities == null) {
             return Collections.emptyList();
         }
@@ -37,7 +36,7 @@ public class UserMapper {
                 .collect(Collectors.toList());
     }
 
-    public List<UserEntity> toEntityList(List<User> models) {
+    public List<OrderEntity> toEntityList(List<Order> models) {
         if (models == null) {
             return Collections.emptyList();
         }

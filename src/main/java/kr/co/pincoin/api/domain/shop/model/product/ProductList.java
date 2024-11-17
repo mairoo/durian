@@ -1,0 +1,90 @@
+package kr.co.pincoin.api.domain.shop.model.product;
+
+import kr.co.pincoin.api.domain.shop.model.store.Store;
+import kr.co.pincoin.api.infra.shop.entity.product.ProductListEntity;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+
+import java.time.LocalDateTime;
+
+@Getter
+public class ProductList {
+    private final Long id;
+    private String name;
+    private final String code;
+    private final Store store;
+    private final LocalDateTime created;
+    private final LocalDateTime modified;
+
+    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
+    private ProductList(String name, String code, Store store) {
+        this.id = null;
+        this.name = name;
+        this.code = code;
+        this.store = store;
+        this.created = LocalDateTime.now();
+        this.modified = LocalDateTime.now();
+
+        validateProductList();
+    }
+
+    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    private ProductList(Long id, String name, String code, Store store,
+                        LocalDateTime created, LocalDateTime modified) {
+        this.id = id;
+        this.name = name;
+        this.code = code;
+        this.store = store;
+        this.created = created;
+        this.modified = modified;
+
+        validateProductList();
+    }
+
+    public static ProductList of(String name, String code, Store store) {
+        return ProductList.instanceBuilder()
+                .name(name)
+                .code(code)
+                .store(store)
+                .build();
+    }
+
+    public static ProductList from(ProductListEntity entity) {
+        return ProductList.jpaBuilder()
+                .id(entity.getId())
+                .name(entity.getName())
+                .code(entity.getCode())
+                .store(Store.from(entity.getStore()))
+                .created(entity.getCreated())
+                .modified(entity.getModified())
+                .build();
+    }
+
+    public void updateName(String name) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product list name cannot be empty");
+        }
+        this.name = name;
+    }
+
+    public boolean belongsToStore(Long storeId) {
+        return this.store != null &&
+                this.store.getId().equals(storeId);
+    }
+
+    private void validateProductList() {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product list name cannot be empty");
+        }
+        if (code == null || code.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product list code cannot be empty");
+        }
+        if (!code.matches("^[A-Za-z0-9-]+$")) {
+            throw new IllegalArgumentException("Product list code must contain only letters, numbers, and hyphens");
+        }
+        if (store == null) {
+            throw new IllegalArgumentException("Store is required");
+        }
+    }
+}
