@@ -11,16 +11,29 @@ import java.time.LocalDateTime;
 public class BannedEmail {
     private final Long id;
 
+    private final String email;
+
     private final LocalDateTime created;
 
     private final LocalDateTime modified;
 
-    private final String email;
-
     private boolean isRemoved;
 
-    @Builder(access = AccessLevel.PRIVATE)
-    private BannedEmail(Long id, String email, LocalDateTime created, LocalDateTime modified, boolean isRemoved) {
+    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
+    private BannedEmail(String email) {
+        this.id = null; // id가 필수값처럼 보이지만 실제론 DB 저장 전까진 null
+        this.email = email;
+        this.created = LocalDateTime.now();
+        this.modified = LocalDateTime.now();
+        this.isRemoved = false;
+    }
+
+    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
+    private BannedEmail(Long id,
+                        String email,
+                        LocalDateTime created,
+                        LocalDateTime modified,
+                        boolean isRemoved) {
         this.id = id;
         this.email = email;
         this.created = created;
@@ -30,14 +43,20 @@ public class BannedEmail {
 
     // 새로운 차단 이메일 생성
     public static BannedEmail of(String email) {
-        return BannedEmail.builder().email(email).created(LocalDateTime.now()).modified(LocalDateTime.now())
-                .isRemoved(false).build();
+        return BannedEmail.instanceBuilder()
+                .email(email)
+                .build();
     }
 
     // 엔티티로부터 도메인 모델 생성
     public static BannedEmail from(BannedEmailEntity entity) {
-        return BannedEmail.builder().id(entity.getId()).email(entity.getEmail()).created(entity.getCreated())
-                .modified(entity.getModified()).isRemoved(entity.getIsRemoved()).build();
+        return BannedEmail.jpaBuilder()
+                .id(entity.getId())
+                .email(entity.getEmail())
+                .created(entity.getCreated())
+                .modified(entity.getModified())
+                .isRemoved(entity.getIsRemoved())
+                .build();
     }
 
     public void remove() {

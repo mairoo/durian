@@ -11,15 +11,24 @@ import java.time.LocalDateTime;
 public class BannedPhone {
     private final Long id;
 
+    private String phone;
+
     private final LocalDateTime created;
 
     private final LocalDateTime modified;
 
-    private String phone;
-
     private boolean isRemoved;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
+    private BannedPhone(String phone) {
+        this.id = null;
+        this.phone = phone;
+        this.created = LocalDateTime.now();
+        this.modified = LocalDateTime.now();
+        this.isRemoved = false;
+    }
+
+    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
     private BannedPhone(Long id,
                         String phone,
                         LocalDateTime created,
@@ -32,19 +41,14 @@ public class BannedPhone {
         this.isRemoved = isRemoved;
     }
 
-    // 새로운 차단 전화번호 생성
     public static BannedPhone of(String phone) {
-        return BannedPhone.builder()
+        return BannedPhone.instanceBuilder()
                 .phone(phone)
-                .created(LocalDateTime.now())
-                .modified(LocalDateTime.now())
-                .isRemoved(false)
                 .build();
     }
 
-    // 엔티티로부터 도메인 모델 생성
     public static BannedPhone from(BannedPhoneEntity entity) {
-        return BannedPhone.builder()
+        return BannedPhone.jpaBuilder()
                 .id(entity.getId())
                 .phone(entity.getPhone())
                 .created(entity.getCreated())
@@ -81,7 +85,6 @@ public class BannedPhone {
         return normalizedInput.equals(normalizedBanned);
     }
 
-    // 전화번호 정규화 (특수문자 제거)
     private String normalizePhoneNumber(String phone) {
         return phone.replaceAll("[^0-9]", "");
     }

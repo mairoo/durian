@@ -16,10 +16,6 @@ public class PhoneVerificationLog {
 
     private final User owner;
 
-    private final LocalDateTime created;
-
-    private final LocalDateTime modified;
-
     private final String token;
 
     private final String code;
@@ -50,7 +46,38 @@ public class PhoneVerificationLog {
 
     private final String returnMessage;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    private final LocalDateTime created;
+
+    private final LocalDateTime modified;
+
+    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
+    private PhoneVerificationLog(String token,
+                                 String code,
+                                 String reason,
+                                 String cellphone,
+                                 User owner) {
+        this.id = null;
+        this.token = token;
+        this.code = code;
+        this.reason = reason;
+        this.resultCode = null;
+        this.message = null;
+        this.transactionId = null;
+        this.di = null;
+        this.ci = null;
+        this.fullname = null;
+        this.dateOfBirth = null;
+        this.gender = null;
+        this.domestic = null;
+        this.telecom = null;
+        this.cellphone = cellphone;
+        this.returnMessage = null;
+        this.owner = owner;
+        this.created = LocalDateTime.now();
+        this.modified = LocalDateTime.now();
+    }
+
+    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
     private PhoneVerificationLog(Long id,
                                  String token,
                                  String code,
@@ -91,26 +118,22 @@ public class PhoneVerificationLog {
         this.modified = modified;
     }
 
-    // 새로운 인증 요청 생성
-    public static PhoneVerificationLog createRequest(String token,
-                                                     String code,
-                                                     String reason,
-                                                     String cellphone,
-                                                     User owner) {
-        return PhoneVerificationLog.builder()
+    public static PhoneVerificationLog of(String token,
+                                          String code,
+                                          String reason,
+                                          String cellphone,
+                                          User owner) {
+        return PhoneVerificationLog.instanceBuilder()
                 .token(token)
                 .code(code)
                 .reason(reason)
                 .cellphone(cellphone)
                 .owner(owner)
-                .created(LocalDateTime.now())
-                .modified(LocalDateTime.now())
                 .build();
     }
 
-    // 엔티티로부터 도메인 모델 생성
     public static PhoneVerificationLog from(PhoneVerificationLogEntity entity) {
-        return PhoneVerificationLog.builder()
+        return PhoneVerificationLog.jpaBuilder()
                 .id(entity.getId())
                 .token(entity.getToken())
                 .code(entity.getCode())

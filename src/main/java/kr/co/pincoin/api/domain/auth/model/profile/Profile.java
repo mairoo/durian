@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -19,10 +20,6 @@ public class Profile {
     private final Long id;
 
     private final User user;
-
-    private final LocalDateTime created;
-
-    private final LocalDateTime modified;
 
     private String phone;
 
@@ -70,7 +67,27 @@ public class Profile {
 
     private String telecom;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    private final LocalDateTime created;
+
+    private final LocalDateTime modified;
+
+    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
+    private Profile(User user) {
+        this.id = null;
+        this.user = user;
+        this.phoneVerified = false;
+        this.phoneVerifiedStatus = PhoneVerifiedStatus.UNVERIFIED;
+        this.documentVerified = false;
+        this.allowOrder = false;
+        this.totalOrderCount = 0;
+        this.totalListPrice = BigDecimal.ZERO;
+        this.totalSellingPrice = BigDecimal.ZERO;
+        this.mileage = BigDecimal.ZERO;
+        this.created = LocalDateTime.now();
+        this.modified = LocalDateTime.now();
+    }
+
+    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
     private Profile(Long id,
                     String phone,
                     String address,
@@ -127,26 +144,14 @@ public class Profile {
         this.modified = modified;
     }
 
-    // 새로운 프로필 생성
     public static Profile of(User user) {
-        return Profile.builder()
-                .phoneVerified(false)
-                .phoneVerifiedStatus(PhoneVerifiedStatus.UNVERIFIED)
-                .documentVerified(false)
-                .allowOrder(false)
-                .totalOrderCount(0)
-                .totalListPrice(BigDecimal.ZERO)
-                .totalSellingPrice(BigDecimal.ZERO)
-                .mileage(BigDecimal.ZERO)
+        return Profile.instanceBuilder()
                 .user(user)
-                .created(LocalDateTime.now())
-                .modified(LocalDateTime.now())
                 .build();
     }
 
-    // 엔티티로부터 도메인 모델 생성
     public static Profile from(ProfileEntity entity) {
-        return Profile.builder()
+        return Profile.jpaBuilder()
                 .id(entity.getId())
                 .phone(entity.getPhone())
                 .address(entity.getAddress())
@@ -177,7 +182,6 @@ public class Profile {
                 .build();
     }
 
-    // 도메인 로직 메소드
     public void verifyPhone(String phone) {
         this.phone = phone;
         this.phoneVerified = true;
@@ -208,8 +212,10 @@ public class Profile {
         this.allowOrder = false;
     }
 
-    public void updatePersonalInfo(LocalDate dateOfBirth, Gender gender,
-                                   Domestic domestic, String telecom) {
+    public void updatePersonalInfo(LocalDate dateOfBirth,
+                                   Gender gender,
+                                   Domestic domestic,
+                                   String telecom) {
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.domestic = domestic;
@@ -232,9 +238,8 @@ public class Profile {
         this.totalOrderCount++;
         this.totalListPrice = this.totalListPrice.add(listPrice);
         this.totalSellingPrice = this.totalSellingPrice.add(sellingPrice);
-        this.averagePrice = this.totalSellingPrice.divide(BigDecimal.valueOf(totalOrderCount),
-                                                          2,
-                                                          BigDecimal.ROUND_HALF_UP);
+        this.averagePrice = this.totalSellingPrice
+                .divide(BigDecimal.valueOf(totalOrderCount), 2, RoundingMode.HALF_UP);
 
         if (sellingPrice.compareTo(this.maxPrice != null ? this.maxPrice : BigDecimal.ZERO) > 0) {
             this.maxPrice = sellingPrice;
@@ -255,7 +260,6 @@ public class Profile {
         this.memo = memo;
     }
 
-    // 비즈니스 로직
     public boolean canOrder() {
         return this.allowOrder && this.phoneVerified && this.documentVerified;
     }
@@ -279,7 +283,8 @@ public class Profile {
         if (this.totalListPrice.compareTo(BigDecimal.ZERO) == 0) {
             return 0.0;
         }
-        return this.getTotalDiscount().divide(this.totalListPrice, 4, BigDecimal.ROUND_HALF_UP)
+        return this.getTotalDiscount()
+                .divide(this.totalListPrice, 4, RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100))
                 .doubleValue();
     }

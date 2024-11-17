@@ -19,7 +19,17 @@ public class LoginLog {
 
     private final LocalDateTime modified;
 
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
+    private LoginLog(String ipAddress,
+                     User user) {
+        this.id = null;
+        this.ipAddress = ipAddress;
+        this.user = user;
+        this.created = LocalDateTime.now();
+        this.modified = LocalDateTime.now();
+    }
+
+    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
     private LoginLog(Long id,
                      String ipAddress,
                      User user,
@@ -33,16 +43,14 @@ public class LoginLog {
     }
 
     public static LoginLog of(String ipAddress, User user) {
-        return LoginLog.builder()
+        return LoginLog.instanceBuilder()
                 .ipAddress(ipAddress)
                 .user(user)
-                .created(LocalDateTime.now())
-                .modified(LocalDateTime.now())
                 .build();
     }
 
     public static LoginLog from(LoginLogEntity entity) {
-        return LoginLog.builder()
+        return LoginLog.jpaBuilder()
                 .id(entity.getId())
                 .ipAddress(entity.getIpAddress())
                 .user(User.from(entity.getUser()))
@@ -51,7 +59,6 @@ public class LoginLog {
                 .build();
     }
 
-    // 도메인 로직 메소드
     public boolean isRecentLogin() {
         return this.created.isAfter(LocalDateTime.now().minusHours(24));
     }

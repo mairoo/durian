@@ -1,6 +1,5 @@
 package kr.co.pincoin.api.domain.auth.model.user;
 
-
 import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class User {
-    private final Long id; // 변경 불가능한 식별자
+    private final Long id;
 
     private final LocalDateTime dateJoined;
 
@@ -32,8 +31,27 @@ public class User {
 
     private boolean isActive;
 
-    // 1. private 생성자: 내부 빌더 호출, 외부 호출 불가
-    @Builder(access = AccessLevel.PRIVATE)
+    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "instanceBuilder")
+    private User(String username,
+                 String password,
+                 String email,
+                 String firstName,
+                 String lastName,
+                 boolean isSuperuser,
+                 boolean isStaff) {
+        this.id = null;
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.isActive = true;
+        this.isSuperuser = isSuperuser;
+        this.isStaff = isStaff;
+        this.dateJoined = LocalDateTime.now();
+    }
+
+    @Builder(access = AccessLevel.PRIVATE, builderMethodName = "jpaBuilder")
     private User(Long id,
                  String password,
                  LocalDateTime lastLogin,
@@ -55,32 +73,43 @@ public class User {
         this.email = email;
         this.isStaff = isStaff;
         this.isActive = isActive;
-        this.dateJoined = dateJoined != null ? dateJoined : LocalDateTime.now();
+        this.dateJoined = dateJoined;
     }
 
-    // 2. 외부 사용 팩토리 메소드
-    // 2-1. 기본 사용자 생성 - of
     public static User of(String username,
                           String password,
                           String email,
                           String firstName,
                           String lastName) {
-        return User.builder()
+        return User.instanceBuilder()
                 .username(username)
                 .password(password)
                 .email(email)
                 .firstName(firstName)
                 .lastName(lastName)
-                .isActive(true)
                 .isSuperuser(false)
                 .isStaff(false)
-                .dateJoined(LocalDateTime.now())
-                .build(); // 이 때 private 생성자 호출
+                .build();
     }
 
-    // 2-2. 엔티티로부터 도메인 모델 생성을 위한 팩토리 메서드 추가
+    public static User createAdmin(String username,
+                                   String password,
+                                   String email,
+                                   String firstName,
+                                   String lastName) {
+        return User.instanceBuilder()
+                .username(username)
+                .password(password)
+                .email(email)
+                .firstName(firstName)
+                .lastName(lastName)
+                .isSuperuser(true)
+                .isStaff(true)
+                .build();
+    }
+
     public static User from(UserEntity entity) {
-        return User.builder()
+        return User.jpaBuilder()
                 .id(entity.getId())
                 .password(entity.getPassword())
                 .lastLogin(entity.getLastLogin())
@@ -92,25 +121,6 @@ public class User {
                 .isStaff(entity.getIsStaff())
                 .isActive(entity.getIsActive())
                 .dateJoined(entity.getDateJoined())
-                .build();
-    }
-
-    // 2-3. 관리자 생성 특별한 로직 - create
-    public static User createAdmin(String username,
-                                   String password,
-                                   String email,
-                                   String firstName,
-                                   String lastName) {
-        return User.builder()
-                .username(username)
-                .password(password)
-                .email(email)
-                .firstName(firstName)
-                .lastName(lastName)
-                .isActive(true)
-                .isSuperuser(true)
-                .isStaff(true)
-                .dateJoined(LocalDateTime.now())
                 .build();
     }
 
@@ -167,4 +177,3 @@ public class User {
         return this.isSuperuser && this.isStaff;
     }
 }
-
