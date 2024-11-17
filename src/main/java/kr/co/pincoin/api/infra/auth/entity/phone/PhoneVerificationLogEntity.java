@@ -50,11 +50,11 @@ public class PhoneVerificationLogEntity extends BaseDateTime {
     private String dateOfBirth;
 
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "gender")
+    @Column(name = "gender", columnDefinition = "INT")
     private Gender gender;
 
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "domestic")
+    @Column(name = "domestic", columnDefinition = "INT")
     private Domestic domestic;
 
     @Column(name = "telecom")

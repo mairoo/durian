@@ -19,7 +19,7 @@ public class OrderEntity extends BaseRemovalDateTime {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "order_no")
+    @Column(name = "order_no", columnDefinition = "CHAR(32")
     private String orderNo;
 
     @Column(name = "fullname")

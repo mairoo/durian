@@ -34,7 +34,7 @@ public class ProfileEntity extends BaseDateTime {
     private Boolean phoneVerified;
 
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "phone_verified_status")
+    @Column(name = "phone_verified_status", columnDefinition = "INT")
     private PhoneVerifiedStatus phoneVerifiedStatus;
 
     @Column(name = "document_verified")
@@ -86,11 +86,11 @@ public class ProfileEntity extends BaseDateTime {
     private LocalDate dateOfBirth;
 
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "gender")
+    @Column(name = "gender", columnDefinition = "INT")
     private Gender gender;
 
     @Enumerated(EnumType.ORDINAL)
-    @Column(name = "domestic")
+    @Column(name = "domestic", columnDefinition = "INT")
     private Domestic domestic;
 
     @Column(name = "telecom")
