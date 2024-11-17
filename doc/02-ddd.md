@@ -39,22 +39,22 @@
 리파지토리
 
 - 도메인 계층
-    - OrderRepository
+    - `OrderRepository`
         - 순수 자바 인터페이스
         - JPA + QueryDSL 쿼리 모두 호출 가능
 
 - 인프라 계층
-    - OrderJpaRepository
-        - @Repository
+    - `OrderJpaRepository`
+        - `@Repository`
         - JpaRepository 상속(extends)
-    - OrderQueryRepository
+    - `OrderQueryRepository`
         - 순수 자바 인터페이스
         - QueryDSL 용도
-    - OrderQueryRepositoryImpl
-        - @Repository
+    - `OrderQueryRepositoryImpl`
+        - `@Repository`
         - OrderQueryRepository 구현체(implements)
-    - OrderRepositoryImpl
-        - @Repository
+    - `OrderRepositoryImpl`
+        - `@Repository`
         - OrderRepository 구현체
         - OrderJpaRepository + OrderQueryRepository + OrderMapper (Composition 패턴 / has-a)
 
