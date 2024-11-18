@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.co.pincoin.api.global.response.error.ErrorResponse;
+import kr.co.pincoin.api.global.response.error.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,11 +32,15 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request,
                        HttpServletResponse response,
                        AccessDeniedException accessDeniedException) throws IOException {
+        ErrorCode errorCode = ErrorCode.FORBIDDEN;
+
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
 
-        ErrorResponse errorResponse = ErrorResponse.of(request, HttpStatus.FORBIDDEN, "접근 권한이 없습니다.");
+        ErrorResponse errorResponse = ErrorResponse.of(request,
+                                                       errorCode.getStatus(),
+                                                       errorCode.getMessage());
 
         objectMapper.writeValue(response.getWriter(), errorResponse);
     }

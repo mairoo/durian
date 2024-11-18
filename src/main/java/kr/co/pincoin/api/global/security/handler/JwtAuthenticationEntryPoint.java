@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.co.pincoin.api.global.response.error.ErrorResponse;
+import kr.co.pincoin.api.global.response.error.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,7 +21,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private final ObjectMapper objectMapper;
-
     @PostConstruct
     public void setup() {
         objectMapper.registerModule(new JavaTimeModule());
@@ -31,11 +31,15 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
         response.setCharacterEncoding("UTF-8");
 
-        ErrorResponse errorResponse = ErrorResponse.of(request, HttpStatus.UNAUTHORIZED, "인증이 필요합니다.");
+        ErrorResponse errorResponse = ErrorResponse.of(request,
+                                                       errorCode.getStatus(),
+                                                       errorCode.getMessage());
 
         objectMapper.writeValue(response.getWriter(), errorResponse);
     }
