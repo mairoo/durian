@@ -70,6 +70,7 @@ public class SecurityConfig {
 
                 // 4. URL 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/health").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/public/**").permitAll()
                         .requestMatchers("/api/**").authenticated()
