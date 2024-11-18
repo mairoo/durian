@@ -3,7 +3,7 @@ package kr.co.pincoin.api.app.admin.user.service;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class AdminUserService {
     public void
     createUser() {
 

@@ -1,7 +1,7 @@
 package kr.co.pincoin.api.app.member.user.controller;
 
 import jakarta.validation.Valid;
-import kr.co.pincoin.api.app.admin.user.service.UserService;
+import kr.co.pincoin.api.app.admin.user.service.AdminUserService;
 import kr.co.pincoin.api.app.member.user.request.UserCreateRequest;
 import kr.co.pincoin.api.app.member.user.response.UserResponse;
 import kr.co.pincoin.api.domain.auth.model.user.User;
@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Slf4j
-public class UserController {
-    private final UserService userService;
+public class MemberUserController {
+    private final AdminUserService adminUserService;
 
     private final UserMapper userMapper;  // 또는 Response 클래스 내 정적 팩토리 메서드 사용
 

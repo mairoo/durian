@@ -44,6 +44,12 @@ dependencies {
 	annotationProcessor 'com.querydsl:querydsl-apt:5.1.0:jakarta'
 	annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
 	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+
+	// JJWT-API - 2024-11-17 (버전 명시)
+	// https://github.com/jwtk/jjwt
+	implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6' // or 'io.jsonwebtoken:jjwt-gson:0.12.6' for gson
 }
 
 tasks.named('test') {

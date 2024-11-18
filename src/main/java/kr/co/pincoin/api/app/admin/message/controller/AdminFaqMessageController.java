@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin/faq-messages")
 @RequiredArgsConstructor
 @Slf4j
-public class FaqMessageController {
+public class AdminFaqMessageController {
 }

@@ -1,4 +1,4 @@
-package kr.co.pincoin.api.app.admin.review.controller;
+package kr.co.pincoin.api.app.admin.product.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/admin/testimonials")
+@RequestMapping("/admin/categories")
 @RequiredArgsConstructor
 @Slf4j
-public class TestimonialController {
+public class AdminCategoryController {
 }
