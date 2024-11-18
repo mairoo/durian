@@ -1,6 +1,8 @@
 package kr.co.pincoin.api.global.config;
 
-import jakarta.servlet.http.HttpServletResponse;
+import kr.co.pincoin.api.global.security.handler.JwtAccessDeniedHandler;
+import kr.co.pincoin.api.global.security.handler.JwtAuthenticationEntryPoint;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,7 +15,11 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
+
+    private final JwtAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -71,17 +77,8 @@ public class SecurityConfig {
 
                 // 5. 예외 처리 설정
                 .exceptionHandling(exception -> exception
-                                           .authenticationEntryPoint((request, response, authException) -> {
-                                               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                                               response.setContentType("application/json;charset=UTF-8");
-                                               response.getWriter().write("{\"error\": \"인증이 필요합니다.\"}");
-                                           })
-                                           .accessDeniedHandler((request, response, accessDeniedException) -> {
-                                               response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                                               response.setContentType("application/json;charset=UTF-8");
-                                               response.getWriter().write("{\"error\": \"접근 권한이 없습니다.\"}");
-                                           })
-                                  );
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler));
 
         return http.build();
     }
