@@ -1,4 +1,4 @@
 package kr.co.pincoin.api.infra.shop.repository.order;
 
-public interface OrderRepository {
+public interface PurchaseOrderPaymentQueryRepository {
 }
