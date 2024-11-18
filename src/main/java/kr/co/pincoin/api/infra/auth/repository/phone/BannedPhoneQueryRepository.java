@@ -1,4 +1,4 @@
 package kr.co.pincoin.api.infra.auth.repository.phone;
 
-public interface BannedPhoneRepository {
+public interface BannedPhoneQueryRepository {
 }
