@@ -5,12 +5,10 @@ import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Builder
 public class ErrorResponse {
-    private final LocalDateTime timestamp;
+    private final Long timestamp;  // Unix 타임스탬프
     private final int status;
     private final String error;
     private final String message;
@@ -18,7 +16,7 @@ public class ErrorResponse {
 
     public static ErrorResponse of(HttpServletRequest request, HttpStatus status, String message) {
         return ErrorResponse.builder()
-                .timestamp(LocalDateTime.now())
+                .timestamp(System.currentTimeMillis())
                 .status(status.value())
                 .error(status.getReasonPhrase())
                 .message(message)
