@@ -76,6 +76,7 @@ public class SecurityConfig {
                         .anyRequest().denyAll())
 
                 // 5. 예외 처리 설정
+                // 401, 403 오류는 GlobalExceptionHandler 사용 안 하고 커스텀 핸들러로 처리
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler));
