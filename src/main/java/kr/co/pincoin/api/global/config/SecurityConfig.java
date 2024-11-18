@@ -68,13 +68,13 @@ public class SecurityConfig {
                     });
                 })
 
-                // 4. URL 접근 권한 설정
+                // 4. URL 접근 권한 설정 (모두 허용)
+                // - JWT + 서비스 계층 메소드 보안으로 이미 충분한 보안 계층 존재
+                // - REST API URL 패턴이 리소스 중심으로 설계되어 권한 관리가 너무 복잡해짐
+                // - /users, /products 같은 엔드포인트는 인증/미인증 요청을 모두 처리해야하는 경우가 많음
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/health").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/public/**").permitAll()
-                        .requestMatchers("/api/**").authenticated()
-                        .anyRequest().denyAll())
+                        .requestMatchers("/actuator/**").denyAll() // actuator 등 민감한 엔드포인트는 명시적 차단
+                        .anyRequest().permitAll()) // 나머지 모두 허용
 
                 // 5. 예외 처리 설정
                 // 401, 403 오류는 GlobalExceptionHandler 사용 안 하고 커스텀 핸들러로 처리
