@@ -1,4 +1,4 @@
 package kr.co.pincoin.api.infra.shop.repository.support.review;
 
-public interface TestimonialRepository {
+public interface TestimonialAnswerQueryRepository {
 }
