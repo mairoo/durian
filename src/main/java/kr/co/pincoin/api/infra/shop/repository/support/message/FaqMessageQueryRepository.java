@@ -1,4 +1,4 @@
 package kr.co.pincoin.api.infra.shop.repository.support.message;
 
-public interface SmsRepository {
+public interface FaqMessageQueryRepository {
 }
