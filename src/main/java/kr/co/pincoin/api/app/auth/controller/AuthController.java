@@ -30,36 +30,47 @@ public class AuthController {
            HttpServletRequest servletRequest) {
         TokenPair tokenPair = authService.login(request, servletRequest);
 
-        HttpHeaders headers = new HttpHeaders();
-
-        if (request.isRememberMe()) {
-            ResponseCookie refreshTokenCookie = ResponseCookie.from(jwtProperties.cookieName(),
-                                                                    tokenPair.getRefreshToken())
-                    .httpOnly(true)
-                    .secure(true)
-                    .path("/")
-                    .maxAge(jwtProperties.refreshTokenExpiresIn())
-                    .sameSite("Strict")
-                    .domain(jwtProperties.cookieDomain())
-                    .build();
-
-            headers.add(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString());
-        }
-
         return ResponseEntity.ok()
-                .headers(headers)
+                .headers(createRefreshTokenCookie(tokenPair.getRefreshToken()))
                 .body(ApiResponse.of(tokenPair.getAccessToken()));
     }
 
-    // 리프레시
     @PostMapping("/refresh")
-    public void
-    refresh(@CookieValue(name = "refresh_token") String refreshToken) {
+    public ResponseEntity<ApiResponse<AccessTokenResponse>>
+    refresh(@CookieValue(name = JwtProperties.REFRESH_TOKEN_COOKIE_NAME) String refreshToken,
+            HttpServletRequest servletRequest) {
+        TokenPair tokenPair = authService.refresh(refreshToken, servletRequest);
+
+        return ResponseEntity.ok()
+                .headers(createRefreshTokenCookie(tokenPair.getRefreshToken()))
+                .body(ApiResponse.of(tokenPair.getAccessToken()));
     }
 
-    // 로그아웃
     @PostMapping("/sign-out")
-    public void
-    signOut() {
+    public ResponseEntity<ApiResponse<Void>> signOut(
+            @CookieValue(name = JwtProperties.REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken) {
+        authService.logout(refreshToken);
+
+        return ResponseEntity.ok()
+                .headers(createRefreshTokenCookie(""))
+                .body(ApiResponse.of(null));
+    }
+
+    private HttpHeaders createRefreshTokenCookie(String refreshToken) {
+        HttpHeaders headers = new HttpHeaders();
+
+        ResponseCookie cookie = ResponseCookie.from(JwtProperties.REFRESH_TOKEN_COOKIE_NAME,
+                                                    refreshToken != null ? refreshToken : "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(refreshToken != null && !refreshToken.isEmpty()
+                                ? jwtProperties.refreshTokenExpiresIn() : 0)
+                .sameSite("Strict")
+                .domain(jwtProperties.cookieDomain())
+                .build();
+
+        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+        return headers;
     }
 }

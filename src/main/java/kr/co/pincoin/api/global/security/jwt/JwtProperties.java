@@ -10,10 +10,9 @@ public record JwtProperties(
 
         int refreshTokenExpiresIn,
 
-        String cookieName,
-
         String cookieDomain,
 
         String oauth2RedirectUrl
 ) {
+    public static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
 }
