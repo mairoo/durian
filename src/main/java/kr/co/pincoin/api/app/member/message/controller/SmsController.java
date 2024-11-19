@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/sms")
 @RequiredArgsConstructor
 @Slf4j
-public class MemberSmsController {
+public class SmsController {
 }

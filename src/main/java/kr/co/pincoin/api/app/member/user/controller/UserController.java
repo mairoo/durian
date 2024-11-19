@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Slf4j
-public class MemberUserController {
+public class UserController {
     private final AdminUserService adminUserService;
 
     private final UserMapper userMapper;  // 또는 Response 클래스 내 정적 팩토리 메서드 사용

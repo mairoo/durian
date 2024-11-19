@@ -1,4 +1,4 @@
-package kr.co.pincoin.api.app.member.inquiry.controller;
+package kr.co.pincoin.api.app.member.product.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/customer-questions")
+@RequestMapping("/products")
 @RequiredArgsConstructor
 @Slf4j
-public class MemberCustomerQuestionController {
+public class ProductController {
 }
