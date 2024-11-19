@@ -59,10 +59,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 3. ... 다른 필터들 ...
         // 4. FilterSecurityInterceptor (URL 기반 permitAll() 등의 권한 설정
 
+        // 완전 공개 리소스 목록
         List<RequestMatcher> permitAllMatchers = Arrays.asList(
                 new AntPathRequestMatcher("/auth/**"),
                 new AntPathRequestMatcher("/oauth2/**"),
-                new AntPathRequestMatcher("/api/**"));
+                new AntPathRequestMatcher("/public/**"));
 
         return permitAllMatchers.stream()
                 .anyMatch(matcher -> matcher.matches(request));

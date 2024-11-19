@@ -80,8 +80,8 @@ public class SecurityConfig {
                 // - /users, /products 같은 엔드포인트는 인증/미인증 요청을 모두 처리해야하는 경우가 많음
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/**").denyAll() // actuator 등 민감한 엔드포인트는 명시적 차단
+                        .requestMatchers("/admin/**").authenticated() // 관리자 대시보드 인증 필요
                         .anyRequest().permitAll()) // 나머지 모두 허용
-
 
                 // 5. 커스텀 필터 추가 (JWT 인증)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
