@@ -31,7 +31,7 @@ public class OrderProductVoucherMapper {
                 .voucher(voucherMapper.toModel(entity.getVoucher()))
                 .created(entity.getCreated())
                 .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
+                .isRemoved(entity.isRemoved())
                 .build();
     }
 

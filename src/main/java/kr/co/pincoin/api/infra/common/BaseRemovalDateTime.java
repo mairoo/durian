@@ -8,7 +8,7 @@ import lombok.Getter;
 @MappedSuperclass
 public abstract class BaseRemovalDateTime extends BaseDateTime {
     @Column(name = "is_removed")
-    private Boolean isRemoved;
+    private boolean isRemoved;
 
     public void remove() {
         this.isRemoved = true;

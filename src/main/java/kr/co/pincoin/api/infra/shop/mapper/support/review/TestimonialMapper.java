@@ -32,7 +32,7 @@ public class TestimonialMapper {
                 .store(storeMapper.toModel(entity.getStore()))
                 .created(entity.getCreated())
                 .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
+                .isRemoved(entity.isRemoved())
                 .build();
     }
 

@@ -20,7 +20,7 @@ public class BannedPhoneMapper {
                 .phone(entity.getPhone())
                 .created(entity.getCreated())
                 .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
+                .isRemoved(entity.isRemoved())
                 .build();
     }
 

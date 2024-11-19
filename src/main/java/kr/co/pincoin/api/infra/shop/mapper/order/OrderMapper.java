@@ -40,7 +40,7 @@ public class OrderMapper {
                 .user(userMapper.toModel(entity.getUser()))
                 .created(entity.getCreated())
                 .modified(entity.getModified())
-                .removed(entity.getIsRemoved())
+                .removed(entity.isRemoved())
                 .build();
     }
 

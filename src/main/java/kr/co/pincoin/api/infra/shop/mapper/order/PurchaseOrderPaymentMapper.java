@@ -26,7 +26,7 @@ public class PurchaseOrderPaymentMapper {
                 .order(purchaseOrderMapper.toModel(entity.getOrder()))
                 .created(entity.getCreated())
                 .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
+                .isRemoved(entity.isRemoved())
                 .build();
     }
 

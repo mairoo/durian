@@ -24,7 +24,7 @@ public class PurchaseOrderMapper {
                 .amount(entity.getAmount())
                 .created(entity.getCreated())
                 .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
+                .isRemoved(entity.isRemoved())
                 .build();
     }
 

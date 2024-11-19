@@ -20,7 +20,7 @@ public class BannedEmailMapper {
                 .email(entity.getEmail())
                 .created(entity.getCreated())
                 .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
+                .isRemoved(entity.isRemoved())
                 .build();
     }
 

@@ -29,7 +29,7 @@ public class OrderPaymentMapper {
                 .order(orderMapper.toModel(entity.getOrder()))
                 .created(entity.getCreated())
                 .modified(entity.getModified())
-                .isRemoved(entity.getIsRemoved())
+                .isRemoved(entity.isRemoved())
                 .build();
     }
 
