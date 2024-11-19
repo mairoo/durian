@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.regex.Pattern;
 
 @Getter
 public class BannedEmail {
@@ -56,17 +57,25 @@ public class BannedEmail {
         return !this.isRemoved;
     }
 
-    public boolean matches(String email) {
+    public static boolean
+    validate(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        return pattern.matcher(email).matches();
+    }
+
+    public boolean
+    matches(String email) {
         if (email == null || isRemoved) {
             return false;
         }
 
-        // 정확한 이메일 매칭
+        // 정확한 이메일 매칭 (차단 이메일 주소 예시: username@Domain.com)
         if (this.email.equalsIgnoreCase(email)) {
             return true;
         }
 
-        // 와일드카드 도메인 매칭 (예: *@domain.com)
+        // 와일드카드 도메인 매칭 (차단 이메일 주소 예시: *@domain.com)
         if (this.email.startsWith("*@")) {
             String domain = this.email.substring(2);
             return email.toLowerCase().endsWith("@" + domain.toLowerCase());
