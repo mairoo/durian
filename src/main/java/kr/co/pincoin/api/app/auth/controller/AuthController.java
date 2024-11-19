@@ -1,9 +1,11 @@
 package kr.co.pincoin.api.app.auth.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kr.co.pincoin.api.app.auth.request.SignInRequest;
 import kr.co.pincoin.api.app.auth.response.AccessTokenResponse;
-import kr.co.pincoin.api.domain.auth.vo.AccessToken;
+import kr.co.pincoin.api.app.auth.service.AuthService;
+import kr.co.pincoin.api.domain.auth.vo.TokenPair;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,11 +19,19 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
+    private final AuthService authService;
+
     @PostMapping("/sign-in")
     public ResponseEntity<ApiResponse<AccessTokenResponse>>
-    signIn(@Valid @RequestBody SignInRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.of(AccessTokenResponse.from(new AccessToken("token", LocalDateTime.now()))));
+    signIn(@Valid @RequestBody SignInRequest request,
+           HttpServletRequest servletRequest) {
+
+        authService.login(request, servletRequest);
+
+
+        return ResponseEntity.ok(ApiResponse.of(AccessTokenResponse.from(new TokenPair("accessToken",
+                                                                                       null,
+                                                                                       LocalDateTime.now()))));
     }
 
     // 리프레시

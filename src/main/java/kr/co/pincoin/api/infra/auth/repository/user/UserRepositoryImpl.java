@@ -1,9 +1,12 @@
 package kr.co.pincoin.api.infra.auth.repository.user;
 
+import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
 import kr.co.pincoin.api.infra.auth.mapper.user.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -13,4 +16,9 @@ public class UserRepositoryImpl implements UserRepository {
     private final UserQueryRepository userQueryRepository;
 
     private final UserMapper userMapper;
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userJpaRepository.findByEmail(email).map(userMapper::toModel);
+    }
 }
