@@ -1,21 +1,13 @@
 package kr.co.pincoin.api.domain.auth.vo;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
+import kr.co.pincoin.api.app.auth.response.AccessTokenResponse;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public record TokenPair(
-        String accessToken,
-        String refreshToken,
-        LocalDateTime expiresAt
-) {
-    // 유효성 검증 compact 생성자
-    public TokenPair {
-        Objects.requireNonNull(accessToken, "Token must not be null");
-        Objects.requireNonNull(expiresAt, "Expiry date must not be null");
-    }
+@Getter
+@AllArgsConstructor
+public class TokenPair {
+    private AccessTokenResponse accessToken; // 클라이언트에 전달될 JSON 응답
 
-    // 도메인 로직
-    public boolean isExpired() {
-        return LocalDateTime.now().isAfter(expiresAt);
-    }
+    private String refreshToken; // 쿠키에 설정될 토큰 (nullable)
 }

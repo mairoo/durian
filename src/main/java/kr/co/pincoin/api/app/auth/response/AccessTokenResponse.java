@@ -2,20 +2,25 @@ package kr.co.pincoin.api.app.auth.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import kr.co.pincoin.api.domain.auth.vo.TokenPair;
 import lombok.Getter;
 
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AccessTokenResponse {
+    // https://www.oauth.com/oauth2-servers/access-tokens/access-token-response/
+
     @JsonProperty("accessToken")
-    private final String accessToken;
+    private String accessToken;
 
-    private AccessTokenResponse(TokenPair tokenPair) {
-        this.accessToken = tokenPair.accessToken();
-    }
+    @JsonProperty("tokenType")
+    private String tokenType;
 
-    public static AccessTokenResponse from(TokenPair tokenPair) {
-        return new AccessTokenResponse(tokenPair);
+    @JsonProperty("expiresIn")
+    private int expiresIn;
+
+    public AccessTokenResponse(String accessToken, int expiresIn) {
+        this.accessToken = accessToken;
+        this.tokenType = "Bearer";  // OAuth 2.0에서 가장 일반적인 타입
+        this.expiresIn = expiresIn; // 초 단위의 만료 시간
     }
 }

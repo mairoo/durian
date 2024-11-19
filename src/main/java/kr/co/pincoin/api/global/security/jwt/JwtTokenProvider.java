@@ -8,29 +8,22 @@ import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
 import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.global.exception.JwtAuthenticationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.*;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class JwtTokenProvider {
     public static final String JWT_TYPE = "JWT";
 
     public static final String JWT_ALGORITHM = "HS512";
 
-    // 알고리즘에 따라 키 길이 변경
-    // HS256: openssl rand -hex 24
-    // HS384: openssl rand -hex 32
-    // HS512: openssl rand -hex 48
-    @Value("${jwt.secret}")
-    private String secret;
-
-    @Value("${jwt.access-token-expires-in}")
-    private int accessTokenValidity;
+    private final JwtProperties jwtProperties;
 
     private SecretKey key;
 
@@ -42,7 +35,7 @@ public class JwtTokenProvider {
     init() {
         // SecretKey key = Jwts.SIG.HS512.key().build();
         // 위와 같이 키를 생성할 경우 서버 재부팅 시 액세스 토큰 검증 문제가 있을 수 있다.
-        key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
+        key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtProperties.secret()));
 
         headers = new HashMap<>();
         headers.put("typ", JWT_TYPE);
@@ -52,7 +45,7 @@ public class JwtTokenProvider {
     public String
     createAccessToken(String subject) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + accessTokenValidity * 1000L);
+        Date validity = new Date(now.getTime() + jwtProperties.accessTokenExpiresIn() * 1000L);
 
         // 예약 클레임
         // iss, sub, aud, exp, nbf, iat, jti
