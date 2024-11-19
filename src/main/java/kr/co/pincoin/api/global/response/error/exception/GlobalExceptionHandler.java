@@ -4,6 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import kr.co.pincoin.api.global.response.error.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -26,6 +29,30 @@ public class GlobalExceptionHandler {
                                        e.getMessage()));
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
+            HttpMessageNotReadableException e, HttpServletRequest request) {
+        log.error("Request Body Missing Exception: {}", e.getMessage());
+
+        return ResponseEntity
+                .status(ErrorCode.REQUEST_BODY_MISSING.getStatus())
+                .body(ErrorResponse.of(request,
+                                       ErrorCode.REQUEST_BODY_MISSING.getStatus(),
+                                       ErrorCode.REQUEST_BODY_MISSING.getMessage()));
+    }
+
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    protected ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(
+            HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
+        log.error("Method Not Allowed Exception: {}", e.getMessage());
+
+        return ResponseEntity
+                .status(ErrorCode.METHOD_NOT_ALLOWED.getStatus())
+                .body(ErrorResponse.of(request,
+                                       ErrorCode.METHOD_NOT_ALLOWED.getStatus(),
+                                       ErrorCode.METHOD_NOT_ALLOWED.getMessage()));
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
             MethodArgumentNotValidException e, HttpServletRequest request) {
@@ -39,6 +66,18 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(request,
                                        ErrorCode.INVALID_INPUT_VALUE.getStatus(),
                                        errorMessage));
+    }
+
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+    protected ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(
+            HttpMediaTypeNotSupportedException e, HttpServletRequest request) {
+        log.error("Unsupported Media Type Exception: {}", e.getMessage());
+
+        return ResponseEntity
+                .status(ErrorCode.UNSUPPORTED_MEDIA_TYPE.getStatus())
+                .body(ErrorResponse.of(request,
+                                       ErrorCode.UNSUPPORTED_MEDIA_TYPE.getStatus(),
+                                       ErrorCode.UNSUPPORTED_MEDIA_TYPE.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)

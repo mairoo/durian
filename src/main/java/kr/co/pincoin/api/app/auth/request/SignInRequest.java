@@ -25,4 +25,7 @@ public class SignInRequest {
     )
     @JsonProperty("password")
     private String password;
+
+    @JsonProperty("rememberMe")
+    private boolean rememberMe;
 }
