@@ -1,8 +1,10 @@
 package kr.co.pincoin.api.global.response.error.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import kr.co.pincoin.api.global.response.error.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -10,6 +12,10 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+
+import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -18,10 +24,16 @@ public class GlobalExceptionHandler {
     // handleAuthenticationException 메소드 - 401 재정의 안 함
     // handleAccessDeniedException 메소드 - 403 재정의 안 함
 
+    /**
+     * 비즈니스 로직 예외 처리
+     * 애플리케이션에서 정의한 비즈니스 규칙 위반 시 발생하는 예외 처리
+     * 예) 잔액 부족, 재고 부족, 주문 취소 불가 등
+     */
     @ExceptionHandler(BusinessException.class)
-    protected ResponseEntity<ErrorResponse> handleBusinessException(
-            BusinessException e, HttpServletRequest request) {
-        log.error("Business Exception: {}", e.getMessage());
+    protected ResponseEntity<ErrorResponse>
+    handleBusinessException(BusinessException e,
+                            HttpServletRequest request) {
+        log.error("[Business Exception] {}", e.getMessage());
         return ResponseEntity
                 .status(e.getErrorCode().getStatus())
                 .body(ErrorResponse.of(request,
@@ -29,10 +41,36 @@ public class GlobalExceptionHandler {
                                        e.getMessage()));
     }
 
+    /**
+     * 입력값 유효성 검사 실패 처리
+     * Bean Validation (@Valid, @Validated) 실패 시 발생하는 예외 처리
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    protected ResponseEntity<ErrorResponse>
+    handleMethodArgumentNotValidException(MethodArgumentNotValidException e,
+                                          HttpServletRequest request) {
+        log.error("[Validation Exception] {}", e.getMessage());
+
+        String errorMessage = e.getBindingResult().getFieldErrors().stream()
+                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+
+        return ResponseEntity
+                .status(ErrorCode.INVALID_INPUT_VALUE.getStatus())
+                .body(ErrorResponse.of(request,
+                                       ErrorCode.INVALID_INPUT_VALUE.getStatus(),
+                                       errorMessage.isEmpty() ? "Invalid input value" : errorMessage));
+    }
+
+    /**
+     * JSON 파싱 오류 처리
+     * 잘못된 JSON 형식이나 타입 불일치로 인한 파싱 실패 시 발생하는 예외 처리
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(
-            HttpMessageNotReadableException e, HttpServletRequest request) {
-        log.error("Request Body Missing Exception: {}", e.getMessage());
+    protected ResponseEntity<ErrorResponse>
+    handleHttpMessageNotReadableException(HttpMessageNotReadableException e,
+                                          HttpServletRequest request) {
+        log.error("[Request Body Missing] {}", e.getMessage());
 
         return ResponseEntity
                 .status(ErrorCode.REQUEST_BODY_MISSING.getStatus())
@@ -41,10 +79,31 @@ public class GlobalExceptionHandler {
                                        ErrorCode.REQUEST_BODY_MISSING.getMessage()));
     }
 
+    /**
+     * 엔티티 조회 실패 처리
+     * JPA에서 엔티티를 찾지 못했을 때 발생하는 예외 처리
+     */
+    @ExceptionHandler(EntityNotFoundException.class)
+    protected ResponseEntity<ErrorResponse>
+    handleEntityNotFoundException(EntityNotFoundException e,
+                                  HttpServletRequest request) {
+        log.error("[Resource Not Found] {}", e.getMessage());
+        return ResponseEntity
+                .status(ErrorCode.RESOURCE_NOT_FOUND.getStatus())
+                .body(ErrorResponse.of(request,
+                                       ErrorCode.RESOURCE_NOT_FOUND.getStatus(),
+                                       ErrorCode.RESOURCE_NOT_FOUND.getMessage()));
+    }
+
+    /**
+     * HTTP 메소드 오류 처리
+     * 지원하지 않는 HTTP 메소드 호출 시 발생하는 예외 처리
+     */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    protected ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(
-            HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
-        log.error("Method Not Allowed Exception: {}", e.getMessage());
+    protected ResponseEntity<ErrorResponse>
+    handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e,
+                                                 HttpServletRequest request) {
+        log.error("[Method Not Allowed] {}", e.getMessage());
 
         return ResponseEntity
                 .status(ErrorCode.METHOD_NOT_ALLOWED.getStatus())
@@ -53,25 +112,15 @@ public class GlobalExceptionHandler {
                                        ErrorCode.METHOD_NOT_ALLOWED.getMessage()));
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
-            MethodArgumentNotValidException e, HttpServletRequest request) {
-        log.error("Validation Exception: {}", e.getMessage());
-        String errorMessage = e.getBindingResult().getFieldError() != null ?
-                e.getBindingResult().getFieldError().getDefaultMessage() :
-                "Invalid input value";
-
-        return ResponseEntity
-                .status(ErrorCode.INVALID_INPUT_VALUE.getStatus())
-                .body(ErrorResponse.of(request,
-                                       ErrorCode.INVALID_INPUT_VALUE.getStatus(),
-                                       errorMessage));
-    }
-
+    /**
+     * Content-Type 오류 처리
+     * 지원하지 않는 Content-Type으로 요청 시 발생하는 예외 처리
+     */
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    protected ResponseEntity<ErrorResponse> handleHttpMediaTypeNotSupportedException(
-            HttpMediaTypeNotSupportedException e, HttpServletRequest request) {
-        log.error("Unsupported Media Type Exception: {}", e.getMessage());
+    protected ResponseEntity<ErrorResponse>
+    handleHttpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e,
+                                             HttpServletRequest request) {
+        log.error("[Unsupported Media Type] {}", e.getMessage());
 
         return ResponseEntity
                 .status(ErrorCode.UNSUPPORTED_MEDIA_TYPE.getStatus())
@@ -80,14 +129,76 @@ public class GlobalExceptionHandler {
                                        ErrorCode.UNSUPPORTED_MEDIA_TYPE.getMessage()));
     }
 
+    /**
+     * 파일 업로드 크기 제한 초과 처리
+     * 설정된 최대 파일 크기를 초과하여 업로드 시 발생하는 예외 처리
+     */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    protected ResponseEntity<ErrorResponse>
+    handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e,
+                                         HttpServletRequest request) {
+        log.error("[File Size Exceeded] {}", e.getMessage());
+        return ResponseEntity
+                .status(ErrorCode.FILE_SIZE_EXCEEDED.getStatus())
+                .body(ErrorResponse.of(request,
+                                       ErrorCode.FILE_SIZE_EXCEEDED.getStatus(),
+                                       ErrorCode.FILE_SIZE_EXCEEDED.getMessage()));
+    }
+
+    /**
+     * 데이터 무결성 위반 처리
+     * DB 제약조건 위반 시 발생하는 예외 처리 (UK, FK 등)
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    protected ResponseEntity<ErrorResponse>
+    handleDataIntegrityViolationException(DataIntegrityViolationException e,
+                                          HttpServletRequest request) {
+        log.error("[Data Integrity Violation] Message: {}, Cause: {}",
+                  e.getMessage(),
+                  e.getMostSpecificCause().getMessage());
+
+        if (e.getCause() instanceof SQLIntegrityConstraintViolationException cause) {
+            return switch (cause.getErrorCode()) {
+                case 1062 -> // Duplicate entry (UK/PK violation)
+                        ResponseEntity
+                                .status(ErrorCode.DUPLICATE_KEY.getStatus())
+                                .body(ErrorResponse.of(request,
+                                                       ErrorCode.DUPLICATE_KEY.getStatus(),
+                                                       ErrorCode.DUPLICATE_KEY.getMessage()));
+                case 1452 -> // FK violation
+                        ResponseEntity
+                                .status(ErrorCode.FOREIGN_KEY_VIOLATION.getStatus())
+                                .body(ErrorResponse.of(request,
+                                                       ErrorCode.FOREIGN_KEY_VIOLATION.getStatus(),
+                                                       ErrorCode.FOREIGN_KEY_VIOLATION.getMessage()));
+                default -> ResponseEntity
+                        .status(ErrorCode.DATA_INTEGRITY_VIOLATION.getStatus())
+                        .body(ErrorResponse.of(request,
+                                               ErrorCode.DATA_INTEGRITY_VIOLATION.getStatus(),
+                                               ErrorCode.DATA_INTEGRITY_VIOLATION.getMessage()));
+            };
+        }
+
+        return ResponseEntity
+                .status(ErrorCode.DATA_INTEGRITY_VIOLATION.getStatus())
+                .body(ErrorResponse.of(request,
+                                       ErrorCode.DATA_INTEGRITY_VIOLATION.getStatus(),
+                                       ErrorCode.DATA_INTEGRITY_VIOLATION.getMessage()));
+    }
+
+    /**
+     * 기타 모든 예외 처리
+     * 위에서 처리되지 않은 모든 예외를 처리하는 마지막 단계
+     */
     @ExceptionHandler(Exception.class)
-    protected ResponseEntity<ErrorResponse> handleException(
-            Exception e, HttpServletRequest request) {
-        log.error("Internal Server Error: {}", e.getMessage());
+    protected ResponseEntity<ErrorResponse>
+    handleException(Exception e,
+                    HttpServletRequest request) {
+        log.error("[Internal Server Error] {}", e.getMessage());
         return ResponseEntity
                 .status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus())
                 .body(ErrorResponse.of(request,
                                        ErrorCode.INTERNAL_SERVER_ERROR.getStatus(),
-                                       e.getMessage()));
+                                       ErrorCode.INTERNAL_SERVER_ERROR.getMessage())); // 일반화된 메시지 사용
     }
 }
