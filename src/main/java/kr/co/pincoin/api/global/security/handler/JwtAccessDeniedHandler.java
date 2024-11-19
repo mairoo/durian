@@ -7,7 +7,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kr.co.pincoin.api.global.response.error.ErrorResponse;
-import kr.co.pincoin.api.global.response.error.exception.ErrorCode;
+import kr.co.pincoin.api.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

@@ -1,8 +1,9 @@
-package kr.co.pincoin.api.global.response.error.exception;
+package kr.co.pincoin.api.global.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import kr.co.pincoin.api.global.response.error.ErrorResponse;
+import kr.co.pincoin.api.global.response.error.ValidationError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -51,15 +53,21 @@ public class GlobalExceptionHandler {
                                           HttpServletRequest request) {
         log.error("[Validation Exception] {}", e.getMessage());
 
-        String errorMessage = e.getBindingResult().getFieldErrors().stream()
-                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
-                .collect(Collectors.joining(", "));
+        List<ValidationError> validationErrors = e.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(error -> ValidationError.builder()
+                        .field(error.getField())
+                        .message(error.getDefaultMessage())
+                        .build())
+                .collect(Collectors.toList());
 
         return ResponseEntity
                 .status(ErrorCode.INVALID_INPUT_VALUE.getStatus())
                 .body(ErrorResponse.of(request,
                                        ErrorCode.INVALID_INPUT_VALUE.getStatus(),
-                                       errorMessage.isEmpty() ? "Invalid input value" : errorMessage));
+                                       ErrorCode.INVALID_INPUT_VALUE.getMessage(),
+                                       validationErrors));
     }
 
     /**

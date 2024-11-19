@@ -1,4 +1,4 @@
-package kr.co.pincoin.api.global.response.error.exception;
+package kr.co.pincoin.api.global.exception;
 
 import lombok.Getter;
 
