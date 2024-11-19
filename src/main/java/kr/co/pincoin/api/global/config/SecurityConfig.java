@@ -21,7 +21,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // 1. 기본적인 보안 메커니즘 비활성화
+                // 1. 기본적인 보안 메커니즘 비활성화: JwtAuthenticationFilter 토큰 검증이 유일
 
                 // 1-1. CSRF 비활성화
                 .csrf(AbstractHttpConfigurer::disable)

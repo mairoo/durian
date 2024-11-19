@@ -104,8 +104,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                             // 7. 현재 인증된 사용자 정보를 보안 컨텍스트에 저장 = 로그인 처리
                             SecurityContextHolder.getContext().setAuthentication(auth);
-
-                            log.debug("logged in: {}", sub);
                         } catch (UsernameNotFoundException e) {
                             throw new JwtAuthenticationException(ErrorCode.INVALID_CREDENTIALS);
                         }

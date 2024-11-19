@@ -22,9 +22,8 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    // 스프링 시큐리티에서 401, 403 오류는 직접 처리
-    // handleAuthenticationException 메소드 - 401 재정의 안 함
-    // handleAccessDeniedException 메소드 - 403 재정의 안 함
+    // handleAuthenticationException 메소드 - 재정의 안 함 401: JwtAuthenticationFilter 필터에서 직접 예외 처리
+    // handleAccessDeniedException 메소드 - 재정의 안 함 403: 스프링 시큐리티 커스텀 예외 처리
 
     /**
      * 비즈니스 로직 예외 처리
