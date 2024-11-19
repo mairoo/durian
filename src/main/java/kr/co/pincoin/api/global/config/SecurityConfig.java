@@ -1,7 +1,6 @@
 package kr.co.pincoin.api.global.config;
 
 import kr.co.pincoin.api.global.security.handler.JwtAccessDeniedHandler;
-import kr.co.pincoin.api.global.security.handler.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,8 +16,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtAuthenticationEntryPoint authenticationEntryPoint;
-
     private final JwtAccessDeniedHandler accessDeniedHandler;
 
     @Bean
@@ -76,11 +73,12 @@ public class SecurityConfig {
                         .requestMatchers("/actuator/**").denyAll() // actuator 등 민감한 엔드포인트는 명시적 차단
                         .anyRequest().permitAll()) // 나머지 모두 허용
 
-                // 5. 예외 처리 설정
-                // 401, 403 오류는 GlobalExceptionHandler 사용 안 하고 커스텀 핸들러로 처리
+                // 5. 예외 처리 설정 (401, 403 오류는 GlobalExceptionHandler 사용 안 함)
+                // 401 - JwtAuthenticationFilter 토큰 검증에서 직접 처리
+                // 403 - 스프링 시큐리티 설정에서 처리
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                        .accessDeniedHandler(accessDeniedHandler));
+                        // JwtAuthenticationFilter 토큰 검증이 유일하므로 AuthenticationEntryPoint 제거
+                        .accessDeniedHandler(accessDeniedHandler)); // 403 - 스프링 시큐리티에서 처리
 
         return http.build();
     }

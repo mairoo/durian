@@ -1,6 +1,8 @@
 package kr.co.pincoin.api.domain.shop.model.product;
 
 import kr.co.pincoin.api.domain.shop.model.store.Store;
+import kr.co.pincoin.api.global.exception.BusinessException;
+import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.infra.shop.entity.product.CategoryEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -122,7 +124,7 @@ public class Category {
 
     public void updateNestedSetInfo(Integer lft, Integer rght, Integer treeId) {
         if (lft >= rght) {
-            throw new IllegalArgumentException("Left value must be less than right value");
+            throw new BusinessException(ErrorCode.INVALID_NESTED_SET_VALUES);
         }
         this.lft = lft;
         this.rght = rght;
@@ -180,7 +182,7 @@ public class Category {
 
     public BigDecimal calculateDiscountedPrice(BigDecimal originalPrice, boolean isPgPayment) {
         if (originalPrice == null || originalPrice.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Original price must be positive");
+            throw new BusinessException(ErrorCode.INVALID_ORIGINAL_PRICE);
         }
 
         BigDecimal rate = isPgPayment && this.pg ? this.pgDiscountRate : this.discountRate;
@@ -195,13 +197,13 @@ public class Category {
 
     private void validateCategory() {
         if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Category title cannot be empty");
+            throw new BusinessException(ErrorCode.INVALID_CATEGORY_TITLE);
         }
         if (slug == null || slug.trim().isEmpty()) {
-            throw new IllegalArgumentException("Category slug cannot be empty");
+            throw new BusinessException(ErrorCode.INVALID_CATEGORY_SLUG);
         }
         if (store == null) {
-            throw new IllegalArgumentException("Store is required");
+            throw new BusinessException(ErrorCode.STORE_REQUIRED);
         }
         validateDiscountRates(discountRate, pgDiscountRate);
     }
@@ -210,12 +212,12 @@ public class Category {
         if (discountRate != null &&
                 (discountRate.compareTo(BigDecimal.ZERO) < 0 ||
                         discountRate.compareTo(BigDecimal.valueOf(100)) > 0)) {
-            throw new IllegalArgumentException("Discount rate must be between 0 and 100");
+            throw new BusinessException(ErrorCode.INVALID_DISCOUNT_RATE);
         }
         if (pg && pgDiscountRate != null &&
                 (pgDiscountRate.compareTo(BigDecimal.ZERO) < 0 ||
                         pgDiscountRate.compareTo(BigDecimal.valueOf(100)) > 0)) {
-            throw new IllegalArgumentException("PG discount rate must be between 0 and 100");
+            throw new BusinessException(ErrorCode.INVALID_PG_DISCOUNT_RATE);
         }
     }
 }

@@ -5,6 +5,21 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum ErrorCode {
+    // 비즈니스 로직
+    PAYMENT_ALREADY_RECEIVED(HttpStatus.CONFLICT, "이미 결제가 완료된 주문입니다"),
+    NEGATIVE_BALANCE(HttpStatus.BAD_REQUEST, "잔액은 음수가 될 수 없습니다"),
+
+    INVALID_NESTED_SET_VALUES(HttpStatus.BAD_REQUEST, "왼쪽 값이 오른쪽 값보다 작아야 합니다"),
+    INVALID_ORIGINAL_PRICE(HttpStatus.BAD_REQUEST, "상품 가격은 0보다 커야 합니다"),
+    INVALID_CATEGORY_TITLE(HttpStatus.BAD_REQUEST, "카테고리 제목은 비워둘 수 없습니다"),
+    INVALID_CATEGORY_SLUG(HttpStatus.BAD_REQUEST, "카테고리 슬러그는 비워둘 수 없습니다"),
+    STORE_REQUIRED(HttpStatus.BAD_REQUEST, "스토어 정보는 필수입니다"),
+    INVALID_DISCOUNT_RATE(HttpStatus.BAD_REQUEST, "할인율은 0에서 100 사이여야 합니다"),
+    INVALID_PG_DISCOUNT_RATE(HttpStatus.BAD_REQUEST, "PG 할인율은 0에서 100 사이여야 합니다"),
+
+
+
+
     // 공통
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "잘못된 입력값입니다."),
     REQUEST_BODY_MISSING(HttpStatus.BAD_REQUEST, "요청 본문이 없거나 형식이 잘못되었습니다"),

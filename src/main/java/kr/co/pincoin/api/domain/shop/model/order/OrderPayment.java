@@ -1,5 +1,7 @@
 package kr.co.pincoin.api.domain.shop.model.order;
 
+import kr.co.pincoin.api.global.exception.BusinessException;
+import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderPaymentEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -71,11 +73,11 @@ public class OrderPayment {
 
     public void receive(BigDecimal balance) {
         if (this.received != null) {
-            throw new IllegalStateException("Payment already received");
+            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_RECEIVED);
         }
 
         if (balance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Balance cannot be negative");
+            throw new BusinessException(ErrorCode.NEGATIVE_BALANCE);
         }
 
         this.received = LocalDateTime.now();

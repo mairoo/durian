@@ -6,6 +6,8 @@ import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
+import kr.co.pincoin.api.global.exception.ErrorCode;
+import kr.co.pincoin.api.global.exception.JwtAuthenticationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -95,13 +97,15 @@ public class JwtTokenProvider {
             return Optional.ofNullable(parsed.getPayload().getSubject());
         } catch (SignatureException | DecodingException ex) {
             // 잘못된 비밀키
-            throw new RuntimeException("서명 오류");
+            throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);
+
         } catch (ExpiredJwtException ex) {
             // 만료된 토큰
-            throw new RuntimeException("만료된 토큰");
+            throw new JwtAuthenticationException(ErrorCode.EXPIRED_TOKEN);
+
         } catch (UnsupportedJwtException | MalformedJwtException | SecurityException | IllegalArgumentException ex) {
             // 토큰 형식 오류
-            throw new RuntimeException("잘못된 토큰");
+            throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);
         }
     }
 }
