@@ -25,6 +25,7 @@ public class GlobalExceptionHandler {
     // handleAuthenticationException 메소드 - 재정의 안 함 401: JwtAuthenticationFilter 필터에서 직접 예외 처리
     // handleAccessDeniedException 메소드 - 재정의 안 함 403: 스프링 시큐리티 커스텀 예외 처리
 
+    // 1. 비즈니스 / 애플리케이션 예외
     /**
      * 비즈니스 로직 예외 처리
      * 애플리케이션에서 정의한 비즈니스 규칙 위반 시 발생하는 예외 처리
@@ -42,6 +43,30 @@ public class GlobalExceptionHandler {
                                        e.getMessage()));
     }
 
+    // 2. 인증 / 보안 예외
+    /**
+     * null 예외 처리
+     * 인증/보안 예외처리
+     */
+    @ExceptionHandler(NullPointerException.class)
+    protected ResponseEntity<ErrorResponse>
+    handleNullPointerException(NullPointerException e,
+                               HttpServletRequest request) {
+        // User 객체 관련 NPE인 경우에는 인증 오류로 처리
+        if (e.getMessage() != null && e.getMessage().contains("User.getId()")) {
+            log.error("[Authentication Required] {}", e.getMessage());
+            return ResponseEntity
+                    .status(ErrorCode.AUTHENTICATION_REQUIRED.getStatus())
+                    .body(ErrorResponse.of(request,
+                                           ErrorCode.AUTHENTICATION_REQUIRED.getStatus(),
+                                           ErrorCode.AUTHENTICATION_REQUIRED.getMessage()));
+        }
+
+        // 다른 NPE는 일반적인 서버 오류로 처리
+        return handleInternalServerError(e, request);
+    }
+
+    // 3. 입력값 검증 예외
     /**
      * 입력값 유효성 검사 실패 처리
      * Bean Validation (@Valid, @Validated) 실패 시 발생하는 예외 처리
@@ -86,22 +111,7 @@ public class GlobalExceptionHandler {
                                        ErrorCode.REQUEST_BODY_MISSING.getMessage()));
     }
 
-    /**
-     * 엔티티 조회 실패 처리
-     * JPA에서 엔티티를 찾지 못했을 때 발생하는 예외 처리
-     */
-    @ExceptionHandler(EntityNotFoundException.class)
-    protected ResponseEntity<ErrorResponse>
-    handleEntityNotFoundException(EntityNotFoundException e,
-                                  HttpServletRequest request) {
-        log.error("[Resource Not Found] {}", e.getMessage());
-        return ResponseEntity
-                .status(ErrorCode.RESOURCE_NOT_FOUND.getStatus())
-                .body(ErrorResponse.of(request,
-                                       ErrorCode.RESOURCE_NOT_FOUND.getStatus(),
-                                       ErrorCode.RESOURCE_NOT_FOUND.getMessage()));
-    }
-
+    // 4. HTTP 관련 예외
     /**
      * HTTP 메소드 오류 처리
      * 지원하지 않는 HTTP 메소드 호출 시 발생하는 예외 처리
@@ -152,6 +162,23 @@ public class GlobalExceptionHandler {
                                        ErrorCode.FILE_SIZE_EXCEEDED.getMessage()));
     }
 
+    // 5. DB / 데이터 관련 예외
+    /**
+     * 엔티티 조회 실패 처리
+     * JPA에서 엔티티를 찾지 못했을 때 발생하는 예외 처리
+     */
+    @ExceptionHandler(EntityNotFoundException.class)
+    protected ResponseEntity<ErrorResponse>
+    handleEntityNotFoundException(EntityNotFoundException e,
+                                  HttpServletRequest request) {
+        log.error("[Resource Not Found] {}", e.getMessage());
+        return ResponseEntity
+                .status(ErrorCode.RESOURCE_NOT_FOUND.getStatus())
+                .body(ErrorResponse.of(request,
+                                       ErrorCode.RESOURCE_NOT_FOUND.getStatus(),
+                                       ErrorCode.RESOURCE_NOT_FOUND.getMessage()));
+    }
+
     /**
      * 데이터 무결성 위반 처리
      * DB 제약조건 위반 시 발생하는 예외 처리 (UK, FK 등)
@@ -193,33 +220,7 @@ public class GlobalExceptionHandler {
                                        ErrorCode.DATA_INTEGRITY_VIOLATION.getMessage()));
     }
 
-    /**
-     * null 예외 처리
-     * @AuthenticationPrincipal 어노테이션으로 가져온 User 객체가 null인 경우 발생하는 예외 처리
-     */
-    @ExceptionHandler(NullPointerException.class)
-    protected ResponseEntity<ErrorResponse>
-    handleNullPointerException(NullPointerException e,
-                               HttpServletRequest request) {
-        // User 객체 관련 NPE인 경우에는 인증 오류로 처리
-        if (e.getMessage() != null && e.getMessage().contains("User.getId()")) {
-            log.error("[Authentication Required] {}", e.getMessage());
-            return ResponseEntity
-                    .status(ErrorCode.AUTHENTICATION_REQUIRED.getStatus())
-                    .body(ErrorResponse.of(request,
-                                           ErrorCode.AUTHENTICATION_REQUIRED.getStatus(),
-                                           ErrorCode.AUTHENTICATION_REQUIRED.getMessage()));
-        }
-
-        // 다른 NPE는 일반적인 서버 오류로 처리
-        log.error("[Internal Server Error] {}", e.getMessage());
-        return ResponseEntity
-                .status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus())
-                .body(ErrorResponse.of(request,
-                                       ErrorCode.INTERNAL_SERVER_ERROR.getStatus(),
-                                       ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
-    }
-
+    // 6. 일반적인 예외 (항상 마지막에 위치)
     /**
      * 기타 모든 예외 처리
      * 위에서 처리되지 않은 모든 예외를 처리하는 마지막 단계
@@ -228,6 +229,13 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse>
     handleException(Exception e,
                     HttpServletRequest request) {
+        return handleInternalServerError(e, request);
+    }
+
+    /**
+     * 내부 서버 오류 공통 처리
+     */
+    private ResponseEntity<ErrorResponse> handleInternalServerError(Exception e, HttpServletRequest request) {
         log.error("[Internal Server Error] {}", e.getMessage());
         return ResponseEntity
                 .status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus())
