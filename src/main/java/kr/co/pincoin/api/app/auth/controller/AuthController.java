@@ -38,7 +38,7 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<AccessTokenResponse>>
-    refresh(@CookieValue(name = CookieKey.REFRESH_TOKEN_COOKIE_NAME) String refreshToken,
+    refresh(@CookieValue(name = CookieKey.REFRESH_TOKEN_NAME) String refreshToken,
             HttpServletRequest servletRequest) {
         TokenPair tokenPair = authService.refresh(refreshToken, servletRequest);
 
@@ -49,7 +49,7 @@ public class AuthController {
 
     @PostMapping("/sign-out")
     public ResponseEntity<ApiResponse<Void>>
-    signOut(@CookieValue(name = CookieKey.REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken) {
+    signOut(@CookieValue(name = CookieKey.REFRESH_TOKEN_NAME, required = false) String refreshToken) {
         authService.logout(refreshToken);
 
         return ResponseEntity.ok()
@@ -60,14 +60,13 @@ public class AuthController {
     private HttpHeaders createRefreshTokenCookie(String refreshToken) {
         HttpHeaders headers = new HttpHeaders();
 
-        ResponseCookie cookie = ResponseCookie.from(CookieKey.REFRESH_TOKEN_COOKIE_NAME,
+        ResponseCookie cookie = ResponseCookie.from(CookieKey.REFRESH_TOKEN_NAME,
                                                     refreshToken != null ? refreshToken : "")
                 .httpOnly(true)
                 .secure(true)
-                .path("/")
-                .maxAge(refreshToken != null && !refreshToken.isEmpty()
-                                ? jwtProperties.refreshTokenExpiresIn() : 0)
-                .sameSite("Strict")
+                .path(CookieKey.PATH)
+                .maxAge(refreshToken != null && !refreshToken.isEmpty() ? jwtProperties.refreshTokenExpiresIn() : 0)
+                .sameSite(CookieKey.SAME_SITE)
                 .domain(jwtProperties.cookieDomain())
                 .build();
 
