@@ -2,18 +2,22 @@ package kr.co.pincoin.api.app.member.user.controller;
 
 import jakarta.validation.Valid;
 import kr.co.pincoin.api.app.admin.user.service.AdminUserService;
+import kr.co.pincoin.api.app.member.user.request.EmailUpdateRequest;
+import kr.co.pincoin.api.app.member.user.request.PasswordUpdateRequest;
 import kr.co.pincoin.api.app.member.user.request.UserCreateRequest;
+import kr.co.pincoin.api.app.member.user.request.UsernameUpdateRequest;
 import kr.co.pincoin.api.app.member.user.response.MyUserResponse;
 import kr.co.pincoin.api.app.member.user.response.UserResponse;
 import kr.co.pincoin.api.app.member.user.service.UserService;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import kr.co.pincoin.api.global.security.annotation.CurrentUser;
-import kr.co.pincoin.api.infra.auth.mapper.user.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -21,57 +25,73 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class UserController {
     private final AdminUserService adminUserService;
-
-    private final UserMapper userMapper;  // 또는 Response 클래스 내 정적 팩토리 메서드 사용
     private final UserService userService;
 
+    // Create
     @PostMapping("")
     public ResponseEntity<ApiResponse<UserResponse>>
-    createUser(@Valid @RequestBody UserCreateRequest request) {
+    create(@Valid @RequestBody UserCreateRequest request) {
         User user = User.of("username", "password", "email", "firstName", "lastName");
-        log.error("{} {} {}", user.getUsername(), user.getPassword(), user.getEmail());
         return ResponseEntity.ok()
                 .body(ApiResponse.of(UserResponse.from(user)));
     }
 
-    @GetMapping
-    public void findAllUsers() {
-
+    // Read
+    @GetMapping("")
+    public ResponseEntity<ApiResponse<List<UserResponse>>>
+    findAll() {
+        // Implementation
+        return null;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>>
-    findUserById(@PathVariable Long id) {
-        User user = userService.findUser(id);
-
+    find(@PathVariable Long id) {
+        User user = userService.find(id);
         return ResponseEntity.ok()
                 .body(ApiResponse.of(UserResponse.from(user)));
     }
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<MyUserResponse>>
-    getMyInfo(@CurrentUser User user) {
+    findMe(@CurrentUser User user) {
         return ResponseEntity.ok()
                 .body(ApiResponse.of(MyUserResponse.from(user)));
     }
 
-    @PatchMapping("/{id}/name")
-    public void updateUserName() {
-
+    // Update
+    @PatchMapping("/{id}/username")
+    public ResponseEntity<ApiResponse<UserResponse>>
+    updateUsername(@PathVariable Long id,
+                   @Valid @RequestBody UsernameUpdateRequest request) {
+        User updatedUser = userService.updateUsername(id, request);
+        return ResponseEntity.ok()
+                .body(ApiResponse.of(UserResponse.from(updatedUser)));
     }
 
     @PatchMapping("/{id}/email")
-    public void updateUserEmail() {
-
+    public ResponseEntity<ApiResponse<UserResponse>>
+    updateEmail(@PathVariable Long id,
+                @Valid @RequestBody EmailUpdateRequest request) {
+        User updatedUser = userService.updateEmail(id, request);
+        return ResponseEntity.ok()
+                .body(ApiResponse.of(UserResponse.from(updatedUser)));
     }
 
     @PatchMapping("/{id}/password")
-    public void updateUserPassword() {
-
+    public ResponseEntity<ApiResponse<UserResponse>>
+    updatePassword(@PathVariable Long id,
+                   @Valid @RequestBody PasswordUpdateRequest request) {
+        User updatedUser = userService.updatePassword(id, request);
+        return ResponseEntity.ok()
+                .body(ApiResponse.of(UserResponse.from(updatedUser)));
     }
 
+    // Delete
     @DeleteMapping("/{id}")
-    public void deleteUser() {
-
+    public ResponseEntity<Void>
+    delete(@PathVariable Long id) {
+        // Implementation
+        return ResponseEntity.noContent().build();
     }
 }
