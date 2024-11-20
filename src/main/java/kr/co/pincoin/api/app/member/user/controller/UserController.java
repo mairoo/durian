@@ -6,11 +6,12 @@ import kr.co.pincoin.api.app.member.user.request.UserCreateRequest;
 import kr.co.pincoin.api.app.member.user.response.MyUserResponse;
 import kr.co.pincoin.api.app.member.user.response.UserResponse;
 import kr.co.pincoin.api.domain.auth.model.user.User;
+import kr.co.pincoin.api.global.response.success.ApiResponse;
+import kr.co.pincoin.api.global.security.annotation.CurrentUser;
 import kr.co.pincoin.api.infra.auth.mapper.user.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,11 +24,12 @@ public class UserController {
     private final UserMapper userMapper;  // 또는 Response 클래스 내 정적 팩토리 메서드 사용
 
     @PostMapping("")
-    public ResponseEntity<UserResponse>
+    public ResponseEntity<ApiResponse<UserResponse>>
     createUser(@Valid @RequestBody UserCreateRequest request) {
         User user = User.of("username", "password", "email", "firstName", "lastName");
         log.error("{} {} {}", user.getUsername(), user.getPassword(), user.getEmail());
-        return ResponseEntity.ok(UserResponse.from(user));
+        return ResponseEntity.ok()
+                .body(ApiResponse.of(UserResponse.from(user)));
     }
 
     @GetMapping
@@ -41,8 +43,10 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public MyUserResponse getMyInfo(@AuthenticationPrincipal User user) {
-        return MyUserResponse.from(user);
+    public ResponseEntity<ApiResponse<MyUserResponse>>
+    getMyInfo(@CurrentUser User user) {
+        return ResponseEntity.ok()
+                .body(ApiResponse.of(MyUserResponse.from(user)));
     }
 
     @PatchMapping("/{id}/name")
