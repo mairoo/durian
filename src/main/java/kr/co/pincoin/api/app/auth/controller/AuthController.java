@@ -6,6 +6,7 @@ import kr.co.pincoin.api.app.auth.request.SignInRequest;
 import kr.co.pincoin.api.app.auth.response.AccessTokenResponse;
 import kr.co.pincoin.api.app.auth.service.AuthService;
 import kr.co.pincoin.api.domain.auth.vo.TokenPair;
+import kr.co.pincoin.api.global.constant.CookieKey;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import kr.co.pincoin.api.global.security.jwt.JwtProperties;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +38,7 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<AccessTokenResponse>>
-    refresh(@CookieValue(name = JwtProperties.REFRESH_TOKEN_COOKIE_NAME) String refreshToken,
+    refresh(@CookieValue(name = CookieKey.REFRESH_TOKEN_COOKIE_NAME) String refreshToken,
             HttpServletRequest servletRequest) {
         TokenPair tokenPair = authService.refresh(refreshToken, servletRequest);
 
@@ -47,19 +48,19 @@ public class AuthController {
     }
 
     @PostMapping("/sign-out")
-    public ResponseEntity<ApiResponse<Void>> signOut(
-            @CookieValue(name = JwtProperties.REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken) {
+    public ResponseEntity<ApiResponse<Void>>
+    signOut(@CookieValue(name = CookieKey.REFRESH_TOKEN_COOKIE_NAME, required = false) String refreshToken) {
         authService.logout(refreshToken);
 
         return ResponseEntity.ok()
-                .headers(createRefreshTokenCookie(""))
+                .headers(createRefreshTokenCookie("")) // 쿠키 삭제 효과
                 .body(ApiResponse.of(null));
     }
 
     private HttpHeaders createRefreshTokenCookie(String refreshToken) {
         HttpHeaders headers = new HttpHeaders();
 
-        ResponseCookie cookie = ResponseCookie.from(JwtProperties.REFRESH_TOKEN_COOKIE_NAME,
+        ResponseCookie cookie = ResponseCookie.from(CookieKey.REFRESH_TOKEN_COOKIE_NAME,
                                                     refreshToken != null ? refreshToken : "")
                 .httpOnly(true)
                 .secure(true)
