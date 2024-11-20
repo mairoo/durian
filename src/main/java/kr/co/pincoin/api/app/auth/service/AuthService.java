@@ -6,6 +6,7 @@ import kr.co.pincoin.api.app.auth.response.AccessTokenResponse;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
 import kr.co.pincoin.api.domain.auth.vo.TokenPair;
+import kr.co.pincoin.api.global.constant.RedisKey;
 import kr.co.pincoin.api.global.exception.BusinessException;
 import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.global.exception.JwtAuthenticationException;
@@ -75,7 +76,7 @@ public class AuthService {
     @Transactional
     public void logout(String refreshToken) {
         if (refreshToken != null) {
-            String email = (String) redisTemplate.opsForHash().get(refreshToken, "email");
+            String email = (String) redisTemplate.opsForHash().get(refreshToken, RedisKey.EMAIL);
             if (email != null) {
                 redisTemplate.delete(refreshToken);
                 redisTemplate.delete(email);
@@ -95,7 +96,7 @@ public class AuthService {
     public TokenPair refresh(String refreshToken, HttpServletRequest servletRequest) {
         validateRefreshToken(refreshToken, servletRequest);
 
-        String email = (String) redisTemplate.opsForHash().get(refreshToken, "email");
+        String email = (String) redisTemplate.opsForHash().get(refreshToken, RedisKey.EMAIL);
         String newAccessToken = jwtTokenProvider.createAccessToken(email);
         String newRefreshToken = jwtTokenProvider.createRefreshToken();
 
@@ -113,8 +114,8 @@ public class AuthService {
      */
     private void saveRefreshTokenInfo(String refreshToken, String email, HttpServletRequest request) {
         String clientIp = IpUtils.getClientIp(request);
-        redisTemplate.opsForHash().put(refreshToken, "email", email);
-        redisTemplate.opsForHash().put(refreshToken, "ipAddress", clientIp);
+        redisTemplate.opsForHash().put(refreshToken, RedisKey.EMAIL, email);
+        redisTemplate.opsForHash().put(refreshToken, RedisKey.IP_ADDRESS, clientIp);
         redisTemplate.expire(refreshToken, jwtProperties.refreshTokenExpiresIn(), TimeUnit.SECONDS);
         redisTemplate.opsForValue().set(email, refreshToken, jwtProperties.refreshTokenExpiresIn(), TimeUnit.SECONDS);
     }
@@ -131,12 +132,12 @@ public class AuthService {
             throw new JwtAuthenticationException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-        String email = (String) redisTemplate.opsForHash().get(refreshToken, "email");
+        String email = (String) redisTemplate.opsForHash().get(refreshToken, RedisKey.EMAIL);
         if (email == null) {
             throw new JwtAuthenticationException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-        String storedIp = (String) redisTemplate.opsForHash().get(refreshToken, "ipAddress");
+        String storedIp = (String) redisTemplate.opsForHash().get(refreshToken, RedisKey.IP_ADDRESS);
         String currentIp = IpUtils.getClientIp(request);
         if (storedIp == null || !storedIp.equals(currentIp)) {
             throw new JwtAuthenticationException(ErrorCode.INVALID_REFRESH_TOKEN);

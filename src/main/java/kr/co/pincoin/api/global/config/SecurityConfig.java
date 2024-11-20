@@ -83,6 +83,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/**").denyAll() // actuator 등 민감한 엔드포인트는 명시적 차단
                         .requestMatchers("/admin/**").authenticated() // 관리자 대시보드 인증 필요
+                        .requestMatchers("/users/me").authenticated() // 사용자 경로 인증 필요
                         .anyRequest().permitAll()) // 나머지 모두 허용
 
                 // 5. 커스텀 필터 추가 (JWT 인증)

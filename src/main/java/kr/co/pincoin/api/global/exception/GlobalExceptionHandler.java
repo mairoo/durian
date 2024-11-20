@@ -194,6 +194,33 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * null 예외 처리
+     * @AuthenticationPrincipal 어노테이션으로 가져온 User 객체가 null인 경우 발생하는 예외 처리
+     */
+    @ExceptionHandler(NullPointerException.class)
+    protected ResponseEntity<ErrorResponse>
+    handleNullPointerException(NullPointerException e,
+                               HttpServletRequest request) {
+        // User 객체 관련 NPE인 경우에는 인증 오류로 처리
+        if (e.getMessage() != null && e.getMessage().contains("User.getId()")) {
+            log.error("[Authentication Required] {}", e.getMessage());
+            return ResponseEntity
+                    .status(ErrorCode.AUTHENTICATION_REQUIRED.getStatus())
+                    .body(ErrorResponse.of(request,
+                                           ErrorCode.AUTHENTICATION_REQUIRED.getStatus(),
+                                           ErrorCode.AUTHENTICATION_REQUIRED.getMessage()));
+        }
+
+        // 다른 NPE는 일반적인 서버 오류로 처리
+        log.error("[Internal Server Error] {}", e.getMessage());
+        return ResponseEntity
+                .status(ErrorCode.INTERNAL_SERVER_ERROR.getStatus())
+                .body(ErrorResponse.of(request,
+                                       ErrorCode.INTERNAL_SERVER_ERROR.getStatus(),
+                                       ErrorCode.INTERNAL_SERVER_ERROR.getMessage()));
+    }
+
+    /**
      * 기타 모든 예외 처리
      * 위에서 처리되지 않은 모든 예외를 처리하는 마지막 단계
      */

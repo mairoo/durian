@@ -3,12 +3,14 @@ package kr.co.pincoin.api.app.member.user.controller;
 import jakarta.validation.Valid;
 import kr.co.pincoin.api.app.admin.user.service.AdminUserService;
 import kr.co.pincoin.api.app.member.user.request.UserCreateRequest;
+import kr.co.pincoin.api.app.member.user.response.MyUserResponse;
 import kr.co.pincoin.api.app.member.user.response.UserResponse;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.infra.auth.mapper.user.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -36,6 +38,11 @@ public class UserController {
     @GetMapping("/{id}")
     public void findUserById() {
 
+    }
+
+    @GetMapping("/me")
+    public MyUserResponse getMyInfo(@AuthenticationPrincipal User user) {
+        return MyUserResponse.from(user);
     }
 
     @PatchMapping("/{id}/name")

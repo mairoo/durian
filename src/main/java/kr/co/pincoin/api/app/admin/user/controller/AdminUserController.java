@@ -1,12 +1,16 @@
 package kr.co.pincoin.api.app.admin.user.controller;
 
+import kr.co.pincoin.api.app.admin.user.response.AdminUserResponse;
 import kr.co.pincoin.api.app.admin.user.service.AdminUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/admin/users")
+@PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminUserController {
@@ -23,8 +27,8 @@ public class AdminUserController {
     }
 
     @GetMapping("/{id}")
-    public void findUserById() {
-
+    public ResponseEntity<AdminUserResponse> findUserById() {
+        return ResponseEntity.ok().body(null);
     }
 
     @PatchMapping("/{id}/name")
