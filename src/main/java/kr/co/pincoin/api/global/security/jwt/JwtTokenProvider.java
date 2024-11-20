@@ -91,11 +91,9 @@ public class JwtTokenProvider {
         } catch (SignatureException | DecodingException ex) {
             // 잘못된 비밀키
             throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);
-
         } catch (ExpiredJwtException ex) {
             // 만료된 토큰
             throw new JwtAuthenticationException(ErrorCode.EXPIRED_TOKEN);
-
         } catch (UnsupportedJwtException | MalformedJwtException | SecurityException | IllegalArgumentException ex) {
             // 토큰 형식 오류
             throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);

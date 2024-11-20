@@ -5,6 +5,7 @@ import kr.co.pincoin.api.app.admin.user.service.AdminUserService;
 import kr.co.pincoin.api.app.member.user.request.UserCreateRequest;
 import kr.co.pincoin.api.app.member.user.response.MyUserResponse;
 import kr.co.pincoin.api.app.member.user.response.UserResponse;
+import kr.co.pincoin.api.app.member.user.service.UserService;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import kr.co.pincoin.api.global.security.annotation.CurrentUser;
@@ -22,6 +23,7 @@ public class UserController {
     private final AdminUserService adminUserService;
 
     private final UserMapper userMapper;  // 또는 Response 클래스 내 정적 팩토리 메서드 사용
+    private final UserService userService;
 
     @PostMapping("")
     public ResponseEntity<ApiResponse<UserResponse>>
@@ -38,8 +40,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public void findUserById() {
+    public ResponseEntity<ApiResponse<UserResponse>>
+    findUserById(@PathVariable Long id) {
+        User user = userService.findUser(id);
 
+        return ResponseEntity.ok()
+                .body(ApiResponse.of(UserResponse.from(user)));
     }
 
     @GetMapping("/me")
