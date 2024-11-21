@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.auth.model.user;
 
+import kr.co.pincoin.api.app.member.user.request.UserCreateRequest;
 import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -83,6 +84,18 @@ public class User {
                 .email(email)
                 .firstName(firstName)
                 .lastName(lastName)
+                .isSuperuser(true)
+                .isStaff(true)
+                .build();
+    }
+
+    public static User from(UserCreateRequest request) {
+        return User.builder()
+                .username(request.getUsername())
+                .password(request.getPassword())
+                .email(request.getEmail())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .isSuperuser(true)
                 .isStaff(true)
                 .build();

@@ -10,4 +10,10 @@ public interface UserRepository {
     Optional<User> findById(Long id);
 
     User save(User user);
+
+    boolean existsByEmail(String email);
+
+    boolean existsByUsername(String username);
+
+    void delete(User user);
 }

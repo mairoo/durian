@@ -2,6 +2,7 @@ package kr.co.pincoin.api.app.member.user.service;
 
 import kr.co.pincoin.api.app.member.user.request.EmailUpdateRequest;
 import kr.co.pincoin.api.app.member.user.request.PasswordUpdateRequest;
+import kr.co.pincoin.api.app.member.user.request.UserCreateRequest;
 import kr.co.pincoin.api.app.member.user.request.UsernameUpdateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
@@ -17,21 +18,28 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+
     private final PasswordEncoder passwordEncoder;
 
     // Create
+    public User
+    create(UserCreateRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
+        }
+
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new BusinessException(ErrorCode.DUPLICATE_USERNAME);
+        }
+
+        User user = User.from(request);
+        return userRepository.save(user);
+    }
 
     // Read
     public User
     find(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
-    }
-
-    private User
-    findUser(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
+        return findUser(id);
     }
 
     // Update
@@ -66,4 +74,10 @@ public class UserService {
     }
 
     // Delete
+
+    private User
+    findUser(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
+    }
 }

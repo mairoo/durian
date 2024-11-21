@@ -31,4 +31,19 @@ public class UserRepositoryImpl implements UserRepository {
     public User save(User user) {
         return userMapper.toModel(userJpaRepository.save(user.toEntity()));
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return userJpaRepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return userJpaRepository.existsByUsername(username);
+    }
+
+    @Override
+    public void delete(User user) {
+        userJpaRepository.delete(user.toEntity());
+    }
 }
