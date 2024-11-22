@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.order;
 
+import kr.co.pincoin.api.domain.shop.model.order.enums.PaymentAccount;
 import kr.co.pincoin.api.global.exception.BusinessException;
 import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderPaymentEntity;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 public class OrderPayment {
     private final Long id;
 
-    private final Integer account;
+    private final PaymentAccount account;
 
     private final BigDecimal amount;
 
@@ -31,7 +32,7 @@ public class OrderPayment {
 
     @Builder
     private OrderPayment(Long id,
-                         Integer account,
+                         PaymentAccount account,
                          BigDecimal amount,
                          BigDecimal balance,
                          LocalDateTime received,
@@ -51,7 +52,7 @@ public class OrderPayment {
     }
 
     public static OrderPayment of(Order order,
-                                  Integer account,
+                                  PaymentAccount account,
                                   BigDecimal amount) {
         return OrderPayment.builder()
                 .order(order)

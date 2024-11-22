@@ -1,6 +1,7 @@
 package kr.co.pincoin.api.infra.shop.entity.order;
 
 import jakarta.persistence.*;
+import kr.co.pincoin.api.domain.shop.model.order.enums.PaymentAccount;
 import kr.co.pincoin.api.infra.common.BaseRemovalDateTime;
 import lombok.*;
 
@@ -19,8 +20,9 @@ public class OrderPaymentEntity extends BaseRemovalDateTime {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "account")
-    private Integer account;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "account", columnDefinition = "INT")
+    private PaymentAccount account;
 
     @Column(name = "amount")
     private BigDecimal amount;
