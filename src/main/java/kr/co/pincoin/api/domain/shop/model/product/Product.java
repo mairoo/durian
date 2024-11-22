@@ -1,6 +1,7 @@
 package kr.co.pincoin.api.domain.shop.model.product;
 
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
+import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
 import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
 import lombok.Builder;
@@ -52,11 +53,11 @@ public class Product {
 
     private Integer position;
 
-    private ProductStatus status;
+    private final ProductStatus status;
 
     private Integer stockQuantity;
 
-    private Integer stock;
+    private final ProductStock stock;
 
     private Integer reviewCount;
 
@@ -77,7 +78,7 @@ public class Product {
                     Integer position,
                     ProductStatus status,
                     Integer stockQuantity,
-                    Integer stock,
+                    ProductStock stock,
                     Integer minimumStockLevel,
                     Integer maximumStockLevel,
                     Integer reviewCount,
@@ -117,9 +118,6 @@ public class Product {
         this.created = created;
         this.modified = modified;
         this.isRemoved = isRemoved;
-
-        validatePrices();
-        validateStockLevels();
     }
 
     public ProductEntity toEntity() {
@@ -184,27 +182,6 @@ public class Product {
         this.position = position;
     }
 
-    public void addStock(Integer quantity) {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Stock addition quantity must be positive");
-        }
-        if (this.stock + quantity > this.maximumStockLevel) {
-            throw new IllegalStateException("Adding stock would exceed maximum stock level");
-        }
-        this.stock += quantity;
-        this.stockQuantity += quantity;
-    }
-
-    public void reduceStock(Integer quantity) {
-        if (quantity <= 0) {
-            throw new IllegalArgumentException("Stock reduction quantity must be positive");
-        }
-        if (this.stock < quantity) {
-            throw new IllegalStateException("Insufficient stock");
-        }
-        this.stock -= quantity;
-    }
-
     public void incrementReviewCount(boolean isPgPurchase) {
         if (isPgPurchase) {
             this.reviewCountPg++;
@@ -214,18 +191,6 @@ public class Product {
 
     public void restore() {
         this.isRemoved = false;
-    }
-
-    public boolean isLowStock() {
-        return this.stock <= this.minimumStockLevel;
-    }
-
-    public boolean isOutOfStock() {
-        return this.stock <= 0;
-    }
-
-    public boolean hasStock(Integer quantity) {
-        return this.stock >= quantity;
     }
 
     public BigDecimal getDiscountAmount() {
@@ -240,41 +205,5 @@ public class Product {
                 .divide(this.listPrice, 4, RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100))
                 .doubleValue();
-    }
-
-    private void validatePrices() {
-        if (listPrice == null || listPrice.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("List price must be non-negative");
-        }
-        if (sellingPrice == null || sellingPrice.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Selling price must be non-negative");
-        }
-        if (sellingPrice.compareTo(listPrice) > 0) {
-            throw new IllegalArgumentException("Selling price cannot exceed list price");
-        }
-        if (pg && (pgSellingPrice == null || pgSellingPrice.compareTo(BigDecimal.ZERO) < 0)) {
-            throw new IllegalArgumentException("PG selling price must be non-negative for PG products");
-        }
-    }
-
-    private void validateStockLevels() {
-        if (minimumStockLevel == null || minimumStockLevel < 0) {
-            throw new IllegalArgumentException("Minimum stock level must be non-negative");
-        }
-        if (maximumStockLevel == null || maximumStockLevel <= 0) {
-            throw new IllegalArgumentException("Maximum stock level must be positive");
-        }
-        if (minimumStockLevel >= maximumStockLevel) {
-            throw new IllegalArgumentException("Minimum stock level must be less than maximum stock level");
-        }
-    }
-
-    private void validateForPublication() {
-        if (description == null || description.trim().isEmpty()) {
-            throw new IllegalStateException("Description is required for publication");
-        }
-        if (stock <= minimumStockLevel) {
-            throw new IllegalStateException("Stock level is too low for publication");
-        }
     }
 }
