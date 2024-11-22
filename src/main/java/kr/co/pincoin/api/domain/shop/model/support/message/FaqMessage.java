@@ -2,6 +2,7 @@ package kr.co.pincoin.api.domain.shop.model.support.message;
 
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
+import kr.co.pincoin.api.domain.shop.model.support.message.enums.FaqCategory;
 import kr.co.pincoin.api.infra.shop.entity.support.message.FaqMessageEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.util.Set;
 public class FaqMessage {
     private final Long id;
 
-    private final Integer category;
+    private final FaqCategory category;
 
     private final User owner;
 
@@ -43,7 +44,7 @@ public class FaqMessage {
                        String description,
                        String keywords,
                        String content,
-                       Integer category,
+                       FaqCategory category,
                        Integer position,
                        User owner,
                        Store store,
@@ -82,7 +83,7 @@ public class FaqMessage {
 
     public static FaqMessage of(String title,
                                 String content,
-                                Integer category,
+                                FaqCategory category,
                                 User owner,
                                 Store store) {
         return FaqMessage.builder()
@@ -170,11 +171,6 @@ public class FaqMessage {
                 this.keywords.contains(keyword.toLowerCase());
     }
 
-    public boolean
-    matchesCategory(FaqCategory category) {
-        return this.category.equals(category.getValue());
-    }
-
     private Set<String>
     parseKeywords(String keywords) {
         if (keywords == null || keywords.trim().isEmpty()) {
@@ -191,9 +187,6 @@ public class FaqMessage {
 
         if (category == null) {
             throw new IllegalArgumentException("Category cannot be null");
-        }
-        if (!FaqCategory.isValid(category)) {
-            throw new IllegalArgumentException("Invalid FAQ category");
         }
         if (owner == null) {
             throw new IllegalArgumentException("Owner cannot be null");
@@ -223,43 +216,6 @@ public class FaqMessage {
         }
         if (content.length() > 2000) {
             throw new IllegalArgumentException("Content cannot exceed 2000 characters");
-        }
-    }
-
-    public enum FaqCategory {
-        GENERAL(1),
-        PRODUCT(2),
-        DELIVERY(3),
-        PAYMENT(4),
-        REFUND(5),
-        TECHNICAL(6);
-
-        private final Integer value;
-
-        FaqCategory(Integer value) {
-            this.value = value;
-        }
-
-        public static boolean isValid(Integer value) {
-            for (FaqCategory category : FaqCategory.values()) {
-                if (category.value.equals(value)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static FaqCategory fromValue(Integer value) {
-            for (FaqCategory category : FaqCategory.values()) {
-                if (category.value.equals(value)) {
-                    return category;
-                }
-            }
-            throw new IllegalArgumentException("Invalid FAQ category value: " + value);
-        }
-
-        public Integer getValue() {
-            return value;
         }
     }
 }

@@ -9,9 +9,13 @@ import java.time.LocalDateTime;
 @Getter
 public class TestimonialAnswer {
     private final Long id;
+
     private final Testimonial testimonial;
+
     private final LocalDateTime created;
+
     private final LocalDateTime modified;
+
     private String content;
 
     @Builder
@@ -45,40 +49,48 @@ public class TestimonialAnswer {
                 .build();
     }
 
-    public void updateContent(String content) {
+    public void
+    updateContent(String content) {
         validateContent(content);
         this.content = content;
     }
 
-    public boolean isFirstAnswer() {
+    public boolean
+    isFirstAnswer() {
         return this.testimonial != null &&
                 this.testimonial.getAnswerCount() == 0;
     }
 
-    public boolean belongsToTestimonial(Long testimonialId) {
+    public boolean
+    belongsToTestimonial(Long testimonialId) {
         return this.testimonial != null &&
                 this.testimonial.getId().equals(testimonialId);
     }
 
-    public boolean isRecent() {
+    public boolean
+    isRecent() {
         return this.created.isAfter(
                 LocalDateTime.now().minusHours(24));
     }
 
-    public int getContentLength() {
+    public int
+    getContentLength() {
         return this.content != null ? this.content.length() : 0;
     }
 
-    public boolean isModified() {
+    public boolean
+    isModified() {
         return !this.created.equals(this.modified);
     }
 
-    public boolean isByStore() {
+    public boolean
+    isByStore() {
         return this.testimonial != null &&
                 this.testimonial.getStore() != null;
     }
 
-    private void validateAnswer() {
+    private void
+    validateAnswer() {
         validateContent(this.content);
 
         if (testimonial == null) {
@@ -94,7 +106,8 @@ public class TestimonialAnswer {
         }
     }
 
-    private void validateContent(String content) {
+    private void
+    validateContent(String content) {
         if (content == null || content.trim().isEmpty()) {
             throw new IllegalArgumentException("Answer content cannot be empty");
         }
@@ -106,7 +119,8 @@ public class TestimonialAnswer {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean
+    equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -121,7 +135,8 @@ public class TestimonialAnswer {
     }
 
     @Override
-    public int hashCode() {
+    public int
+    hashCode() {
         if (id != null) {
             return id.hashCode();
         }

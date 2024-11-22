@@ -14,16 +14,27 @@ import java.util.Set;
 @Getter
 public class Testimonial {
     private final Long id;
+
     private final User owner;
+
     private final Store store;
+
     private final LocalDateTime created;
+
     private final LocalDateTime modified;
+
     private String title;
+
     private String description;
+
     private Set<String> keywords;
+
     private String content;
+
     private Boolean isRemoved;
+
     private Boolean isHidden;
+
     private Integer answerCount;
 
     @Builder
@@ -77,82 +88,96 @@ public class Testimonial {
                 .build();
     }
 
-    public void updateTitle(String title) {
+    public void
+    updateTitle(String title) {
         validateTitle(title);
         this.title = title;
     }
 
-    public void updateContent(String content) {
+    public void
+    updateContent(String content) {
         validateContent(content);
         this.content = content;
     }
 
-    public void updateDescription(String description) {
+    public void
+    updateDescription(String description) {
         this.description = description;
     }
 
-    public void updateKeywords(String keywords) {
+    public void
+    updateKeywords(String keywords) {
         this.keywords = parseKeywords(keywords);
     }
 
-    public void hide() {
+    public void
+    hide() {
         this.isHidden = true;
     }
 
-    public void show() {
+    public void
+    show() {
         this.isHidden = false;
     }
 
-    public void remove() {
+    public void
+    remove() {
         this.isRemoved = true;
     }
 
-    public void restore() {
+    public void
+    restore() {
         this.isRemoved = false;
     }
 
-    public void incrementAnswerCount() {
+    public void
+    incrementAnswerCount() {
         this.answerCount++;
     }
 
-    public boolean isOwner(Long userId) {
-        return this.owner != null && this.owner.getId().equals(userId);
-    }
-
-    public boolean belongsToStore(Long storeId) {
+    public boolean
+    belongsToStore(Long storeId) {
         return this.store != null && this.store.getId().equals(storeId);
     }
 
-    public boolean hasKeyword(String keyword) {
+    public boolean
+    hasKeyword(String keyword) {
         return this.keywords != null &&
                 this.keywords.contains(keyword.toLowerCase());
     }
 
-    public boolean isRecent() {
+    public boolean
+    isRecent() {
         return this.created.isAfter(LocalDateTime.now().minusDays(7));
     }
 
-    public boolean isModified() {
+    public boolean
+    isModified() {
         return !this.created.equals(this.modified);
     }
 
-    public boolean hasAnswers() {
+    public boolean
+    hasAnswers() {
         return this.answerCount > 0;
     }
 
-    public boolean canBeModified() {
+    public boolean
+    canBeModified() {
         return !this.isRemoved && !this.hasAnswers();
     }
 
-    public boolean isHidden() {
+    public boolean
+    isHidden() {
         return this.isHidden;
     }
 
-    public boolean isVisible() {
+    public boolean
+    isVisible() {
         return !this.isHidden && !this.isRemoved;
     }
 
-    private Set<String> parseKeywords(String keywords) {
+    private Set<String>
+    parseKeywords(String keywords) {
         if (keywords == null || keywords.trim().isEmpty()) {
             return new HashSet<>();
         }
@@ -160,7 +185,8 @@ public class Testimonial {
                 keywords.toLowerCase().split(",\\s*")));
     }
 
-    private void validateTestimonial() {
+    private void
+    validateTestimonial() {
         validateTitle(this.title);
         validateContent(this.content);
 
@@ -172,7 +198,8 @@ public class Testimonial {
         }
     }
 
-    private void validateTitle(String title) {
+    private void
+    validateTitle(String title) {
         if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("Title cannot be empty");
         }
@@ -181,7 +208,8 @@ public class Testimonial {
         }
     }
 
-    private void validateContent(String content) {
+    private void
+    validateContent(String content) {
         if (content == null || content.trim().isEmpty()) {
             throw new IllegalArgumentException("Content cannot be empty");
         }
@@ -191,8 +219,10 @@ public class Testimonial {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean
+    equals(Object o) {
         if (this == o) return true;
+
         if (o == null || getClass() != o.getClass()) return false;
 
         Testimonial that = (Testimonial) o;
@@ -207,7 +237,8 @@ public class Testimonial {
     }
 
     @Override
-    public int hashCode() {
+    public int
+    hashCode() {
         if (id != null) {
             return id.hashCode();
         }

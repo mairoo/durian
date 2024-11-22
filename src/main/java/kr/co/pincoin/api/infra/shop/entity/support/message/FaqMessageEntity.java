@@ -1,6 +1,7 @@
 package kr.co.pincoin.api.infra.shop.entity.support.message;
 
 import jakarta.persistence.*;
+import kr.co.pincoin.api.domain.shop.model.support.message.enums.FaqCategory;
 import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
 import kr.co.pincoin.api.infra.common.BaseRemovalDateTime;
 import kr.co.pincoin.api.infra.shop.entity.store.StoreEntity;
@@ -30,8 +31,9 @@ public class FaqMessageEntity extends BaseRemovalDateTime {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "category")
-    private Integer category;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "category", columnDefinition = "INT")
+    private FaqCategory category;
 
     @Column(name = "position")
     private Integer position;

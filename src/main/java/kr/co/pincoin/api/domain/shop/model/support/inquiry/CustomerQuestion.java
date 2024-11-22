@@ -3,6 +3,7 @@ package kr.co.pincoin.api.domain.shop.model.support.inquiry;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
+import kr.co.pincoin.api.domain.shop.model.support.inquiry.enums.QuestionCategory;
 import kr.co.pincoin.api.infra.shop.entity.support.inquiry.CustomerQuestionEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.util.Set;
 public class CustomerQuestion {
     private final Long id;
 
-    private final Integer category;
+    private final QuestionCategory category;
 
     private final User owner;
 
@@ -46,7 +47,7 @@ public class CustomerQuestion {
                              String description,
                              String keywords,
                              String content,
-                             Integer category,
+                             QuestionCategory category,
                              User owner,
                              Order order,
                              Store store,
@@ -66,8 +67,6 @@ public class CustomerQuestion {
         this.modified = modified;
         this.isRemoved = isRemoved;
         this.answerCount = 0;
-
-        validateQuestion();
     }
 
     public CustomerQuestionEntity toEntity() {
@@ -86,7 +85,7 @@ public class CustomerQuestion {
 
     public static CustomerQuestion of(String title,
                                       String content,
-                                      Integer category,
+                                      QuestionCategory category,
                                       User owner,
                                       Store store) {
         return CustomerQuestion.builder()
@@ -100,7 +99,6 @@ public class CustomerQuestion {
 
     public void
     updateTitle(String title) {
-        validateTitle(title);
         this.title = title;
     }
 
@@ -165,78 +163,12 @@ public class CustomerQuestion {
     }
 
     private void
-    validateQuestion() {
-        validateTitle(this.title);
-        validateContent(this.content);
-
-        if (category == null) {
-            throw new IllegalArgumentException("Category cannot be null");
-        }
-        if (!QuestionCategory.isValid(category)) {
-            throw new IllegalArgumentException("Invalid question category");
-        }
-        if (owner == null) {
-            throw new IllegalArgumentException("Owner cannot be null");
-        }
-        if (store == null) {
-            throw new IllegalArgumentException("Store cannot be null");
-        }
-    }
-
-    private void
-    validateTitle(String title) {
-        if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Title cannot be empty");
-        }
-        if (title.length() > 200) {
-            throw new IllegalArgumentException("Title cannot exceed 200 characters");
-        }
-    }
-
-    private void
     validateContent(String content) {
         if (content == null || content.trim().isEmpty()) {
             throw new IllegalArgumentException("Content cannot be empty");
         }
         if (content.length() > 2000) {
             throw new IllegalArgumentException("Content cannot exceed 2000 characters");
-        }
-    }
-
-    public enum QuestionCategory {
-        GENERAL(1),
-        PRODUCT(2),
-        DELIVERY(3),
-        PAYMENT(4),
-        REFUND(5),
-        TECHNICAL(6);
-
-        private final Integer value;
-
-        QuestionCategory(Integer value) {
-            this.value = value;
-        }
-
-        public static boolean isValid(Integer value) {
-            for (QuestionCategory category : QuestionCategory.values()) {
-                if (category.value.equals(value)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static QuestionCategory fromValue(Integer value) {
-            for (QuestionCategory category : QuestionCategory.values()) {
-                if (category.value.equals(value)) {
-                    return category;
-                }
-            }
-            throw new IllegalArgumentException("Invalid question category value: " + value);
-        }
-
-        public Integer getValue() {
-            return value;
         }
     }
 }

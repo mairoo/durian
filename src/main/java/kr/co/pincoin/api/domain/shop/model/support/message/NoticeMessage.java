@@ -2,6 +2,7 @@ package kr.co.pincoin.api.domain.shop.model.support.message;
 
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
+import kr.co.pincoin.api.domain.shop.model.support.message.enums.NoticeCategory;
 import kr.co.pincoin.api.infra.shop.entity.support.message.NoticeMessageEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import java.util.Set;
 public class NoticeMessage {
     private final Long id;
 
-    private final Integer category;
+    private final NoticeCategory category;
 
     private final User owner;
 
@@ -41,7 +42,7 @@ public class NoticeMessage {
                           String description,
                           String keywords,
                           String content,
-                          Integer category,
+                          NoticeCategory category,
                           User owner,
                           Store store,
                           LocalDateTime created,
@@ -77,7 +78,7 @@ public class NoticeMessage {
 
     public static NoticeMessage of(String title,
                                    String content,
-                                   Integer category,
+                                   NoticeCategory category,
                                    User owner,
                                    Store store) {
         return NoticeMessage.builder()
@@ -134,11 +135,6 @@ public class NoticeMessage {
     }
 
     public boolean
-    matchesCategory(NoticeCategory category) {
-        return this.category.equals(category.getValue());
-    }
-
-    public boolean
     isRecent() {
         return this.created.isAfter(
                 LocalDateTime.now().minusDays(7));
@@ -160,9 +156,6 @@ public class NoticeMessage {
 
         if (category == null) {
             throw new IllegalArgumentException("Category cannot be null");
-        }
-        if (!NoticeCategory.isValid(category)) {
-            throw new IllegalArgumentException("Invalid notice category");
         }
         if (owner == null) {
             throw new IllegalArgumentException("Owner cannot be null");
@@ -189,43 +182,6 @@ public class NoticeMessage {
         }
         if (content.length() > 2000) {
             throw new IllegalArgumentException("Content cannot exceed 2000 characters");
-        }
-    }
-
-    public enum NoticeCategory {
-        GENERAL(1),
-        SYSTEM(2),
-        EVENT(3),
-        UPDATE(4),
-        MAINTENANCE(5),
-        IMPORTANT(6);
-
-        private final Integer value;
-
-        NoticeCategory(Integer value) {
-            this.value = value;
-        }
-
-        public static boolean isValid(Integer value) {
-            for (NoticeCategory category : NoticeCategory.values()) {
-                if (category.value.equals(value)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static NoticeCategory fromValue(Integer value) {
-            for (NoticeCategory category : NoticeCategory.values()) {
-                if (category.value.equals(value)) {
-                    return category;
-                }
-            }
-            throw new IllegalArgumentException("Invalid notice category value: " + value);
-        }
-
-        public Integer getValue() {
-            return value;
         }
     }
 }

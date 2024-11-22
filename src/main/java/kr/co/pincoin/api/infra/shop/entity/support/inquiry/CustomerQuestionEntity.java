@@ -1,6 +1,7 @@
 package kr.co.pincoin.api.infra.shop.entity.support.inquiry;
 
 import jakarta.persistence.*;
+import kr.co.pincoin.api.domain.shop.model.support.inquiry.enums.QuestionCategory;
 import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
 import kr.co.pincoin.api.infra.common.BaseRemovalDateTime;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderEntity;
@@ -31,8 +32,9 @@ public class CustomerQuestionEntity extends BaseRemovalDateTime {
     @Column(name = "content")
     private String content;
 
-    @Column(name = "category")
-    private Integer category;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "category", columnDefinition = "INT")
+    private QuestionCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
