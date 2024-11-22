@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProductMapper {
     private final CategoryMapper categoryMapper;
+
     private final StoreMapper storeMapper;
 
     public Product toModel(ProductEntity entity) {

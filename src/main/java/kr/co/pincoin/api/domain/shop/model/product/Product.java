@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.shop.model.product;
 
+import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
 import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
 import lombok.Builder;
@@ -12,30 +13,55 @@ import java.time.LocalDateTime;
 @Getter
 public class Product {
     private final Long id;
+
     private final String name;
+
     private final String subtitle;
+
     private final String code;
+
     private final BigDecimal listPrice;
+
     private final BigDecimal sellingPrice;
+
     private final Boolean pg;
+
     private final BigDecimal pgSellingPrice;
+
     private final Integer minimumStockLevel;
+
     private final Integer maximumStockLevel;
+
     private final Boolean naverPartner;
+
     private final String naverPartnerTitle;
+
     private final String naverPartnerTitlePg;
+
     private final String naverAttribute;
+
     private final Category category;
+
     private final Store store;
+
     private final LocalDateTime created;
+
     private final LocalDateTime modified;
+
     private String description;
+
     private Integer position;
-    private Integer status;
+
+    private ProductStatus status;
+
     private Integer stockQuantity;
+
     private Integer stock;
+
     private Integer reviewCount;
+
     private Integer reviewCountPg;
+
     private Boolean isRemoved;
 
     @Builder
@@ -49,7 +75,7 @@ public class Product {
                     BigDecimal pgSellingPrice,
                     String description,
                     Integer position,
-                    Integer status,
+                    ProductStatus status,
                     Integer stockQuantity,
                     Integer stock,
                     Integer minimumStockLevel,
@@ -158,18 +184,6 @@ public class Product {
         this.position = position;
     }
 
-    public void publish() {
-        if (this.status.equals(ProductStatus.PUBLISHED.getValue())) {
-            throw new IllegalStateException("Product is already published");
-        }
-        validateForPublication();
-        this.status = ProductStatus.PUBLISHED.getValue();
-    }
-
-    public void unpublish() {
-        this.status = ProductStatus.UNPUBLISHED.getValue();
-    }
-
     public void addStock(Integer quantity) {
         if (quantity <= 0) {
             throw new IllegalArgumentException("Stock addition quantity must be positive");
@@ -198,27 +212,8 @@ public class Product {
         this.reviewCount++;
     }
 
-    public void remove() {
-        if (isPublished()) {
-            throw new IllegalStateException("Cannot remove published product");
-        }
-        this.isRemoved = true;
-    }
-
     public void restore() {
         this.isRemoved = false;
-    }
-
-    public boolean isPublished() {
-        return ProductStatus.PUBLISHED.getValue().equals(this.status);
-    }
-
-    public boolean isDraft() {
-        return ProductStatus.DRAFT.getValue().equals(this.status);
-    }
-
-    public boolean isUnpublished() {
-        return ProductStatus.UNPUBLISHED.getValue().equals(this.status);
     }
 
     public boolean isLowStock() {
@@ -280,22 +275,6 @@ public class Product {
         }
         if (stock <= minimumStockLevel) {
             throw new IllegalStateException("Stock level is too low for publication");
-        }
-    }
-
-    public enum ProductStatus {
-        DRAFT(0),
-        PUBLISHED(1),
-        UNPUBLISHED(2);
-
-        private final Integer value;
-
-        ProductStatus(Integer value) {
-            this.value = value;
-        }
-
-        public Integer getValue() {
-            return value;
         }
     }
 }

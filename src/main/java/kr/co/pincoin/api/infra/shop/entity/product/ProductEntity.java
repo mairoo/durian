@@ -1,6 +1,7 @@
 package kr.co.pincoin.api.infra.shop.entity.product;
 
 import jakarta.persistence.*;
+import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.infra.common.BaseRemovalDateTime;
 import kr.co.pincoin.api.infra.shop.entity.store.StoreEntity;
 import lombok.*;
@@ -46,8 +47,8 @@ public class ProductEntity extends BaseRemovalDateTime {
     @Column(name = "position")
     private Integer position;
 
-    @Column(name = "status")
-    private Integer status;
+    @Column(name = "status", columnDefinition = "INT")
+    private ProductStatus status;
 
     @Column(name = "stock_quantity")
     private Integer stockQuantity;

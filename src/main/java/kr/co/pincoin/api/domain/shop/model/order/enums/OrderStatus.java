@@ -1,5 +1,8 @@
 package kr.co.pincoin.api.domain.shop.model.order.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum OrderStatus {
     PENDING(0),
     COMPLETED(1),
