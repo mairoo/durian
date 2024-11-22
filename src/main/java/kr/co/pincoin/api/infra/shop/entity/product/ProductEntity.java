@@ -48,12 +48,14 @@ public class ProductEntity extends BaseRemovalDateTime {
     @Column(name = "position")
     private Integer position;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", columnDefinition = "INT")
     private ProductStatus status;
 
     @Column(name = "stock_quantity")
     private Integer stockQuantity;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "stock", columnDefinition = "INT")
     private ProductStock stock;
 

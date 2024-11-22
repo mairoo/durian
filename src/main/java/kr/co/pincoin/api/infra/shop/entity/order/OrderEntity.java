@@ -1,6 +1,8 @@
 package kr.co.pincoin.api.infra.shop.entity.order;
 
 import jakarta.persistence.*;
+import kr.co.pincoin.api.domain.shop.model.order.enums.OrderCurrency;
+import kr.co.pincoin.api.domain.shop.model.order.enums.OrderPaymentMethod;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
@@ -36,15 +38,18 @@ public class OrderEntity extends BaseRemovalDateTime {
     @Column(name = "ip_address", columnDefinition = "CHAR(39)")
     private String ipAddress;
 
-    @Column(name = "payment_method")
-    private Integer paymentMethod;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "payment_method", columnDefinition = "INT")
+    private OrderPaymentMethod paymentMethod;
 
     @Column(name = "transaction_id")
     private String transactionId;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "status", columnDefinition = "INT")
     private OrderStatus status;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "visible", columnDefinition = "INT")
     private OrderVisibility visibility;
 
@@ -54,8 +59,9 @@ public class OrderEntity extends BaseRemovalDateTime {
     @Column(name = "total_selling_price")
     private BigDecimal totalSellingPrice;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "currency")
-    private String currency;
+    private OrderCurrency currency;
 
     @Column(name = "message")
     private String message;

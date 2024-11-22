@@ -1,6 +1,8 @@
 package kr.co.pincoin.api.domain.shop.model.order;
 
 import kr.co.pincoin.api.domain.auth.model.user.User;
+import kr.co.pincoin.api.domain.shop.model.order.enums.OrderCurrency;
+import kr.co.pincoin.api.domain.shop.model.order.enums.OrderPaymentMethod;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderEntity;
@@ -25,7 +27,7 @@ public class Order {
 
     private final String ipAddress;
 
-    private final Integer paymentMethod;
+    private final OrderPaymentMethod paymentMethod;
 
     private final String transactionId;
 
@@ -33,7 +35,7 @@ public class Order {
 
     private final BigDecimal totalSellingPrice;
 
-    private final String currency;
+    private final OrderCurrency currency;
 
     private final Order parent;
 
@@ -60,13 +62,13 @@ public class Order {
                   String userAgent,
                   String acceptLanguage,
                   String ipAddress,
-                  Integer paymentMethod,
+                  OrderPaymentMethod paymentMethod,
                   String transactionId,
                   OrderStatus status,
                   OrderVisibility visibility,
                   BigDecimal totalListPrice,
                   BigDecimal totalSellingPrice,
-                  String currency,
+                  OrderCurrency currency,
                   String message,
                   Boolean suspicious,
                   Order parent,
@@ -102,10 +104,10 @@ public class Order {
                            String userAgent,
                            String acceptLanguage,
                            String ipAddress,
-                           Integer paymentMethod,
+                           OrderPaymentMethod paymentMethod,
                            BigDecimal totalListPrice,
                            BigDecimal totalSellingPrice,
-                           String currency) {
+                           OrderCurrency currency) {
         return Order.builder()
                 .user(user)
                 .orderNo(orderNo)
