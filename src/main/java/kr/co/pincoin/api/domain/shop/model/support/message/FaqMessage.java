@@ -14,23 +14,41 @@ import java.util.Set;
 @Getter
 public class FaqMessage {
     private final Long id;
+
     private final Integer category;
+
     private final User owner;
+
     private final Store store;
+
     private final LocalDateTime created;
+
     private final LocalDateTime modified;
+
     private String title;
+
     private String description;
+
     private Set<String> keywords;
+
     private String content;
+
     private Integer position;
+
     private Boolean isRemoved;
 
     @Builder
-    private FaqMessage(Long id, String title, String description,
-                       String keywords, String content, Integer category,
-                       Integer position, User owner, Store store,
-                       LocalDateTime created, LocalDateTime modified,
+    private FaqMessage(Long id,
+                       String title,
+                       String description,
+                       String keywords,
+                       String content,
+                       Integer category,
+                       Integer position,
+                       User owner,
+                       Store store,
+                       LocalDateTime created,
+                       LocalDateTime modified,
                        Boolean isRemoved) {
         this.id = id;
         this.title = title;
@@ -76,78 +94,89 @@ public class FaqMessage {
                 .build();
     }
 
-    public void updateTitle(String title) {
+    public void
+    updateTitle(String title) {
         validateTitle(title);
         this.title = title;
     }
 
-    public void updateContent(String content) {
+    public void
+    updateContent(String content) {
         validateContent(content);
         this.content = content;
     }
 
-    public void updateDescription(String description) {
+    public void
+    updateDescription(String description) {
         this.description = description;
     }
 
-    public void updateKeywords(String keywords) {
+    public void
+    updateKeywords(String keywords) {
         this.keywords = parseKeywords(keywords);
     }
 
-    public void updatePosition(Integer position) {
+    public void
+    updatePosition(Integer position) {
         if (position == null || position < 0) {
             throw new IllegalArgumentException("Position must be non-negative");
         }
         this.position = position;
     }
 
-    public void moveToTop() {
+    public void
+    moveToTop() {
         this.position = 0;
     }
 
-    public void moveToBottom(int maxPosition) {
+    public void
+    moveToBottom(int maxPosition) {
         if (maxPosition < 0) {
             throw new IllegalArgumentException("Max position must be non-negative");
         }
         this.position = maxPosition + 1;
     }
 
-    public void moveUp() {
+    public void
+    moveUp() {
         if (this.position > 0) {
             this.position--;
         }
     }
 
-    public void moveDown() {
+    public void
+    moveDown() {
         this.position++;
     }
 
-    public void remove() {
+    public void
+    remove() {
         this.isRemoved = true;
     }
 
-    public void restore() {
+    public void
+    restore() {
         this.isRemoved = false;
     }
 
-    public boolean isOwner(Long userId) {
-        return this.owner != null && this.owner.getId().equals(userId);
-    }
-
-    public boolean belongsToStore(Long storeId) {
+    public boolean
+    belongsToStore(Long storeId) {
         return this.store != null && this.store.getId().equals(storeId);
     }
 
-    public boolean hasKeyword(String keyword) {
+    public boolean
+    hasKeyword(String keyword) {
         return this.keywords != null &&
                 this.keywords.contains(keyword.toLowerCase());
     }
 
-    public boolean matchesCategory(FaqCategory category) {
+    public boolean
+    matchesCategory(FaqCategory category) {
         return this.category.equals(category.getValue());
     }
 
-    private Set<String> parseKeywords(String keywords) {
+    private Set<String>
+    parseKeywords(String keywords) {
         if (keywords == null || keywords.trim().isEmpty()) {
             return new HashSet<>();
         }
@@ -155,7 +184,8 @@ public class FaqMessage {
                 keywords.toLowerCase().split(",\\s*")));
     }
 
-    private void validateFaq() {
+    private void
+    validateFaq() {
         validateTitle(this.title);
         validateContent(this.content);
 
@@ -176,7 +206,8 @@ public class FaqMessage {
         }
     }
 
-    private void validateTitle(String title) {
+    private void
+    validateTitle(String title) {
         if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("Title cannot be empty");
         }
@@ -185,7 +216,8 @@ public class FaqMessage {
         }
     }
 
-    private void validateContent(String content) {
+    private void
+    validateContent(String content) {
         if (content == null || content.trim().isEmpty()) {
             throw new IllegalArgumentException("Content cannot be empty");
         }

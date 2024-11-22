@@ -126,19 +126,23 @@ public class PhoneVerificationLog {
                 .build();
     }
 
-    public boolean isVerified() {
+    public boolean
+    isVerified() {
         return this.resultCode != null && this.resultCode.equals("0000");
     }
 
-    public boolean isExpired(int expirationMinutes) {
+    public boolean
+    isExpired(int expirationMinutes) {
         return this.created.plusMinutes(expirationMinutes).isBefore(LocalDateTime.now());
     }
 
-    public boolean matchesCode(String inputCode) {
+    public boolean
+    matchesCode(String inputCode) {
         return this.code != null && this.code.equals(inputCode);
     }
 
-    public boolean belongsTo(User user) {
+    public boolean
+    belongsTo(User user) {
         return this.owner.getId().equals(user.getId());
     }
 }

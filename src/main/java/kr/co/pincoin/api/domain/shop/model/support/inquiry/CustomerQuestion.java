@@ -15,16 +15,27 @@ import java.util.Set;
 @Getter
 public class CustomerQuestion {
     private final Long id;
+
     private final Integer category;
+
     private final User owner;
+
     private final Order order;
+
     private final Store store;
+
     private final LocalDateTime created;
+
     private final LocalDateTime modified;
+
     private String title;
+
     private String description;
+
     private Set<String> keywords;
+
     private String content;
+
     private Boolean isRemoved;
 
     private int answerCount;
@@ -73,8 +84,11 @@ public class CustomerQuestion {
                 .build();
     }
 
-    public static CustomerQuestion of(String title, String content,
-                                      Integer category, User owner, Store store) {
+    public static CustomerQuestion of(String title,
+                                      String content,
+                                      Integer category,
+                                      User owner,
+                                      Store store) {
         return CustomerQuestion.builder()
                 .title(title)
                 .content(content)
@@ -84,57 +98,65 @@ public class CustomerQuestion {
                 .build();
     }
 
-    public void updateTitle(String title) {
+    public void
+    updateTitle(String title) {
         validateTitle(title);
         this.title = title;
     }
 
-    public void updateContent(String content) {
+    public void
+    updateContent(String content) {
         validateContent(content);
         this.content = content;
     }
 
-    public void updateDescription(String description) {
+    public void
+    updateDescription(String description) {
         this.description = description;
     }
 
-    public void updateKeywords(String keywords) {
+    public void
+    updateKeywords(String keywords) {
         this.keywords = parseKeywords(keywords);
     }
 
-    public void incrementAnswerCount() {
+    public void
+    incrementAnswerCount() {
         this.answerCount++;
     }
 
-    public void remove() {
+    public void
+    remove() {
         this.isRemoved = true;
     }
 
-    public void restore() {
+    public void
+    restore() {
         this.isRemoved = false;
     }
 
-    public boolean isClosed() {
+    public boolean
+    isClosed() {
         return this.isRemoved;
     }
 
-    public boolean hasOrder() {
+    public boolean
+    hasOrder() {
         return this.order != null;
     }
 
-    public boolean isOwner(Long userId) {
-        return this.owner != null && this.owner.getId().equals(userId);
-    }
-
-    public boolean belongsToStore(Long storeId) {
+    public boolean
+    belongsToStore(Long storeId) {
         return this.store != null && this.store.getId().equals(storeId);
     }
 
-    public boolean hasKeyword(String keyword) {
+    public boolean
+    hasKeyword(String keyword) {
         return this.keywords != null && this.keywords.contains(keyword.toLowerCase());
     }
 
-    private Set<String> parseKeywords(String keywords) {
+    private Set<String>
+    parseKeywords(String keywords) {
         if (keywords == null || keywords.trim().isEmpty()) {
             return new HashSet<>();
         }
@@ -142,7 +164,8 @@ public class CustomerQuestion {
                 keywords.toLowerCase().split(",\\s*")));
     }
 
-    private void validateQuestion() {
+    private void
+    validateQuestion() {
         validateTitle(this.title);
         validateContent(this.content);
 
@@ -160,7 +183,8 @@ public class CustomerQuestion {
         }
     }
 
-    private void validateTitle(String title) {
+    private void
+    validateTitle(String title) {
         if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("Title cannot be empty");
         }
@@ -169,7 +193,8 @@ public class CustomerQuestion {
         }
     }
 
-    private void validateContent(String content) {
+    private void
+    validateContent(String content) {
         if (content == null || content.trim().isEmpty()) {
             throw new IllegalArgumentException("Content cannot be empty");
         }

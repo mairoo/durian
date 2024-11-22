@@ -10,10 +10,15 @@ import java.time.LocalDateTime;
 @Getter
 public class ProductList {
     private final Long id;
+
     private String name;
+
     private final String code;
+
     private final Store store;
+
     private final LocalDateTime created;
+
     private final LocalDateTime modified;
 
     @Builder
@@ -46,19 +51,22 @@ public class ProductList {
                 .build();
     }
 
-    public void updateName(String name) {
+    public void
+    updateName(String name) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Product list name cannot be empty");
         }
         this.name = name;
     }
 
-    public boolean belongsToStore(Long storeId) {
+    public boolean
+    belongsToStore(Long storeId) {
         return this.store != null &&
                 this.store.getId().equals(storeId);
     }
 
-    private void validateProductList() {
+    private void
+    validateProductList() {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Product list name cannot be empty");
         }

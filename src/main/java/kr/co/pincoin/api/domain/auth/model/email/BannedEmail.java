@@ -45,15 +45,18 @@ public class BannedEmail {
                 .build();
     }
 
-    public void remove() {
+    public void
+    remove() {
         this.isRemoved = true;
     }
 
-    public void restore() {
+    public void
+    restore() {
         this.isRemoved = false;
     }
 
-    public boolean isActive() {
+    public boolean
+    isActive() {
         return !this.isRemoved;
     }
 

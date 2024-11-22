@@ -13,24 +13,43 @@ import java.time.LocalDateTime;
 @Getter
 public class Category {
     private final Long id;
+
     private final String title;
+
     private final String slug;
+
     private final Boolean pg;
+
     private final Category parent;
+
     private final Store store;
+
     private final LocalDateTime created;
+
     private final LocalDateTime modified;
+
     private String thumbnail;
+
     private String description;
+
     private String description1;
+
     private BigDecimal discountRate;
+
     private BigDecimal pgDiscountRate;
+
     private String naverSearchTag;
+
     private String naverBrandName;
+
     private String naverMakerName;
+
     private Integer lft;
+
     private Integer rght;
+
     private Integer treeId;
+
     private Integer level;
 
     @Builder
@@ -78,6 +97,24 @@ public class Category {
         validateCategory();
     }
 
+    public static Category of(String title,
+                              String slug,
+                              BigDecimal discountRate,
+                              Boolean pg,
+                              BigDecimal pgDiscountRate,
+                              Category parent,
+                              Store store) {
+        return Category.builder()
+                .title(title)
+                .slug(slug)
+                .discountRate(discountRate)
+                .pg(pg)
+                .pgDiscountRate(pgDiscountRate)
+                .parent(parent)
+                .store(store)
+                .build();
+    }
+
     public CategoryEntity toEntity() {
         CategoryEntity parentEntity = null;
 
@@ -107,22 +144,10 @@ public class Category {
                 .build();
     }
 
-    public static Category of(String title, String slug,
-                              BigDecimal discountRate, Boolean pg,
-                              BigDecimal pgDiscountRate,
-                              Category parent, Store store) {
-        return Category.builder()
-                .title(title)
-                .slug(slug)
-                .discountRate(discountRate)
-                .pg(pg)
-                .pgDiscountRate(pgDiscountRate)
-                .parent(parent)
-                .store(store)
-                .build();
-    }
-
-    public void updateNestedSetInfo(Integer lft, Integer rght, Integer treeId) {
+    public void
+    updateNestedSetInfo(Integer lft,
+                        Integer rght,
+                        Integer treeId) {
         if (lft >= rght) {
             throw new BusinessException(ErrorCode.INVALID_NESTED_SET_VALUES);
         }
@@ -131,56 +156,72 @@ public class Category {
         this.treeId = treeId;
     }
 
-    public void updateThumbnail(String thumbnail) {
+    public void
+    updateThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
     }
 
-    public void updateDescriptions(String description, String description1) {
+    public void
+    updateDescriptions(String description,
+                       String description1) {
         this.description = description;
         this.description1 = description1;
     }
 
-    public void updateDiscountRates(BigDecimal discountRate, BigDecimal pgDiscountRate) {
+    public void
+    updateDiscountRates(BigDecimal discountRate,
+                        BigDecimal pgDiscountRate) {
         validateDiscountRates(discountRate, pgDiscountRate);
         this.discountRate = discountRate;
         this.pgDiscountRate = pgDiscountRate;
     }
 
-    public void updateNaverInfo(String searchTag, String brandName, String makerName) {
+    public void
+    updateNaverInfo(String searchTag,
+                    String brandName,
+                    String makerName) {
         this.naverSearchTag = searchTag;
         this.naverBrandName = brandName;
         this.naverMakerName = makerName;
     }
 
-    public boolean isRoot() {
+    public boolean
+    isRoot() {
         return this.parent == null;
     }
 
-    public boolean isLeaf() {
+    public boolean
+    isLeaf() {
         return this.rght - this.lft == 1;
     }
 
-    public boolean hasChildren() {
+    public boolean
+    hasChildren() {
         return !isLeaf();
     }
 
-    public boolean isDescendantOf(Category ancestor) {
+    public boolean
+    isDescendantOf(Category ancestor) {
         return this.lft > ancestor.getLft() &&
                 this.rght < ancestor.getRght() &&
                 this.treeId.equals(ancestor.getTreeId());
     }
 
-    public boolean isAncestorOf(Category descendant) {
+    public boolean
+    isAncestorOf(Category descendant) {
         return this.lft < descendant.getLft() &&
                 this.rght > descendant.getRght() &&
                 this.treeId.equals(descendant.getTreeId());
     }
 
-    public int getDescendantCount() {
+    public int
+    getDescendantCount() {
         return (this.rght - this.lft - 1) / 2;
     }
 
-    public BigDecimal calculateDiscountedPrice(BigDecimal originalPrice, boolean isPgPayment) {
+    public BigDecimal
+    calculateDiscountedPrice(BigDecimal originalPrice,
+                             boolean isPgPayment) {
         if (originalPrice == null || originalPrice.compareTo(BigDecimal.ZERO) <= 0) {
             throw new BusinessException(ErrorCode.INVALID_ORIGINAL_PRICE);
         }
@@ -195,7 +236,8 @@ public class Category {
                                                              ));
     }
 
-    private void validateCategory() {
+    private void
+    validateCategory() {
         if (title == null || title.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.INVALID_CATEGORY_TITLE);
         }
@@ -208,7 +250,9 @@ public class Category {
         validateDiscountRates(discountRate, pgDiscountRate);
     }
 
-    private void validateDiscountRates(BigDecimal discountRate, BigDecimal pgDiscountRate) {
+    private void
+    validateDiscountRates(BigDecimal discountRate,
+                          BigDecimal pgDiscountRate) {
         if (discountRate != null &&
                 (discountRate.compareTo(BigDecimal.ZERO) < 0 ||
                         discountRate.compareTo(BigDecimal.valueOf(100)) > 0)) {

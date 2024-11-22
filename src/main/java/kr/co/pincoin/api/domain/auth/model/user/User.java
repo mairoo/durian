@@ -117,56 +117,69 @@ public class User {
                 .build();
     }
 
-    public void updateUsername(String username) {
+    public void
+    updateUsername(String username) {
         this.username = username;
     }
 
-    public void updatePassword(String newPassword) {
+    public void
+    updatePassword(String newPassword) {
         this.password = newPassword;
     }
 
-    public void updateLoginTime() {
+    public void
+    updateLoginTime() {
         this.lastLogin = LocalDateTime.now();
     }
 
-    public void updateEmail(String email) {
+    public void
+    updateEmail(String email) {
         this.email = email;
     }
 
-    public void updateProfile(String firstName, String lastName) {
+    public void
+    updateProfile(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
-    public void activate() {
+    public void
+    activate() {
         this.isActive = true;
     }
 
-    public void deactivate() {
+    public void
+    deactivate() {
         this.isActive = false;
     }
 
-    public void grantStaffPrivileges() {
+    public void
+    grantStaffPrivileges() {
         this.isStaff = true;
     }
 
-    public void revokeStaffPrivileges() {
+    public void
+    revokeStaffPrivileges() {
         this.isStaff = false;
     }
 
-    public void grantSuperuserPrivileges() {
+    public void
+    grantSuperuserPrivileges() {
         this.isSuperuser = true;
     }
 
-    public void revokeSuperuserPrivileges() {
+    public void
+    revokeSuperuserPrivileges() {
         this.isSuperuser = false;
     }
 
-    public String getFullName() {
+    public String
+    getFullName() {
         return String.format("%s %s", lastName, firstName).trim();
     }
 
-    public boolean isAdmin() {
+    public boolean
+    isAdmin() {
         return this.isSuperuser && this.isStaff;
     }
 }

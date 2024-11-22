@@ -1,6 +1,7 @@
 package kr.co.pincoin.api.infra.shop.entity.product;
 
 import jakarta.persistence.*;
+import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
 import kr.co.pincoin.api.infra.common.BaseRemovalDateTime;
 import lombok.*;
 
@@ -22,8 +23,9 @@ public class VoucherEntity extends BaseRemovalDateTime {
     @Column(name = "remarks")
     private String remarks;
 
-    @Column(name = "status")
-    private Integer status;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "status", columnDefinition = "INT")
+    private VoucherStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")

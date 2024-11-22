@@ -103,9 +103,7 @@ public class Profile {
         this.phone = phone;
         this.address = address;
         this.phoneVerified = phoneVerified;
-        this.phoneVerifiedStatus = phoneVerifiedStatus != null
-                ? phoneVerifiedStatus
-                : PhoneVerifiedStatus.UNVERIFIED;
+        this.phoneVerifiedStatus = phoneVerifiedStatus != null ? phoneVerifiedStatus : PhoneVerifiedStatus.UNVERIFIED;
         this.documentVerified = documentVerified;
         this.allowOrder = allowOrder;
         this.photoId = photoId;
@@ -116,27 +114,17 @@ public class Profile {
         this.notPurchasedMonths = notPurchasedMonths;
         this.repurchased = repurchased;
         this.maxPrice = maxPrice;
-        this.totalListPrice = totalListPrice != null
-                ? totalListPrice
-                : BigDecimal.ZERO;
-        this.totalSellingPrice = totalSellingPrice != null
-                ? totalSellingPrice
-                : BigDecimal.ZERO;
+        this.totalListPrice = totalListPrice != null ? totalListPrice : BigDecimal.ZERO;
+        this.totalSellingPrice = totalSellingPrice != null ? totalSellingPrice : BigDecimal.ZERO;
         this.averagePrice = averagePrice;
-        this.mileage = mileage != null
-                ? mileage
-                : BigDecimal.ZERO;
+        this.mileage = mileage != null ? mileage : BigDecimal.ZERO;
         this.memo = memo;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.domestic = domestic;
         this.telecom = telecom;
-        this.created = created != null
-                ? created
-                : LocalDateTime.now();
-        this.modified = modified != null
-                ? modified
-                : LocalDateTime.now();
+        this.created = created != null ? created : LocalDateTime.now();
+        this.modified = modified != null ? modified : LocalDateTime.now();
     }
 
     public static Profile of(User user) {
@@ -175,37 +163,45 @@ public class Profile {
                 .build();
     }
 
-    public void verifyPhone(String phone) {
+    public void
+    verifyPhone(String phone) {
         this.phone = phone;
         this.phoneVerified = true;
         this.phoneVerifiedStatus = PhoneVerifiedStatus.VERIFIED;
     }
 
-    public void verifyDocument() {
+    public void
+    verifyDocument() {
         this.documentVerified = true;
     }
 
-    public void updateAddress(String address) {
+    public void
+    updateAddress(String address) {
         this.address = address;
     }
 
-    public void uploadPhotoId(String photoId) {
+    public void
+    uploadPhotoId(String photoId) {
         this.photoId = photoId;
     }
 
-    public void updateCard(String card) {
+    public void
+    updateCard(String card) {
         this.card = card;
     }
 
-    public void allowOrder() {
+    public void
+    allowOrder() {
         this.allowOrder = true;
     }
 
-    public void disallowOrder() {
+    public void
+    disallowOrder() {
         this.allowOrder = false;
     }
 
-    public void updatePersonalInfo(LocalDate dateOfBirth,
+    public void
+    updatePersonalInfo(LocalDate dateOfBirth,
                                    Gender gender,
                                    Domestic domestic,
                                    String telecom) {
@@ -215,11 +211,13 @@ public class Profile {
         this.telecom = telecom;
     }
 
-    public void addMileage(BigDecimal amount) {
+    public void
+    addMileage(BigDecimal amount) {
         this.mileage = this.mileage.add(amount);
     }
 
-    public void subtractMileage(BigDecimal amount) {
+    public void
+    subtractMileage(BigDecimal amount) {
         BigDecimal newMileage = this.mileage.subtract(amount);
         if (newMileage.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("Mileage cannot be negative");
@@ -227,7 +225,8 @@ public class Profile {
         this.mileage = newMileage;
     }
 
-    public void recordPurchase(BigDecimal listPrice, BigDecimal sellingPrice) {
+    public void
+    recordPurchase(BigDecimal listPrice, BigDecimal sellingPrice) {
         this.totalOrderCount++;
         this.totalListPrice = this.totalListPrice.add(listPrice);
         this.totalSellingPrice = this.totalSellingPrice.add(sellingPrice);
@@ -249,30 +248,36 @@ public class Profile {
         this.notPurchasedMonths = false;
     }
 
-    public void updateMemo(String memo) {
+    public void
+    updateMemo(String memo) {
         this.memo = memo;
     }
 
-    public boolean canOrder() {
+    public boolean
+    canOrder() {
         return this.allowOrder && this.phoneVerified && this.documentVerified;
     }
 
-    public int getAge() {
+    public int
+    getAge() {
         if (this.dateOfBirth == null) {
             return 0;
         }
         return Period.between(this.dateOfBirth, LocalDate.now()).getYears();
     }
 
-    public boolean isRegularCustomer() {
+    public boolean
+    isRegularCustomer() {
         return this.totalOrderCount >= 5;
     }
 
-    public BigDecimal getTotalDiscount() {
+    public BigDecimal
+    getTotalDiscount() {
         return this.totalListPrice.subtract(this.totalSellingPrice);
     }
 
-    public double getAverageDiscountRate() {
+    public double
+    getAverageDiscountRate() {
         if (this.totalListPrice.compareTo(BigDecimal.ZERO) == 0) {
             return 0.0;
         }

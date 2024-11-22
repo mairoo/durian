@@ -9,19 +9,33 @@ import java.time.LocalDateTime;
 @Getter
 public class Store {
     private final Long id;
+
     private final String name;
+
     private final String code;
+
     private final LocalDateTime created;
+
     private final LocalDateTime modified;
+
     private String theme;
+
     private String phone;
+
     private String phone1;
+
     private String kakao;
+
     private String bankAccount;
+
     private String escrowAccount;
+
     private Integer chunkSize;
+
     private Integer blockSize;
+
     private Boolean signupOpen;
+
     private Boolean underAttack;
 
     @Builder
@@ -86,25 +100,29 @@ public class Store {
                 .build();
     }
 
-    public void updateTheme(String theme) {
+    public void
+    updateTheme(String theme) {
         if (theme == null || theme.trim().isEmpty()) {
             throw new IllegalArgumentException("Theme cannot be empty");
         }
         this.theme = theme;
     }
 
-    public void updateContactInfo(String phone, String phone1, String kakao) {
+    public void
+    updateContactInfo(String phone, String phone1, String kakao) {
         this.phone = phone;
         this.phone1 = phone1;
         this.kakao = kakao;
     }
 
-    public void updateBankAccounts(String bankAccount, String escrowAccount) {
+    public void
+    updateBankAccounts(String bankAccount, String escrowAccount) {
         this.bankAccount = bankAccount;
         this.escrowAccount = escrowAccount;
     }
 
-    public void updatePagination(Integer chunkSize, Integer blockSize) {
+    public void
+    updatePagination(Integer chunkSize, Integer blockSize) {
         if (chunkSize != null && chunkSize <= 0) {
             throw new IllegalArgumentException("Chunk size must be positive");
         }
@@ -116,39 +134,47 @@ public class Store {
         this.blockSize = blockSize;
     }
 
-    public void openSignup() {
+    public void
+    openSignup() {
         this.signupOpen = true;
     }
 
-    public void closeSignup() {
+    public void
+    closeSignup() {
         this.signupOpen = false;
     }
 
-    public void markAsUnderAttack() {
+    public void
+    markAsUnderAttack() {
         this.underAttack = true;
         this.closeSignup();
     }
 
-    public void markAsSafe() {
+    public void
+    markAsSafe() {
         this.underAttack = false;
     }
 
-    public boolean isAcceptingSignups() {
+    public boolean
+    isAcceptingSignups() {
         return this.signupOpen && !this.underAttack;
     }
 
-    public boolean hasValidContactInfo() {
+    public boolean
+    hasValidContactInfo() {
         return (phone != null && !phone.trim().isEmpty()) ||
                 (phone1 != null && !phone1.trim().isEmpty()) ||
                 (kakao != null && !kakao.trim().isEmpty());
     }
 
-    public boolean hasValidBankInfo() {
+    public boolean
+    hasValidBankInfo() {
         return (bankAccount != null && !bankAccount.trim().isEmpty()) ||
                 (escrowAccount != null && !escrowAccount.trim().isEmpty());
     }
 
-    private void validateStore() {
+    private void
+    validateStore() {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Store name cannot be empty");
         }

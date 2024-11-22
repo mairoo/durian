@@ -10,17 +10,27 @@ import java.time.LocalDateTime;
 @Getter
 public class PurchaseOrderPayment {
     private final Long id;
+
     private final Integer account;
+
     private final BigDecimal amount;
+
     private final PurchaseOrder order;
+
     private final LocalDateTime created;
+
     private final LocalDateTime modified;
+
     private Boolean isRemoved;
 
     @Builder
-    private PurchaseOrderPayment(Long id, Integer account, BigDecimal amount,
-                                 PurchaseOrder order, LocalDateTime created,
-                                 LocalDateTime modified, Boolean isRemoved) {
+    private PurchaseOrderPayment(Long id,
+                                 Integer account,
+                                 BigDecimal amount,
+                                 PurchaseOrder order,
+                                 LocalDateTime created,
+                                 LocalDateTime modified,
+                                 Boolean isRemoved) {
         this.id = id;
         this.account = account;
         this.amount = amount;
@@ -41,7 +51,8 @@ public class PurchaseOrderPayment {
                 .build();
     }
 
-    public static PurchaseOrderPayment of(Integer account, BigDecimal amount,
+    public static PurchaseOrderPayment of(Integer account,
+                                          BigDecimal amount,
                                           PurchaseOrder order) {
         return PurchaseOrderPayment.builder()
                 .account(account)
@@ -50,34 +61,41 @@ public class PurchaseOrderPayment {
                 .build();
     }
 
-    public void remove() {
+    public void
+    remove() {
         if (this.order.isPaid()) {
             throw new IllegalStateException("Cannot remove payment for paid purchase order");
         }
         this.isRemoved = true;
     }
 
-    public void restore() {
+    public void
+    restore() {
         this.isRemoved = false;
     }
 
-    public boolean isFullPayment() {
+    public boolean
+    isFullPayment() {
         return this.amount.compareTo(this.order.getAmount()) == 0;
     }
 
-    public boolean isPartialPayment() {
+    public boolean
+    isPartialPayment() {
         return this.amount.compareTo(this.order.getAmount()) < 0;
     }
 
-    public boolean isOverPayment() {
+    public boolean
+    isOverPayment() {
         return this.amount.compareTo(this.order.getAmount()) > 0;
     }
 
-    public BigDecimal getRemainingAmount() {
+    public BigDecimal
+    getRemainingAmount() {
         return this.order.getAmount().subtract(this.amount);
     }
 
-    public double getPaymentRate() {
+    public double
+    getPaymentRate() {
         if (this.order.getAmount().compareTo(BigDecimal.ZERO) == 0) {
             return 0.0;
         }
@@ -87,7 +105,8 @@ public class PurchaseOrderPayment {
                 .doubleValue();
     }
 
-    private void validatePayment() {
+    private void
+    validatePayment() {
         if (account == null) {
             throw new IllegalArgumentException("Account cannot be null");
         }
@@ -99,30 +118,6 @@ public class PurchaseOrderPayment {
         }
         if (order.isPaid()) {
             throw new IllegalStateException("Cannot create payment for already paid purchase order");
-        }
-    }
-
-    public enum Account {
-        BANK(1),
-        ESCROW(2);
-
-        private final Integer value;
-
-        Account(Integer value) {
-            this.value = value;
-        }
-
-        public static Account fromValue(Integer value) {
-            for (Account account : Account.values()) {
-                if (account.value.equals(value)) {
-                    return account;
-                }
-            }
-            throw new IllegalArgumentException("Invalid account value: " + value);
-        }
-
-        public Integer getValue() {
-            return value;
         }
     }
 }

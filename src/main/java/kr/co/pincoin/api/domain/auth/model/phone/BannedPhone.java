@@ -44,19 +44,23 @@ public class BannedPhone {
                 .build();
     }
 
-    public void remove() {
+    public void
+    remove() {
         this.isRemoved = true;
     }
 
-    public void restore() {
+    public void
+    restore() {
         this.isRemoved = false;
     }
-    
-    public boolean isActive() {
+
+    public boolean
+    isActive() {
         return !this.isRemoved;
     }
 
-    public boolean matches(String phone) {
+    public boolean
+    matches(String phone) {
         if (phone == null || isRemoved) {
             return false;
         }
@@ -68,7 +72,8 @@ public class BannedPhone {
         return normalizedInput.equals(normalizedBanned);
     }
 
-    private String normalizePhoneNumber(String phone) {
+    private String
+    normalizePhoneNumber(String phone) {
         return phone.replaceAll("[^0-9]", "");
     }
 }

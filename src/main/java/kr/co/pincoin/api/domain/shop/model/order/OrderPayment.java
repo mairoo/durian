@@ -72,7 +72,8 @@ public class OrderPayment {
                 .build();
     }
 
-    public void receive(BigDecimal balance) {
+    public void
+    receive(BigDecimal balance) {
         if (this.received != null) {
             throw new BusinessException(ErrorCode.PAYMENT_ALREADY_RECEIVED);
         }
@@ -85,34 +86,41 @@ public class OrderPayment {
         this.balance = balance;
     }
 
-    public void remove() {
+    public void
+    remove() {
         this.isRemoved = true;
     }
 
-    public void restore() {
+    public void
+    restore() {
         this.isRemoved = false;
     }
 
-    public boolean isReceived() {
+    public boolean
+    isReceived() {
         return this.received != null;
     }
 
-    public boolean isPending() {
+    public boolean
+    isPending() {
         return this.received == null;
     }
 
-    public boolean isFullPayment() {
+    public boolean
+    isFullPayment() {
         return this.amount.compareTo(this.balance) == 0;
     }
 
-    public BigDecimal getUnpaidAmount() {
+    public BigDecimal
+    getUnpaidAmount() {
         if (this.balance == null) {
             return this.amount;
         }
         return this.amount.subtract(this.balance);
     }
 
-    public double getPaymentRate() {
+    public double
+    getPaymentRate() {
         if (this.balance == null || this.amount.compareTo(BigDecimal.ZERO) == 0) {
             return 0.0;
         }

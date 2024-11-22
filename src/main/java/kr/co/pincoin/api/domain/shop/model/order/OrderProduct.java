@@ -11,15 +11,25 @@ import java.time.LocalDateTime;
 @Getter
 public class OrderProduct {
     private final Long id;
+
     private final String name;
+
     private final String subtitle;
+
     private final String code;
+
     private final BigDecimal listPrice;
+
     private final BigDecimal sellingPrice;
+
     private final Order order;
+
     private final LocalDateTime created;
+
     private final LocalDateTime modified;
+
     private Integer quantity;
+
     private Boolean isRemoved;
 
     @Builder
@@ -50,9 +60,13 @@ public class OrderProduct {
         validateQuantity();
     }
 
-    public static OrderProduct of(String name, String subtitle, String code,
-                                  BigDecimal listPrice, BigDecimal sellingPrice,
-                                  Integer quantity, Order order) {
+    public static OrderProduct of(String name,
+                                  String subtitle,
+                                  String code,
+                                  BigDecimal listPrice,
+                                  BigDecimal sellingPrice,
+                                  Integer quantity,
+                                  Order order) {
         return OrderProduct.builder()
                 .name(name)
                 .subtitle(subtitle)
@@ -77,34 +91,41 @@ public class OrderProduct {
                 .build();
     }
 
-    public void updateQuantity(Integer quantity) {
+    public void
+    updateQuantity(Integer quantity) {
         if (quantity == null || quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
         }
         this.quantity = quantity;
     }
 
-    public void remove() {
+    public void
+    remove() {
         this.isRemoved = true;
     }
 
-    public void restore() {
+    public void
+    restore() {
         this.isRemoved = false;
     }
 
-    public BigDecimal getTotalListPrice() {
+    public BigDecimal
+    getTotalListPrice() {
         return this.listPrice.multiply(BigDecimal.valueOf(quantity));
     }
 
-    public BigDecimal getTotalSellingPrice() {
+    public BigDecimal
+    getTotalSellingPrice() {
         return this.sellingPrice.multiply(BigDecimal.valueOf(quantity));
     }
 
-    public BigDecimal getTotalDiscountAmount() {
+    public BigDecimal
+    getTotalDiscountAmount() {
         return getTotalListPrice().subtract(getTotalSellingPrice());
     }
 
-    public double getDiscountRate() {
+    public double
+    getDiscountRate() {
         if (this.listPrice.compareTo(BigDecimal.ZERO) == 0) {
             return 0.0;
         }
@@ -114,11 +135,13 @@ public class OrderProduct {
                 .doubleValue();
     }
 
-    public BigDecimal getUnitDiscountAmount() {
+    public BigDecimal
+    getUnitDiscountAmount() {
         return this.listPrice.subtract(this.sellingPrice);
     }
 
-    private void validatePrices() {
+    private void
+    validatePrices() {
         if (listPrice == null || listPrice.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("List price must be non-negative");
         }
@@ -130,7 +153,8 @@ public class OrderProduct {
         }
     }
 
-    private void validateQuantity() {
+    private void
+    validateQuantity() {
         if (quantity == null || quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be positive");
         }

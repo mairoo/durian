@@ -9,9 +9,13 @@ import java.time.LocalDateTime;
 @Getter
 public class CustomerQuestionAnswer {
     private final Long id;
+
     private final CustomerQuestion question;
+
     private final LocalDateTime created;
+
     private final LocalDateTime modified;
+
     private String content;
 
     @Builder
@@ -45,30 +49,36 @@ public class CustomerQuestionAnswer {
                 .build();
     }
 
-    public void updateContent(String content) {
+    public void
+    updateContent(String content) {
         validateContent(content);
         this.content = content;
     }
 
-    public boolean isFirstAnswer() {
+    public boolean
+    isFirstAnswer() {
         return this.question != null &&
                 this.question.getAnswerCount() == 0;
     }
 
-    public boolean belongsToQuestion(Long questionId) {
+    public boolean
+    belongsToQuestion(Long questionId) {
         return this.question != null &&
                 this.question.getId().equals(questionId);
     }
 
-    public boolean isRecent() {
+    public boolean
+    isRecent() {
         return this.created.isAfter(LocalDateTime.now().minusDays(1));
     }
 
-    public int getContentLength() {
+    public int
+    getContentLength() {
         return this.content != null ? this.content.length() : 0;
     }
 
-    private void validateAnswer() {
+    private void
+    validateAnswer() {
         validateContent(this.content);
 
         if (question == null) {
@@ -80,7 +90,8 @@ public class CustomerQuestionAnswer {
         }
     }
 
-    private void validateContent(String content) {
+    private void
+    validateContent(String content) {
         if (content == null || content.trim().isEmpty()) {
             throw new IllegalArgumentException("Answer content cannot be empty");
         }
@@ -91,7 +102,8 @@ public class CustomerQuestionAnswer {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean
+    equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -106,7 +118,8 @@ public class CustomerQuestionAnswer {
     }
 
     @Override
-    public int hashCode() {
+    public int
+    hashCode() {
         if (id != null) {
             return id.hashCode();
         }

@@ -144,32 +144,39 @@ public class Order {
                 .build();
     }
 
-    public void markAsSuspicious(String message) {
+    public void
+    markAsSuspicious(String message) {
         this.suspicious = true;
         this.message = message;
     }
 
-    public void updateStatus(OrderStatus status) {
+    public void
+    updateStatus(OrderStatus status) {
         this.status = status;
     }
 
-    public void remove() {
+    public void
+    remove() {
         this.removed = true;
     }
 
-    public void restore() {
+    public void
+    restore() {
         this.removed = false;
     }
 
-    public boolean isRemoved() {
+    public boolean
+    isRemoved() {
         return this.removed != null;
     }
 
-    public BigDecimal getDiscountAmount() {
+    public BigDecimal
+    getDiscountAmount() {
         return this.totalListPrice.subtract(this.totalSellingPrice);
     }
 
-    public double getDiscountRate() {
+    public double
+    getDiscountRate() {
         if (this.totalListPrice.compareTo(BigDecimal.ZERO) == 0) {
             return 0.0;
         }

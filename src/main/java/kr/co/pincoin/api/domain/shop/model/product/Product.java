@@ -174,30 +174,36 @@ public class Product {
                 .build();
     }
 
-    public void updateDescription(String description) {
+    public void
+    updateDescription(String description) {
         this.description = description;
     }
 
-    public void updatePosition(Integer position) {
+    public void
+    updatePosition(Integer position) {
         this.position = position;
     }
 
-    public void incrementReviewCount(boolean isPgPurchase) {
+    public void
+    incrementReviewCount(boolean isPgPurchase) {
         if (isPgPurchase) {
             this.reviewCountPg++;
         }
         this.reviewCount++;
     }
 
-    public void restore() {
+    public void
+    restore() {
         this.isRemoved = false;
     }
 
-    public BigDecimal getDiscountAmount() {
+    public BigDecimal
+    getDiscountAmount() {
         return this.listPrice.subtract(this.sellingPrice);
     }
 
-    public double getDiscountRate() {
+    public double
+    getDiscountRate() {
         if (this.listPrice.compareTo(BigDecimal.ZERO) == 0) {
             return 0.0;
         }

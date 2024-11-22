@@ -14,15 +14,25 @@ import java.util.Set;
 @Getter
 public class NoticeMessage {
     private final Long id;
+
     private final Integer category;
+
     private final User owner;
+
     private final Store store;
+
     private final LocalDateTime created;
+
     private final LocalDateTime modified;
+
     private String title;
+
     private String description;
+
     private Set<String> keywords;
+
     private String content;
+
     private Boolean isRemoved;
 
     @Builder
@@ -65,8 +75,11 @@ public class NoticeMessage {
                 .build();
     }
 
-    public static NoticeMessage of(String title, String content,
-                                   Integer category, User owner, Store store) {
+    public static NoticeMessage of(String title,
+                                   String content,
+                                   Integer category,
+                                   User owner,
+                                   Store store) {
         return NoticeMessage.builder()
                 .title(title)
                 .content(content)
@@ -76,57 +89,63 @@ public class NoticeMessage {
                 .build();
     }
 
-    public void updateTitle(String title) {
+    public void
+    updateTitle(String title) {
         validateTitle(title);
         this.title = title;
     }
 
-    public void updateContent(String content) {
+    public void
+    updateContent(String content) {
         validateContent(content);
         this.content = content;
     }
 
-    public void updateDescription(String description) {
+    public void
+    updateDescription(String description) {
         this.description = description;
     }
 
-    public void updateKeywords(String keywords) {
+    public void
+    updateKeywords(String keywords) {
         this.keywords = parseKeywords(keywords);
     }
 
-    public void remove() {
+    public void
+    remove() {
         this.isRemoved = true;
     }
 
-    public void restore() {
+    public void
+    restore() {
         this.isRemoved = false;
     }
 
-    public boolean isOwner(Long userId) {
-        return this.owner != null &&
-                this.owner.getId().equals(userId);
-    }
-
-    public boolean belongsToStore(Long storeId) {
+    public boolean
+    belongsToStore(Long storeId) {
         return this.store != null &&
                 this.store.getId().equals(storeId);
     }
 
-    public boolean hasKeyword(String keyword) {
+    public boolean
+    hasKeyword(String keyword) {
         return this.keywords != null &&
                 this.keywords.contains(keyword.toLowerCase());
     }
 
-    public boolean matchesCategory(NoticeCategory category) {
+    public boolean
+    matchesCategory(NoticeCategory category) {
         return this.category.equals(category.getValue());
     }
 
-    public boolean isRecent() {
+    public boolean
+    isRecent() {
         return this.created.isAfter(
                 LocalDateTime.now().minusDays(7));
     }
 
-    private Set<String> parseKeywords(String keywords) {
+    private Set<String>
+    parseKeywords(String keywords) {
         if (keywords == null || keywords.trim().isEmpty()) {
             return new HashSet<>();
         }
@@ -134,7 +153,8 @@ public class NoticeMessage {
                 keywords.toLowerCase().split(",\\s*")));
     }
 
-    private void validateNotice() {
+    private void
+    validateNotice() {
         validateTitle(this.title);
         validateContent(this.content);
 
@@ -152,7 +172,8 @@ public class NoticeMessage {
         }
     }
 
-    private void validateTitle(String title) {
+    private void
+    validateTitle(String title) {
         if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("Title cannot be empty");
         }
@@ -161,7 +182,8 @@ public class NoticeMessage {
         }
     }
 
-    private void validateContent(String content) {
+    private void
+    validateContent(String content) {
         if (content == null || content.trim().isEmpty()) {
             throw new IllegalArgumentException("Content cannot be empty");
         }

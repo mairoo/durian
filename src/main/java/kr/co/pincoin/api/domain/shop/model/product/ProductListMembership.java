@@ -7,8 +7,11 @@ import lombok.Getter;
 @Getter
 public class ProductListMembership {
     private final Long id;
+
     private final Product product;
+
     private final ProductList productList;
+
     private Integer position;
 
     @Builder
@@ -46,45 +49,53 @@ public class ProductListMembership {
                 .build();
     }
 
-    public void updatePosition(Integer position) {
+    public void
+    updatePosition(Integer position) {
         if (position == null || position < 0) {
             throw new IllegalArgumentException("Position must be non-negative");
         }
         this.position = position;
     }
 
-    public void moveToTop() {
+    public void
+    moveToTop() {
         this.position = 0;
     }
 
-    public void moveToBottom(int maxPosition) {
+    public void
+    moveToBottom(int maxPosition) {
         if (maxPosition < 0) {
             throw new IllegalArgumentException("Max position must be non-negative");
         }
         this.position = maxPosition + 1;
     }
 
-    public void moveUp() {
+    public void
+    moveUp() {
         if (this.position > 0) {
             this.position--;
         }
     }
 
-    public void moveDown() {
+    public void
+    moveDown() {
         this.position++;
     }
 
-    public boolean belongsToStore(Long storeId) {
+    public boolean
+    belongsToStore(Long storeId) {
         return this.productList != null &&
                 this.productList.belongsToStore(storeId);
     }
 
-    public boolean containsProduct(Long productId) {
+    public boolean
+    containsProduct(Long productId) {
         return this.product != null &&
                 this.product.getId().equals(productId);
     }
 
-    private void validateMembership() {
+    private void
+    validateMembership() {
         if (product == null) {
             throw new IllegalArgumentException("Product cannot be null");
         }
@@ -103,7 +114,8 @@ public class ProductListMembership {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean
+    equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -118,7 +130,8 @@ public class ProductListMembership {
     }
 
     @Override
-    public int hashCode() {
+    public int
+    hashCode() {
         if (id != null) {
             return id.hashCode();
         }

@@ -27,12 +27,8 @@ public class LoginLog {
         this.id = id;
         this.ipAddress = ipAddress;
         this.user = user;
-        this.created = created != null
-                ? created
-                : LocalDateTime.now();
-        this.modified = modified != null
-                ? modified
-                : LocalDateTime.now();
+        this.created = created != null ? created : LocalDateTime.now();
+        this.modified = modified != null ? modified : LocalDateTime.now();
     }
 
     public static LoginLog of(String ipAddress, User user) {
@@ -50,15 +46,18 @@ public class LoginLog {
                 .build();
     }
 
-    public boolean isRecentLogin() {
+    public boolean
+    isRecentLogin() {
         return this.created.isAfter(LocalDateTime.now().minusHours(24));
     }
 
-    public boolean isSameUser(User otherUser) {
+    public boolean
+    isSameUser(User otherUser) {
         return this.user.getId().equals(otherUser.getId());
     }
 
-    public boolean isFromSameIP(String otherIpAddress) {
+    public boolean
+    isFromSameIP(String otherIpAddress) {
         return this.ipAddress.equals(otherIpAddress);
     }
 }

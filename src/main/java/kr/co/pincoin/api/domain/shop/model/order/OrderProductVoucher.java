@@ -20,10 +20,15 @@ public class OrderProductVoucher {
     private Boolean isRemoved;
 
     @Builder
-    private OrderProductVoucher(Long id, String code, Boolean revoked,
-                                String remarks, OrderProduct orderProduct,
-                                Voucher voucher, LocalDateTime created,
-                                LocalDateTime modified, Boolean isRemoved) {
+    private OrderProductVoucher(Long id,
+                                String code,
+                                Boolean revoked,
+                                String remarks,
+                                OrderProduct orderProduct,
+                                Voucher voucher,
+                                LocalDateTime created,
+                                LocalDateTime modified,
+                                Boolean isRemoved) {
         this.id = id;
         this.code = code;
         this.revoked = revoked;
@@ -57,7 +62,8 @@ public class OrderProductVoucher {
                 .build();
     }
 
-    public void revoke(String remarks) {
+    public void
+    revoke(String remarks) {
         if (this.revoked) {
             throw new IllegalStateException("Voucher is already revoked");
         }
@@ -69,44 +75,46 @@ public class OrderProductVoucher {
         this.remarks = remarks;
     }
 
-    public void updateRemarks(String remarks) {
+    public void
+    updateRemarks(String remarks) {
         if (remarks == null || remarks.trim().isEmpty()) {
             throw new IllegalArgumentException("Remarks cannot be empty");
         }
         this.remarks = remarks;
     }
 
-    public void remove() {
+    public void
+    remove() {
         if (!this.revoked) {
             throw new IllegalStateException("Cannot remove active voucher. Revoke it first.");
         }
         this.isRemoved = true;
     }
 
-    public void restore() {
+    public void
+    restore() {
         this.isRemoved = false;
     }
 
-    public boolean isActive() {
+    public boolean
+    isActive() {
         return !this.revoked && !this.isRemoved;
     }
 
-    public boolean isRevoked() {
+    public boolean
+    isRevoked() {
         return this.revoked;
     }
 
-    public boolean belongsToOrder(Long orderId) {
+    public boolean
+    belongsToOrder(Long orderId) {
         return this.orderProduct != null &&
                 this.orderProduct.getOrder() != null &&
                 this.orderProduct.getOrder().getId().equals(orderId);
     }
 
-    public boolean isVoucherExpired() {
-        return this.voucher != null &&
-                this.voucher.isExpired();
-    }
-
-    private void validateCode() {
+    private void
+    validateCode() {
         if (code == null || code.trim().isEmpty()) {
             throw new IllegalArgumentException("Voucher code cannot be empty");
         }
