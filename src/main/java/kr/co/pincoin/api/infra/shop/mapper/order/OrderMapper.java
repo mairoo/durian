@@ -30,7 +30,7 @@ public class OrderMapper {
                 .paymentMethod(entity.getPaymentMethod())
                 .transactionId(entity.getTransactionId())
                 .status(entity.getStatus())
-                .visible(entity.getVisible())
+                .visibility(entity.getVisibility())
                 .totalListPrice(entity.getTotalListPrice())
                 .totalSellingPrice(entity.getTotalSellingPrice())
                 .currency(entity.getCurrency())

@@ -4,9 +4,16 @@ import lombok.Getter;
 
 @Getter
 public enum OrderStatus {
-    PENDING(0),
-    COMPLETED(1),
-    CANCELLED(2);
+    PAYMENT_PENDING(0),
+    PAYMENT_COMPLETED(1),
+    UNDER_REVIEW(2),
+    PAYMENT_VERIFIED(3),
+    SHIPPED(4),
+    REFUND_REQUESTED(5),
+    REFUND_PENDING(6),
+    REFUNDED1(7),
+    REFUNDED2(8),
+    VOIDED(9);
 
     private final Integer value;
 

@@ -1,6 +1,8 @@
 package kr.co.pincoin.api.infra.shop.entity.order;
 
 import jakarta.persistence.*;
+import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
+import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
 import kr.co.pincoin.api.infra.common.BaseRemovalDateTime;
 import lombok.*;
@@ -40,11 +42,11 @@ public class OrderEntity extends BaseRemovalDateTime {
     @Column(name = "transaction_id")
     private String transactionId;
 
-    @Column(name = "status")
-    private Integer status;
+    @Column(name = "status", columnDefinition = "INT")
+    private OrderStatus status;
 
-    @Column(name = "visible")
-    private Integer visible;
+    @Column(name = "visible", columnDefinition = "INT")
+    private OrderVisibility visibility;
 
     @Column(name = "total_list_price")
     private BigDecimal totalListPrice;

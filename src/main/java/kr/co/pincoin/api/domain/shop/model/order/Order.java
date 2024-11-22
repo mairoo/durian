@@ -39,9 +39,9 @@ public class Order {
 
     private final User user;
 
-    private Integer status;
+    private OrderStatus status;
 
-    private Integer visible;
+    private OrderVisibility visibility;
 
     private String message;
 
@@ -62,8 +62,8 @@ public class Order {
                   String ipAddress,
                   Integer paymentMethod,
                   String transactionId,
-                  Integer status,
-                  Integer visible,
+                  OrderStatus status,
+                  OrderVisibility visibility,
                   BigDecimal totalListPrice,
                   BigDecimal totalSellingPrice,
                   String currency,
@@ -83,7 +83,7 @@ public class Order {
         this.paymentMethod = paymentMethod;
         this.transactionId = transactionId;
         this.status = status;
-        this.visible = visible;
+        this.visibility = visibility;
         this.totalListPrice = totalListPrice;
         this.totalSellingPrice = totalSellingPrice;
         this.currency = currency;
@@ -131,7 +131,7 @@ public class Order {
                 .paymentMethod(this.getPaymentMethod())
                 .transactionId(this.getTransactionId())
                 .status(this.getStatus())
-                .visible(this.getVisible())
+                .visibility(this.getVisibility())
                 .totalListPrice(this.getTotalListPrice())
                 .totalSellingPrice(this.getTotalSellingPrice())
                 .currency(this.getCurrency())
@@ -148,15 +148,7 @@ public class Order {
     }
 
     public void updateStatus(OrderStatus status) {
-        this.status = status.getValue();
-    }
-
-    public void hide() {
-        this.visible = OrderVisibility.HIDDEN.getValue();
-    }
-
-    public void show() {
-        this.visible = OrderVisibility.VISIBLE.getValue();
+        this.status = status;
     }
 
     public void remove() {
@@ -165,22 +157,6 @@ public class Order {
 
     public void restore() {
         this.removed = false;
-    }
-
-    public boolean isPending() {
-        return OrderStatus.PENDING.getValue().equals(this.status);
-    }
-
-    public boolean isCompleted() {
-        return OrderStatus.COMPLETED.getValue().equals(this.status);
-    }
-
-    public boolean isCancelled() {
-        return OrderStatus.CANCELLED.getValue().equals(this.status);
-    }
-
-    public boolean isVisible() {
-        return OrderVisibility.VISIBLE.getValue().equals(this.visible);
     }
 
     public boolean isRemoved() {

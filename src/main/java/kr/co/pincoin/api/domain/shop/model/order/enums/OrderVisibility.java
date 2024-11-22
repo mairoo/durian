@@ -2,8 +2,8 @@ package kr.co.pincoin.api.domain.shop.model.order.enums;
 
 
 public enum OrderVisibility {
-    VISIBLE(1),
-    HIDDEN(0);
+    HIDDEN(0),
+    VISIBLE(1);
 
     private final Integer value;
 
