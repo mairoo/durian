@@ -7,6 +7,7 @@ import kr.co.pincoin.api.domain.auth.repository.profile.ProfileRepository;
 import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
+import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderPaymentRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
@@ -44,14 +45,6 @@ public class AdminOrderService extends AbstractOrderService {
 
         this.userRepository = userRepository;
     }
-
-    // 사용자가 주문의 상태를 인증완료 처리로 변경한다.
-
-    // 관리자단
-    //- 주문 결제 처리 - POST
-    //- 주문 결제 내역 삭제 - POST
-    //- 주문 결제 완료 처리 - POST
-    //- 주문 결제 완료 취소 - POST
 
     /**
      * 주문 목록 조회
@@ -153,5 +146,34 @@ public class AdminOrderService extends AbstractOrderService {
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
 
         return completeRefundInternal(refundOrder);
+    }
+
+    /**
+     * 주문 검증 상태로 변경하는 메소드
+     *
+     * @param order 상태를 변경할 주문
+     * @throws IllegalStateException 변경 불가능한 주문 상태인 경우
+     */
+    @Transactional
+    public void verifyOrder(Order order) {
+        if (order.getStatus() == OrderStatus.PAYMENT_COMPLETED || order.getStatus() == OrderStatus.UNDER_REVIEW) {
+            order.updateStatus(OrderStatus.PAYMENT_VERIFIED);
+            orderRepository.save(order);
+        } else {
+            throw new IllegalStateException("결제 완료 또는 검토중 상태의 주문만 검증할 수 있습니다.");
+        }
+    }
+
+    /**
+     * 검증 완료된 주문을 검토중 상태로 변경하는 메소드
+     */
+    @Transactional
+    public void unverifyOrder(Order order) {
+        if (order.getStatus() == OrderStatus.PAYMENT_VERIFIED) {
+            order.updateStatus(OrderStatus.UNDER_REVIEW);
+            orderRepository.save(order);
+        } else {
+            throw new IllegalStateException("검증 완료 상태의 주문만 변경할 수 있습니다.");
+        }
     }
 }
