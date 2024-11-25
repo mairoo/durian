@@ -2,10 +2,12 @@ package kr.co.pincoin.api.app.member.order.controller;
 
 import kr.co.pincoin.api.app.member.order.response.OrderResponse;
 import kr.co.pincoin.api.app.member.order.service.OrderService;
+import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.global.response.page.PageResponse;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
+import kr.co.pincoin.api.global.security.annotation.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,12 +27,11 @@ public class OrderController {
      * 내 주문 목록 조회
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<OrderResponse>>> getMyOrders(
-            @ModelAttribute OrderSearchCondition condition,
-            @PageableDefault(size = 20) Pageable pageable
-//            @AuthenticationPrincipal User user
-                                                                               ) {
-        Page<Order> orders = orderService.getMyOrders(209745, condition, pageable);
+    public ResponseEntity<ApiResponse<PageResponse<OrderResponse>>>
+    getMyOrders(@CurrentUser User user,
+                @ModelAttribute OrderSearchCondition condition,
+                @PageableDefault(size = 20) Pageable pageable) {
+        Page<Order> orders = orderService.getMyOrders(user.getId(), condition, pageable);
         Page<OrderResponse> responses = orders.map(OrderResponse::from);
 
         return ResponseEntity.ok(ApiResponse.of(PageResponse.from(responses)));
@@ -40,22 +41,35 @@ public class OrderController {
      * 내 주문 상세 조회
      */
     @GetMapping("/{orderNo}")
-    public ResponseEntity<Void>
-    getMyOrder(
-//            @CurrentUser User user,
-            @PathVariable String orderNo) {
+    public ResponseEntity<ApiResponse<OrderResponse>>
+    getMyOrder(@CurrentUser User user,
+               @PathVariable String orderNo) {
+        Order order = orderService.getMyOrder(user.getId(), orderNo);
+        return ResponseEntity.ok(ApiResponse.of(OrderResponse.from(order)));
+    }
 
-        Order order = orderService.getMyOrder(209745, orderNo);
+    /**
+     * 내 주문 삭제
+     */
+    @PostMapping("/{orderNo}/delete")
+    public ResponseEntity<ApiResponse<Void>>
+    deleteMyOrder(@PathVariable String orderNo,
+                  @CurrentUser User user) {
+        orderService.deleteMyOrder(user.getId(), orderNo);
+        return ResponseEntity.ok(ApiResponse.of(null, "주문이 삭제되었습니다."));
+    }
 
-
-        log.error("{}", order.getOrderNo());
-
-        return ResponseEntity.ok(null);
+    /**
+     * 내 주문 숨김 처리
+     */
+    @PostMapping("/{orderNo}/hide")
+    public ResponseEntity<ApiResponse<Void>>
+    hideMyOrder(@PathVariable String orderNo,
+                @CurrentUser User user) {
+        orderService.hideMyOrder(user.getId(), orderNo);
+        return ResponseEntity.ok(ApiResponse.of(null, "주문이 숨김 처리되었습니다."));
     }
 
     // - 주문 영수증 PDF 생성
     //- 재주문 처리 - POST
-    //- 주문 삭제 - POST
-    //- 주문 숨김 처리 - POST
-    //- 환불 요청 처리 - POST
 }

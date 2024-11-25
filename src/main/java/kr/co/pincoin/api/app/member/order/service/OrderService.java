@@ -22,8 +22,6 @@ public class OrderService {
     // 고객단
     //- 주문 영수증 PDF 생성
     //- 재주문 처리 - POST
-    //- 주문 삭제 - POST (속성 변경)
-    //- 주문 숨김 처리 - POST (속성 변경)
     //- 환불 요청 처리 - POST
 
     /**
