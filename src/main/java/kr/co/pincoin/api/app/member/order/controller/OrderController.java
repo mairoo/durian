@@ -57,8 +57,8 @@ public class OrderController {
      */
     @PostMapping("/{orderNo}/delete")
     public ResponseEntity<ApiResponse<Void>>
-    deleteMyOrder(@PathVariable String orderNo,
-                  @CurrentUser User user) {
+    deleteMyOrder(@CurrentUser User user,
+                  @PathVariable String orderNo) {
         orderService.deleteMyOrder(user.getId(), orderNo);
         return ResponseEntity.ok(ApiResponse.of(null, "주문이 삭제되었습니다."));
     }
