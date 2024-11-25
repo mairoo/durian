@@ -1,15 +1,16 @@
 package kr.co.pincoin.api.app.admin.order.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
+import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
-import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
-import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
-import lombok.RequiredArgsConstructor;
+import kr.co.pincoin.api.domain.shop.service.AbstractOrderService;
+import kr.co.pincoin.api.global.utils.ClientUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,17 +18,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor
-public class AdminOrderService {
+public class AdminOrderService extends AbstractOrderService {
     private final OrderRepository orderRepository;
-
-    private final ProductRepository productRepository;
-
-    private final VoucherRepository voucherRepository;
 
     private final OrderProductRepository orderProductRepository;
 
-    private final OrderProductVoucherRepository orderProductVoucherRepository;
+    private final ProductRepository productRepository;
+
+    public AdminOrderService(OrderRepository orderRepository,
+                             ProductRepository productRepository,
+                             OrderProductRepository orderProductRepository) {
+        super(orderRepository, productRepository, orderProductRepository);
+
+        this.orderRepository = orderRepository;
+        this.orderProductRepository = orderProductRepository;
+        this.productRepository = productRepository;
+    }
+
 
     // 사용자가 주문서를 작성한다.
 
@@ -103,5 +110,16 @@ public class AdminOrderService {
 
         order.updateVisibility(OrderVisibility.HIDDEN);
         orderRepository.save(order);
+    }
+
+    /**
+     * 신규 주문
+     */
+    @Transactional
+    public Order
+    createOrder(User user,
+                OrderCreateRequest request,
+                ClientUtils.ClientInfo clientInfo) {
+        return createOrderInternal(user, request, clientInfo);
     }
 }
