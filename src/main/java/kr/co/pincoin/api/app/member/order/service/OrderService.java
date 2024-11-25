@@ -3,6 +3,7 @@ package kr.co.pincoin.api.app.member.order.service;
 import jakarta.persistence.EntityNotFoundException;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
+import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,5 +39,36 @@ public class OrderService {
     public Order getMyOrder(Integer userId, String orderNo) {
         return orderRepository.findByOrderNoAndUserId(orderNo, userId)
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
+    }
+
+    /**
+     * 내 주문 삭제 처리 (soft delete)
+     */
+    public void deleteMyOrder(Integer userId, String orderNo) {
+        Order order = orderRepository.findByOrderNoAndUserId(orderNo, userId)
+                .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
+
+        // 이미 삭제된 주문인지 확인
+        if (Boolean.TRUE.equals(order.getRemoved())) {
+            throw new IllegalStateException("이미 삭제된 주문입니다.");
+        }
+
+        orderRepository.softDelete(order.getId());
+    }
+
+    /**
+     * 내 주문 숨김 처리
+     */
+    public void hideMyOrder(Integer userId, String orderNo) {
+        Order order = orderRepository.findByOrderNoAndUserId(orderNo, userId)
+                .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
+
+        // 이미 숨김 처리된 주문인지 확인
+        if (OrderVisibility.HIDDEN.equals(order.getVisibility())) {
+            throw new IllegalStateException("이미 숨김 처리된 주문입니다.");
+        }
+
+        order.updateVisibility(OrderVisibility.HIDDEN);
+        orderRepository.save(order);
     }
 }
