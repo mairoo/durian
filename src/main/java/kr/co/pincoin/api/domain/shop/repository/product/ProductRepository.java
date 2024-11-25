@@ -11,5 +11,9 @@ public interface ProductRepository {
 
     Optional<Product> findById(Long id);
 
+    Optional<Product> findByCode(String code);
+
     List<Product> findAllByIdIn(Collection<Long> ids);
+
+    List<Product> findAllByCodeIn(Collection<String> codes);
 }

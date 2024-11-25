@@ -46,7 +46,6 @@ public class AdminOrderService extends AbstractOrderService {
     //- 상품권 발송 처리 (재고 차감, 상품권 상태 변경) - POST
     //- 주문 환불 처리 - POST
     //
-    // 주문 하기
     // 재주문 하기
     // 환불 요청하기
 

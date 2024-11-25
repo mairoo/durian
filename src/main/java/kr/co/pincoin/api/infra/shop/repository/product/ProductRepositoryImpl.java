@@ -32,8 +32,21 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public Optional<Product> findByCode(String code) {
+        return productJpaRepository.findByCode(code)
+                .map(productMapper::toModel);
+    }
+
+    @Override
     public List<Product> findAllByIdIn(Collection<Long> ids) {
         return productJpaRepository.findAllByIdIn(ids).stream()
+                .map(productMapper::toModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Product> findAllByCodeIn(Collection<String> codes) {
+        return productJpaRepository.findAllByCodeIn(codes).stream()
                 .map(productMapper::toModel)
                 .collect(Collectors.toList());
     }

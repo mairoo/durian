@@ -19,7 +19,8 @@ public class OrderProductRepositoryImpl implements OrderProductRepository {
     private final OrderProductMapper orderProductMapper;
 
     @Override
-    public List<OrderProduct> saveAll(List<OrderProduct> orderProducts) {
+    public List<OrderProduct>
+    saveAll(List<OrderProduct> orderProducts) {
         // 1. Domain Model -> JPA Entity 변환
         List<OrderProductEntity> orderProductEntities = orderProductMapper.toEntityList(orderProducts);
 
@@ -28,5 +29,15 @@ public class OrderProductRepositoryImpl implements OrderProductRepository {
 
         // 3. 저장된 Entity -> Domain Model 변환 후 반환
         return orderProductMapper.toModelList(savedEntities);
+    }
+
+    @Override
+    public List<OrderProduct>
+    findAllByOrderNoAndUserIdFetchOrderAndUser(String orderNo,
+                                               Integer userId) {
+        List<OrderProductEntity> entries = orderProductJpaRepository.findAllByOrderNoAndUserIdFetchOrderAndUser(orderNo,
+                                                                                                                userId);
+
+        return orderProductMapper.toModelList(entries);
     }
 }
