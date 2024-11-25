@@ -19,22 +19,20 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderService {
     private final OrderRepository orderRepository;
 
-    // 고객단
-    //- 주문 영수증 PDF 생성
-    //- 재주문 처리 - POST
-    //- 환불 요청 처리 - POST
-
     /**
-     * 내 주문 목록 조회 (페이징)
+     * 내 주문 목록 조회
      */
-    public Page<Order> getMyOrders(Integer userId, OrderSearchCondition condition, Pageable pageable) {
+    public Page<Order> getMyOrders(Integer userId,
+                                   OrderSearchCondition condition,
+                                   Pageable pageable) {
         return orderRepository.searchOrders(condition.withUserId(userId), pageable);
     }
 
     /**
      * 내 주문 조회
      */
-    public Order getMyOrder(Integer userId, String orderNo) {
+    public Order getMyOrder(Integer userId,
+                            String orderNo) {
         return orderRepository.findByOrderNoAndUserId(orderNo, userId)
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
     }
@@ -42,7 +40,8 @@ public class OrderService {
     /**
      * 내 주문 삭제 처리 (soft delete)
      */
-    public void deleteMyOrder(Integer userId, String orderNo) {
+    public void deleteMyOrder(Integer userId,
+                              String orderNo) {
         Order order = orderRepository.findByOrderNoAndUserId(orderNo, userId)
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
 
@@ -57,7 +56,8 @@ public class OrderService {
     /**
      * 내 주문 숨김 처리
      */
-    public void hideMyOrder(Integer userId, String orderNo) {
+    public void hideMyOrder(Integer userId,
+                            String orderNo) {
         Order order = orderRepository.findByOrderNoAndUserId(orderNo, userId)
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
 

@@ -23,6 +23,10 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
     private final OrderService orderService;
 
+    // 주문 하기
+    // 재주문 하기
+    // 환불 요청하기
+
     /**
      * 내 주문 목록 조회
      */
@@ -69,7 +73,4 @@ public class OrderController {
         orderService.hideMyOrder(user.getId(), orderNo);
         return ResponseEntity.ok(ApiResponse.of(null, "주문이 숨김 처리되었습니다."));
     }
-
-    // - 주문 영수증 PDF 생성
-    //- 재주문 처리 - POST
 }
