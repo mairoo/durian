@@ -36,7 +36,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         JPAQuery<OrderEntity> query = queryFactory
                 .selectFrom(order)
                 .leftJoin(order.user, user).fetchJoin()
-                .leftJoin(profile)
+                .leftJoin(profile) // 전화번호 조회 목적 조인의 경우 fetchJoin 불필요!!
                 .on(profile.user.eq(user))
                 .where(
                         userIdEquals(condition.getUserId()),

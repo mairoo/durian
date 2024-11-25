@@ -32,6 +32,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
+    public Order saveAndFlush(Order order) {
+        return orderMapper.toModel(orderJpaRepository.save(orderMapper.toEntity(order)));
+    }
+
+    @Override
     public Optional<Order> findById(Long id) {
         return orderJpaRepository.findById(id)
                 .map(orderMapper::toModel);

@@ -1,5 +1,8 @@
 package kr.co.pincoin.api.app.member.order.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
 import kr.co.pincoin.api.app.member.order.response.OrderResponse;
 import kr.co.pincoin.api.app.member.order.service.OrderService;
 import kr.co.pincoin.api.domain.auth.model.user.User;
@@ -8,6 +11,7 @@ import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.global.response.page.PageResponse;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import kr.co.pincoin.api.global.security.annotation.CurrentUser;
+import kr.co.pincoin.api.global.utils.ClientUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -72,5 +76,21 @@ public class OrderController {
                 @CurrentUser User user) {
         orderService.hideMyOrder(user.getId(), orderNo);
         return ResponseEntity.ok(ApiResponse.of(null, "주문이 숨김 처리되었습니다."));
+    }
+
+    /**
+     * 신규 주문
+     */
+    @PostMapping
+    public ResponseEntity<ApiResponse<OrderResponse>>
+    createOrder(@CurrentUser User user,
+                @Valid @RequestBody OrderCreateRequest request,
+                HttpServletRequest servletRequest) {
+        ClientUtils.ClientInfo clientInfo = ClientUtils.getClientInfo(servletRequest);
+
+        Order createdOrder = orderService.createOrder(user, request, clientInfo);
+
+        return ResponseEntity.ok(ApiResponse.of(OrderResponse.from(createdOrder),
+                                                "주문이 성공적으로 생성되었습니다."));
     }
 }

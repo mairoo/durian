@@ -39,4 +39,29 @@ public class OrderProductEntity extends BaseRemovalDateTime {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private OrderEntity order;
+
+    public static OrderProductEntity of(String name,
+                                        String subtitle,
+                                        String code,
+                                        BigDecimal listPrice,
+                                        BigDecimal sellingPrice,
+                                        Integer quantity,
+                                        OrderEntity order) {
+        OrderProductEntity orderProduct = OrderProductEntity.builder()
+                .name(name)
+                .subtitle(subtitle)
+                .code(code)
+                .listPrice(listPrice)
+                .sellingPrice(sellingPrice)
+                .quantity(quantity)
+                .build();
+
+        orderProduct.setOrder(order);
+        return orderProduct;
+    }
+
+    // 연관관계 편의 메서드
+    protected void setOrder(OrderEntity order) {
+        this.order = order;
+    }
 }
