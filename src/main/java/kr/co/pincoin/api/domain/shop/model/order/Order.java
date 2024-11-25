@@ -109,6 +109,7 @@ public class Order {
                            OrderCurrency currency,
                            OrderPaymentMethod paymentMethod) {
         return Order.builder()
+                // 1. 불변 필드 (user 관련)
                 .user(user)
                 .orderNo(orderNo)
                 .fullname(fullname)
@@ -118,29 +119,36 @@ public class Order {
                 .totalListPrice(totalListPrice)
                 .totalSellingPrice(totalSellingPrice)
                 .currency(currency)
+
+                // 2. 주문 상태
                 .paymentMethod(paymentMethod)
                 .build();
     }
 
     public OrderEntity toEntity() {
         return OrderEntity.builder()
+                // 1. 불변 필드
                 .id(this.getId())
                 .orderNo(this.getOrderNo())
                 .fullname(this.getFullname())
                 .userAgent(this.getUserAgent())
                 .acceptLanguage(this.getAcceptLanguage())
                 .ipAddress(this.getIpAddress())
-                .paymentMethod(this.getPaymentMethod())
-                .transactionId(this.getTransactionId())
-                .status(this.getStatus())
-                .visibility(this.getVisibility())
                 .totalListPrice(this.getTotalListPrice())
                 .totalSellingPrice(this.getTotalSellingPrice())
                 .currency(this.getCurrency())
-                .message(this.getMessage())
-                .suspicious(this.getSuspicious())
                 .parent(this.getParent() != null ? this.getParent().toEntity() : null)
                 .user(this.getUser().toEntity())
+
+                // 2. 주문 상태
+                .paymentMethod(this.getPaymentMethod())
+                .status(this.getStatus())
+                .visibility(this.getVisibility())
+                .transactionId(this.getTransactionId())
+
+                // 3. 기타 정보
+                .message(this.getMessage())
+                .suspicious(this.getSuspicious())
                 .build();
     }
 

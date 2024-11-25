@@ -16,10 +16,16 @@ import java.time.Period;
 
 @Getter
 public class Profile {
+    // 1. 불변 필드 (final)
     private final Long id;
 
     private final User user;
 
+    private final LocalDateTime created;
+
+    private final LocalDateTime modified;
+
+    // 2. 기본 정보
     private String phone;
 
     private String address;
@@ -36,6 +42,18 @@ public class Profile {
 
     private String card;
 
+    private String memo;
+
+    // 3. 개인 정보
+    private LocalDate dateOfBirth;
+
+    private Gender gender;
+
+    private Domestic domestic;
+
+    private String telecom;
+
+    // 4. 구매 통계
     private int totalOrderCount;
 
     private LocalDateTime firstPurchased;
@@ -56,23 +74,14 @@ public class Profile {
 
     private BigDecimal mileage;
 
-    private String memo;
-
-    private LocalDate dateOfBirth;
-
-    private Gender gender;
-
-    private Domestic domestic;
-
-    private String telecom;
-
-    private final LocalDateTime created;
-
-    private final LocalDateTime modified;
-
     @Builder
-    private Profile(Long id,
+    private Profile(// 1. 불변 필드
+                    Long id,
                     User user,
+                    LocalDateTime created,
+                    LocalDateTime modified,
+
+                    // 2. 기본 정보
                     String phone,
                     String address,
                     boolean phoneVerified,
@@ -81,6 +90,15 @@ public class Profile {
                     boolean allowOrder,
                     String photoId,
                     String card,
+                    String memo,
+
+                    // 3. 개인 정보
+                    LocalDate dateOfBirth,
+                    Gender gender,
+                    Domestic domestic,
+                    String telecom,
+
+                    // 4. 구매 통계
                     int totalOrderCount,
                     LocalDateTime firstPurchased,
                     LocalDateTime lastPurchased,
@@ -90,16 +108,14 @@ public class Profile {
                     BigDecimal totalListPrice,
                     BigDecimal totalSellingPrice,
                     BigDecimal averagePrice,
-                    BigDecimal mileage,
-                    String memo,
-                    LocalDate dateOfBirth,
-                    Gender gender,
-                    Domestic domestic,
-                    String telecom,
-                    LocalDateTime created,
-                    LocalDateTime modified) {
+                    BigDecimal mileage) {
+        // 1. 불변 필드
         this.id = id;
         this.user = user;
+        this.created = created != null ? created : LocalDateTime.now();
+        this.modified = modified != null ? modified : LocalDateTime.now();
+
+        // 2. 기본 정보
         this.phone = phone;
         this.address = address;
         this.phoneVerified = phoneVerified;
@@ -108,6 +124,15 @@ public class Profile {
         this.allowOrder = allowOrder;
         this.photoId = photoId;
         this.card = card;
+        this.memo = memo;
+
+        // 3. 개인 정보
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.domestic = domestic;
+        this.telecom = telecom;
+
+        // 4. 구매 통계
         this.totalOrderCount = totalOrderCount;
         this.firstPurchased = firstPurchased;
         this.lastPurchased = lastPurchased;
@@ -118,13 +143,6 @@ public class Profile {
         this.totalSellingPrice = totalSellingPrice != null ? totalSellingPrice : BigDecimal.ZERO;
         this.averagePrice = averagePrice;
         this.mileage = mileage != null ? mileage : BigDecimal.ZERO;
-        this.memo = memo;
-        this.dateOfBirth = dateOfBirth;
-        this.gender = gender;
-        this.domestic = domestic;
-        this.telecom = telecom;
-        this.created = created != null ? created : LocalDateTime.now();
-        this.modified = modified != null ? modified : LocalDateTime.now();
     }
 
     public static Profile of(User user) {
@@ -135,7 +153,11 @@ public class Profile {
 
     public ProfileEntity toEntity() {
         return ProfileEntity.builder()
+                // 1. 불변 필드
                 .id(this.getId())
+                .user(this.getUser().toEntity())
+
+                // 2. 기본 정보
                 .phone(this.getPhone())
                 .address(this.getAddress())
                 .phoneVerified(this.isPhoneVerified())
@@ -144,6 +166,15 @@ public class Profile {
                 .allowOrder(this.isAllowOrder())
                 .photoId(this.getPhotoId())
                 .card(this.getCard())
+                .memo(this.getMemo())
+
+                // 3. 개인 정보
+                .dateOfBirth(this.getDateOfBirth())
+                .gender(this.getGender())
+                .domestic(this.getDomestic())
+                .telecom(this.getTelecom())
+
+                // 4. 구매 통계
                 .totalOrderCount(this.getTotalOrderCount())
                 .firstPurchased(this.getFirstPurchased())
                 .lastPurchased(this.getLastPurchased())
@@ -154,12 +185,6 @@ public class Profile {
                 .totalSellingPrice(this.getTotalSellingPrice())
                 .averagePrice(this.getAveragePrice())
                 .mileage(this.getMileage())
-                .memo(this.getMemo())
-                .dateOfBirth(this.getDateOfBirth())
-                .gender(this.getGender())
-                .domestic(this.getDomestic())
-                .telecom(this.getTelecom())
-                .user(this.getUser().toEntity())
                 .build();
     }
 

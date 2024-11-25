@@ -9,127 +9,153 @@ import java.time.LocalDateTime;
 
 @Getter
 public class User {
+    // 1. 불변 필드 (식별자, 생성일)
     private final Integer id;
-
     private final LocalDateTime dateJoined;
 
+    // 2. 인증 정보
     private String password;
-
+    private String email;
     private LocalDateTime lastLogin;
 
-    private boolean isSuperuser;
-
+    // 3. 개인 정보
     private String username;
-
     private String firstName;
-
     private String lastName;
 
-    private String email;
-
+    // 4. 권한 정보
+    private boolean isSuperuser;
     private boolean isStaff;
-
     private boolean isActive;
 
     @Builder
-    private User(Integer id,
-                 String username,
+    private User(// 1. 불변 필드
+                 Integer id,
+                 LocalDateTime dateJoined,
+
+                 // 2. 인증 정보
                  String password,
                  String email,
+                 LocalDateTime lastLogin,
+
+                 // 3. 개인 정보
+                 String username,
                  String firstName,
                  String lastName,
+
+                 // 4. 권한 정보
                  boolean isSuperuser,
                  boolean isStaff,
-                 boolean isActive,
-                 LocalDateTime lastLogin,
-                 LocalDateTime dateJoined) {
+                 boolean isActive) {
+        // 1. 불변 필드
         this.id = id;
-        this.username = username;
+        this.dateJoined = dateJoined != null ? dateJoined : LocalDateTime.now();
+
+        // 2. 인증 정보
         this.password = password;
         this.email = email;
+        this.lastLogin = lastLogin;
+
+        // 3. 개인 정보
+        this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
+
+        // 4. 권한 정보
         this.isSuperuser = isSuperuser;
         this.isStaff = isStaff;
         this.isActive = isActive;
-        this.lastLogin = lastLogin;
-        this.dateJoined = dateJoined != null
-                ? dateJoined
-                : LocalDateTime.now();
     }
-    public static User of(String username,
+
+    public static User of(String email,
                           String password,
-                          String email,
+                          String username,
                           String firstName,
                           String lastName) {
         return User.builder()
-                .username(username)
-                .password(password)
+                // 2. 인증 정보
                 .email(email)
+                .password(password)
+
+                // 3. 개인 정보
+                .username(username)
                 .firstName(firstName)
                 .lastName(lastName)
+
+                // 4. 권한 정보
                 .isSuperuser(false)
                 .isStaff(false)
+                .isActive(true)
                 .build();
     }
 
-    public static User createAdmin(String username,
+    public static User createAdmin(String email,
                                    String password,
-                                   String email,
+                                   String username,
                                    String firstName,
                                    String lastName) {
         return User.builder()
-                .username(username)
-                .password(password)
+                // 2. 인증 정보
                 .email(email)
+                .password(password)
+
+                // 3. 개인 정보
+                .username(username)
                 .firstName(firstName)
                 .lastName(lastName)
+
+                // 4. 권한 정보
                 .isSuperuser(true)
                 .isStaff(true)
+                .isActive(true)
                 .build();
     }
 
     public static User from(UserCreateRequest request) {
         return User.builder()
-                .username(request.getUsername())
-                .password(request.getPassword())
+                // 2. 인증 정보
                 .email(request.getEmail())
+                .password(request.getPassword())
+
+                // 3. 개인 정보
+                .username(request.getUsername())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
+
+                // 4. 권한 정보
                 .isSuperuser(true)
                 .isStaff(true)
+                .isActive(true)
                 .build();
     }
 
     public UserEntity toEntity() {
         return UserEntity.builder()
+                // 1. 불변 필드
                 .id(this.getId())
+                .dateJoined(this.getDateJoined())
+
+                // 2. 인증 정보
                 .password(this.getPassword())
+                .email(this.getEmail())
                 .lastLogin(this.getLastLogin())
-                .isSuperuser(this.isSuperuser())
+
+                // 3. 개인 정보
                 .username(this.getUsername())
                 .firstName(this.getFirstName())
                 .lastName(this.getLastName())
-                .email(this.getEmail())
+
+                // 4. 권한 정보
+                .isSuperuser(this.isSuperuser())
                 .isStaff(this.isStaff())
                 .isActive(this.isActive())
-                .dateJoined(this.getDateJoined())
                 .build();
     }
 
-    public void
-    updateUsername(String username) {
-        this.username = username;
-    }
-
+    // 2. 인증 정보 변경 메서드
     public void
     updatePassword(String newPassword) {
         this.password = newPassword;
-    }
-
-    public void
-    updateLoginTime() {
-        this.lastLogin = LocalDateTime.now();
     }
 
     public void
@@ -138,11 +164,28 @@ public class User {
     }
 
     public void
+    updateLoginTime() {
+        this.lastLogin = LocalDateTime.now();
+    }
+
+    // 3. 개인 정보 변경 메서드
+    public void
+    updateUsername(String username) {
+        this.username = username;
+    }
+
+    public void
     updateProfile(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
+    public String
+    getFullName() {
+        return String.format("%s %s", lastName, firstName).trim();
+    }
+
+    // 4. 권한 정보 변경 메서드
     public void
     activate() {
         this.isActive = true;
@@ -171,11 +214,6 @@ public class User {
     public void
     revokeSuperuserPrivileges() {
         this.isSuperuser = false;
-    }
-
-    public String
-    getFullName() {
-        return String.format("%s %s", lastName, firstName).trim();
     }
 
     public boolean

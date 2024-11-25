@@ -74,7 +74,6 @@ public class UserService {
     }
 
     // Delete
-
     private User
     findUser(Long id) {
         return userRepository.findById(id)
