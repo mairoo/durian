@@ -1,10 +1,15 @@
 package kr.co.pincoin.api.infra.shop.repository.order;
 
 import kr.co.pincoin.api.domain.shop.model.order.Order;
+import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
+import kr.co.pincoin.api.infra.shop.entity.order.OrderEntity;
 import kr.co.pincoin.api.infra.shop.mapper.order.OrderMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -77,5 +82,16 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public void softDelete(Long orderId) {
         orderJpaRepository.softDelete(orderId, LocalDateTime.now());
+    }
+
+    @Override
+    public Page<Order> searchOrders(OrderSearchCondition condition, Pageable pageable) {
+        Page<OrderEntity> orderEntities = orderQueryRepository.searchOrders(condition, pageable);
+
+        List<Order> orders = orderEntities.getContent().stream()
+                .map(orderMapper::toModel)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(orders, pageable, orderEntities.getTotalElements());
     }
 }

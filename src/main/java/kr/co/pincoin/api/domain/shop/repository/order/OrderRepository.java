@@ -1,7 +1,10 @@
 package kr.co.pincoin.api.domain.shop.repository.order;
 
 import kr.co.pincoin.api.domain.shop.model.order.Order;
+import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,4 +29,6 @@ public interface OrderRepository {
     void markAsSuspicious(Long orderId);
 
     void softDelete(Long orderId);
+
+    Page<Order> searchOrders(OrderSearchCondition condition, Pageable pageable);
 }

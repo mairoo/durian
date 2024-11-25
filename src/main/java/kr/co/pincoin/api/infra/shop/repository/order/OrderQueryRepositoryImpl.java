@@ -5,7 +5,6 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.infra.auth.entity.profile.QProfileEntity;
@@ -23,7 +22,6 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -33,7 +31,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
     private final OrderMapper orderMapper;
 
     @Override
-    public Page<Order> searchOrders(OrderSearchCondition condition, Pageable pageable) {
+    public Page<OrderEntity> searchOrders(OrderSearchCondition condition, Pageable pageable) {
         QOrderEntity order = QOrderEntity.orderEntity;
         QUserEntity user = QUserEntity.userEntity;
         QProfileEntity profile = QProfileEntity.profileEntity;
@@ -86,12 +84,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
 
         long count = total != null ? total : 0L;
 
-        // 도메인 객체로 변환
-        List<Order> result = orders.stream()
-                .map(orderMapper::toModel)
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(result, pageable, count);
+        return new PageImpl<>(orders, pageable, count);
     }
 
     // 동적 쿼리 조건 메서드들

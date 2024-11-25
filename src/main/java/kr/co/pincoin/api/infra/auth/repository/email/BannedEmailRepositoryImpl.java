@@ -60,13 +60,21 @@ public class BannedEmailRepositoryImpl implements BannedEmailRepository {
         bannedEmailJpaRepository.delete(bannedEmail.toEntity());
     }
 
-    // QueryRepository를 활용한 추가 메서드들
+    @Override
     public List<BannedEmail> findEmailsContainingDomain(String domain) {
         return bannedEmailQueryRepository.findEmailsContainingDomain(domain).stream()
                 .map(bannedEmailMapper::toModel)
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<BannedEmail> findByEmailPattern(String pattern) {
+        return bannedEmailQueryRepository.findByEmailPattern(pattern).stream()
+                .map(bannedEmailMapper::toModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<BannedEmail> searchBannedEmails(BannedEmailSearchCondition condition) {
         return bannedEmailQueryRepository.searchBannedEmails(condition).stream()
                 .map(bannedEmailMapper::toModel)
