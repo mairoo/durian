@@ -27,10 +27,6 @@ public class Order {
 
     private final String ipAddress;
 
-    private final OrderPaymentMethod paymentMethod;
-
-    private final String transactionId;
-
     private final BigDecimal totalListPrice;
 
     private final BigDecimal totalSellingPrice;
@@ -41,17 +37,21 @@ public class Order {
 
     private final User user;
 
+    private final LocalDateTime created;
+
+    private final LocalDateTime modified;
+
+    private OrderPaymentMethod paymentMethod;
+
     private OrderStatus status;
 
     private OrderVisibility visibility;
 
+    private String transactionId;
+
     private String message;
 
     private Boolean suspicious;
-
-    private final LocalDateTime created;
-
-    private final LocalDateTime modified;
 
     private Boolean removed;
 
@@ -62,19 +62,19 @@ public class Order {
                   String userAgent,
                   String acceptLanguage,
                   String ipAddress,
-                  OrderPaymentMethod paymentMethod,
-                  String transactionId,
-                  OrderStatus status,
-                  OrderVisibility visibility,
                   BigDecimal totalListPrice,
                   BigDecimal totalSellingPrice,
                   OrderCurrency currency,
-                  String message,
-                  Boolean suspicious,
                   Order parent,
                   User user,
                   LocalDateTime created,
                   LocalDateTime modified,
+                  OrderPaymentMethod paymentMethod,
+                  OrderStatus status,
+                  OrderVisibility visibility,
+                  String transactionId,
+                  String message,
+                  Boolean suspicious,
                   Boolean removed) {
         this.id = id;
         this.orderNo = orderNo;
@@ -82,19 +82,19 @@ public class Order {
         this.userAgent = userAgent;
         this.acceptLanguage = acceptLanguage;
         this.ipAddress = ipAddress;
-        this.paymentMethod = paymentMethod;
-        this.transactionId = transactionId;
-        this.status = status;
-        this.visibility = visibility;
         this.totalListPrice = totalListPrice;
         this.totalSellingPrice = totalSellingPrice;
         this.currency = currency;
-        this.message = message;
-        this.suspicious = suspicious;
         this.parent = parent;
         this.user = user;
         this.created = created;
         this.modified = modified;
+        this.paymentMethod = paymentMethod;
+        this.status = status;
+        this.visibility = visibility;
+        this.transactionId = transactionId;
+        this.message = message;
+        this.suspicious = suspicious;
         this.removed = removed;
     }
 
@@ -104,10 +104,10 @@ public class Order {
                            String userAgent,
                            String acceptLanguage,
                            String ipAddress,
-                           OrderPaymentMethod paymentMethod,
                            BigDecimal totalListPrice,
                            BigDecimal totalSellingPrice,
-                           OrderCurrency currency) {
+                           OrderCurrency currency,
+                           OrderPaymentMethod paymentMethod) {
         return Order.builder()
                 .user(user)
                 .orderNo(orderNo)
@@ -115,10 +115,10 @@ public class Order {
                 .userAgent(userAgent)
                 .acceptLanguage(acceptLanguage)
                 .ipAddress(ipAddress)
-                .paymentMethod(paymentMethod)
                 .totalListPrice(totalListPrice)
                 .totalSellingPrice(totalSellingPrice)
                 .currency(currency)
+                .paymentMethod(paymentMethod)
                 .build();
     }
 
@@ -144,39 +144,56 @@ public class Order {
                 .build();
     }
 
-    public void
-    markAsSuspicious(String message) {
+    // 1. 상태/속성 변경 메소드들 (updateXXX)
+    public void updateStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    public void updateVisibility(OrderVisibility visibility) {
+        this.visibility = visibility;
+    }
+
+    public void updatePaymentMethod(OrderPaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public void updateTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
+
+    public void updateMessage(String message) {
+        this.message = message;
+    }
+
+    // 2. 특수 상태 변경 메소드들 (markAs, remove 등)
+    public void markAsSuspicious(String message) {
         this.suspicious = true;
         this.message = message;
     }
 
-    public void
-    updateStatus(OrderStatus status) {
-        this.status = status;
-    }
-
-    public void
-    remove() {
+    public void remove() {
         this.removed = true;
     }
 
-    public void
-    restore() {
+    public void restore() {
         this.removed = false;
     }
 
-    public boolean
-    isRemoved() {
+    // 3. 상태 확인 메소드들 (isXXX, hasXXX)
+    public boolean isRemoved() {
         return this.removed != null;
     }
 
-    public BigDecimal
-    getDiscountAmount() {
+    public boolean isSuspicious() {
+        return this.suspicious != null && this.suspicious;
+    }
+
+    // 4. 계산 메소드들 (getXXX, calculateXXX)
+    public BigDecimal getDiscountAmount() {
         return this.totalListPrice.subtract(this.totalSellingPrice);
     }
 
-    public double
-    getDiscountRate() {
+    public double getDiscountRate() {
         if (this.totalListPrice.compareTo(BigDecimal.ZERO) == 0) {
             return 0.0;
         }
