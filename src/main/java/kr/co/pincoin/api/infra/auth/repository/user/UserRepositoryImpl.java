@@ -23,7 +23,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<User> findById(Long id) {
+    public Optional<User> findById(Integer id) {
         return userJpaRepository.findById(id).map(userMapper::toModel);
     }
 

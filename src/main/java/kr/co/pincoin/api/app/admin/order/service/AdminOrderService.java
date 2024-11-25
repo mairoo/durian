@@ -3,6 +3,7 @@ package kr.co.pincoin.api.app.admin.order.service;
 import jakarta.persistence.EntityNotFoundException;
 import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
+import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
@@ -19,14 +20,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class AdminOrderService extends AbstractOrderService {
+    private final UserRepository userRepository;
+
     public AdminOrderService(OrderRepository orderRepository,
                              ProductRepository productRepository,
                              OrderProductRepository orderProductRepository) {
         super(orderRepository, productRepository, orderProductRepository);
+
+        this.userRepository = (UserRepository) orderRepository;
     }
 
-
-    // 사용자가 주문서를 작성한다.
 
     // 사용자가 주문서 결제완료 처리한다.
 
@@ -45,8 +48,6 @@ public class AdminOrderService extends AbstractOrderService {
     //- 주문 결제 완료 취소 - POST
     //- 상품권 발송 처리 (재고 차감, 상품권 상태 변경) - POST
     //- 주문 환불 처리 - POST
-    //
-    // 재주문 하기
     // 환불 요청하기
 
 
@@ -102,13 +103,30 @@ public class AdminOrderService extends AbstractOrderService {
     }
 
     /**
-     * 신규 주문
+     * 관리자용 신규 주문
      */
     @Transactional
     public Order
-    createOrder(User user,
+    createOrder(Integer userId,
                 OrderCreateRequest request,
                 ClientUtils.ClientInfo clientInfo) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+
         return createOrderInternal(user, request, clientInfo);
+    }
+
+    /**
+     * 관리자용 재주문
+     */
+    @Transactional
+    public Order
+    reorder(Integer userId,
+            String orderNo,
+            ClientUtils.ClientInfo clientInfo) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
+
+        return createReorderInternal(user.getId(), orderNo, clientInfo);
     }
 }

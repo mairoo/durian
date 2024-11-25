@@ -112,7 +112,8 @@ public abstract class AbstractOrderService {
      * 재주문
      */
     @Transactional
-    public Order reorder(Integer userId, String orderNo, ClientUtils.ClientInfo clientInfo) {
+    public Order
+    createReorderInternal(Integer userId, String orderNo, ClientUtils.ClientInfo clientInfo) {
         // 1. 주문상품 목록 조회 (order, user 포함)
         List<OrderProduct> originalOrderProducts = orderProductRepository
                 .findAllByOrderNoAndUserIdFetchOrderAndUser(orderNo, userId);

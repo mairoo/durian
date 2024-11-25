@@ -94,4 +94,15 @@ public class OrderService extends AbstractOrderService {
                 ClientUtils.ClientInfo clientInfo) {
         return createOrderInternal(user, request, clientInfo);
     }
+
+    /**
+     * 재주문
+     */
+    @Transactional
+    public Order
+    reorder(User user,
+            String orderNo,
+            ClientUtils.ClientInfo clientInfo) {
+        return createReorderInternal(user.getId(), orderNo, clientInfo);
+    }
 }
