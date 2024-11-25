@@ -1,4 +1,4 @@
-package kr.co.pincoin.api.domain.shop.service;
+package kr.co.pincoin.api.app.admin.order.service;
 
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherRepository;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class OrderService {
+public class AdminOrderService {
     private final OrderRepository orderRepository;
 
     private final ProductRepository productRepository;
@@ -32,5 +32,15 @@ public class OrderService {
     // 사용자가 주문을 숨김 상태로 변경한다.
 
     // 사용자가 주문의 상태를 인증완료 처리로 변경한다.
+
+    // 관리자단
+    //- 주문 목록 조회, 검색 - GET
+    //- 주문 상세 정보, 결제 정보, 구매자 정보 확인 - GET
+    //- 주문 결제 처리 - POST
+    //- 주문 결제 내역 삭제 - POST
+    //- 주문 결제 완료 처리 - POST
+    //- 주문 결제 완료 취소 - POST
+    //- 상품권 발송 처리 (재고 차감, 상품권 상태 변경) - POST
+    //- 주문 환불 처리 - POST
 
 }

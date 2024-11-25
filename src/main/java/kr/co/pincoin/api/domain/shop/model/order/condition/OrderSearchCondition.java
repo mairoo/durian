@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class OrderSearchCondition {
+    private final Integer userId;
     private final String fullname;
     private final String orderNo;
     private final String phone;
@@ -18,7 +19,8 @@ public class OrderSearchCondition {
     private final LocalDateTime endDate;
 
     @Builder
-    private OrderSearchCondition(String fullname,
+    private OrderSearchCondition(Integer userId,
+                                 String fullname,
                                  String orderNo,
                                  String phone,
                                  String email,
@@ -26,6 +28,7 @@ public class OrderSearchCondition {
                                  OrderStatus status,
                                  LocalDateTime startDate,
                                  LocalDateTime endDate) {
+        this.userId = userId;
         this.fullname = fullname;
         this.orderNo = orderNo;
         this.phone = phone;
@@ -39,6 +42,12 @@ public class OrderSearchCondition {
     }
 
     // 정적 팩토리 메서드들
+    public static OrderSearchCondition ofUserId(Integer userId) {
+        return OrderSearchCondition.builder()
+                .userId(userId)
+                .build();
+    }
+
     public static OrderSearchCondition ofOrderNo(String orderNo) {
         return OrderSearchCondition.builder()
                 .orderNo(orderNo)
@@ -67,6 +76,21 @@ public class OrderSearchCondition {
                 .build();
     }
 
+    // 기존 조건에 userId를 추가한 새로운 OrderSearchCondition을 반환하는 메서드
+    public OrderSearchCondition withUserId(Integer userId) {
+        return OrderSearchCondition.builder()
+                .userId(userId)
+                .fullname(this.fullname)
+                .orderNo(this.orderNo)
+                .phone(this.phone)
+                .email(this.email)
+                .username(this.username)
+                .status(this.status)
+                .startDate(this.startDate)
+                .endDate(this.endDate)
+                .build();
+    }
+
     private void validate() {
         if (startDate != null && endDate != null && startDate.isAfter(endDate)) {
             throw new IllegalArgumentException("시작일이 종료일보다 늦을 수 없습니다.");
@@ -74,6 +98,10 @@ public class OrderSearchCondition {
     }
 
     // 유틸리티 메서드들
+    public boolean hasUserId() {
+        return userId != null;
+    }
+
     public boolean hasDateRange() {
         return startDate != null && endDate != null;
     }

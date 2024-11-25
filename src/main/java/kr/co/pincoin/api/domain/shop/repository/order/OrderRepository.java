@@ -14,7 +14,9 @@ public interface OrderRepository {
 
     Optional<Order> findById(Long id);
 
-    Optional<Order> findByOrderNo(String orderNo);
+    Optional<Order> findByIdAndUserId(Long orderId, Integer userId);
+
+    Optional<Order> findByOrderNoAndUserId(String orderNo, Integer userId);
 
     List<Order> findByUserId(Integer userId);
 

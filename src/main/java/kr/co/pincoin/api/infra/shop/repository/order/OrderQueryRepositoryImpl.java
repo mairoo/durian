@@ -11,7 +11,6 @@ import kr.co.pincoin.api.infra.auth.entity.profile.QProfileEntity;
 import kr.co.pincoin.api.infra.auth.entity.user.QUserEntity;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderEntity;
 import kr.co.pincoin.api.infra.shop.entity.order.QOrderEntity;
-import kr.co.pincoin.api.infra.shop.mapper.order.OrderMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -28,8 +27,6 @@ import java.util.List;
 public class OrderQueryRepositoryImpl implements OrderQueryRepository {
     private final JPAQueryFactory queryFactory;
 
-    private final OrderMapper orderMapper;
-
     @Override
     public Page<OrderEntity> searchOrders(OrderSearchCondition condition, Pageable pageable) {
         QOrderEntity order = QOrderEntity.orderEntity;
@@ -39,7 +36,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         // 메인 쿼리
         JPAQuery<OrderEntity> query = queryFactory
                 .selectFrom(order)
-                .leftJoin(order.user, user)
+                .leftJoin(order.user, user).fetchJoin()
                 .leftJoin(profile)
                 .on(profile.user.eq(user))
                 .where(
@@ -47,6 +44,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
                         orderNoEquals(condition.getOrderNo()),
                         emailContains(condition.getEmail()),
                         usernameContains(condition.getUsername()),
+                        phoneContains(condition.getPhone()),
                         statusEquals(condition.getStatus()),
                         createdBetween(condition.getStartDate(), condition.getEndDate())
                       );
@@ -65,18 +63,16 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        // 전체 카운트 쿼리
+        // 전체 카운트 쿼리: 불필요한 조인 제거
         Long total = queryFactory
                 .select(order.count())
                 .from(order)
-                .leftJoin(order.user, user)
-                .leftJoin(profile)
-                .on(profile.user.eq(user))
                 .where(
                         fullnameContains(condition.getFullname()),
                         orderNoEquals(condition.getOrderNo()),
                         emailContains(condition.getEmail()),
                         usernameContains(condition.getUsername()),
+                        phoneContains(condition.getPhone()),
                         statusEquals(condition.getStatus()),
                         createdBetween(condition.getStartDate(), condition.getEndDate())
                       )

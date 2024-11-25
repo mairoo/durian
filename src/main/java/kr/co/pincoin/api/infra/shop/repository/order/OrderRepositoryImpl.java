@@ -38,8 +38,14 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public Optional<Order> findByOrderNo(String orderNo) {
-        return orderJpaRepository.findByOrderNo(orderNo)
+    public Optional<Order> findByIdAndUserId(Long orderId, Integer userId) {
+        return orderJpaRepository.findByIdAndUserId(orderId, userId)
+                .map(orderMapper::toModel);
+    }
+
+    @Override
+    public Optional<Order> findByOrderNoAndUserId(String orderNo, Integer userId) {
+        return orderJpaRepository.findByOrderNoAndUserId(orderNo, userId)
                 .map(orderMapper::toModel);
     }
 

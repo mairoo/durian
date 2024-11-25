@@ -1,11 +1,11 @@
-package kr.co.pincoin.api.domain.shop.service;
+package kr.co.pincoin.api.app.admin.product.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ProductService {
+public class AdminProductService {
     // 새 상품권 권종을 등록한다. (디폴트 판매 개시)
 
     // 상품권 품절 처리한다.
