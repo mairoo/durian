@@ -5,6 +5,7 @@ import kr.co.pincoin.api.infra.shop.entity.order.OrderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -13,13 +14,24 @@ import java.util.Optional;
 
 @Repository
 public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
+    @Query("SELECT o FROM OrderEntity o LEFT JOIN FETCH o.user WHERE o.orderNo = :orderNo")
     Optional<OrderEntity> findByOrderNo(String orderNo);
 
-    List<OrderEntity> findByUserId(Integer user_id);
+    @Override
+    @NonNull
+    @Query("SELECT DISTINCT o FROM OrderEntity o " +
+            "LEFT JOIN FETCH o.user u " +
+            "LEFT JOIN ProfileEntity p ON p.user = u " +
+            "WHERE o.id = :id")
+    Optional<OrderEntity> findById(@NonNull Long id);
 
+    @Query("SELECT o FROM OrderEntity o LEFT JOIN FETCH o.user WHERE o.user.id = :userId")
+    List<OrderEntity> findByUserId(Integer userId);
+
+    @Query("SELECT o FROM OrderEntity o LEFT JOIN FETCH o.user WHERE o.status = :status")
     List<OrderEntity> findByStatus(OrderStatus status);
 
-    @Query("SELECT o FROM OrderEntity o WHERE o.suspicious = true AND o.modified IS NULL")
+    @Query("SELECT o FROM OrderEntity o LEFT JOIN FETCH o.user WHERE o.suspicious = true AND o.modified IS NULL")
     List<OrderEntity> findSuspiciousOrders();
 
     @Modifying
