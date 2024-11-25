@@ -6,15 +6,20 @@ import kr.co.pincoin.api.app.member.order.request.OrderLineItem;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
+import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderCurrency;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
+import kr.co.pincoin.api.domain.shop.model.product.Voucher;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
+import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
+import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
+import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
 import kr.co.pincoin.api.global.utils.ClientUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +36,10 @@ public abstract class AbstractOrderService {
     protected final ProductRepository productRepository;
 
     protected final OrderProductRepository orderProductRepository;
+
+    protected final OrderProductVoucherRepository orderProductVoucherRepository;
+
+    protected final VoucherRepository voucherRepository;
 
     /**
      * 신규 주문
@@ -169,6 +178,75 @@ public abstract class AbstractOrderService {
         orderProductRepository.saveAll(newOrderProducts);
 
         return savedOrder;
+    }
+
+    // 별도의 상품권 발권 프로세스
+    @Transactional
+    protected Order issueVouchers(Order order) {
+        // 1. 주문된 모든 상품의 OrderProduct 조회
+        List<OrderProduct> orderProducts = orderProductRepository.findAllByOrderFetchOrder(order);
+
+        for (OrderProduct orderProduct : orderProducts) {
+            Product product = productRepository.findByCode(orderProduct.getCode())
+                    .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다: " + orderProduct.getCode()));
+
+            // 2. 각 주문 상품별로 필요한 수량만큼의 미사용 상품권 조회
+            List<Voucher> availableVouchers = voucherRepository
+                    .findTopNByProductCodeAndStatusOrderByIdAsc(
+                            orderProduct.getCode(),
+                            VoucherStatus.PURCHASED,  // 구매된(입고된) 상품권
+                            orderProduct.getQuantity());
+
+            // 3. 상품권 수량 검증
+            if (availableVouchers.size() < orderProduct.getQuantity()) {
+                throw new IllegalStateException(
+                        String.format("상품 '%s'의 사용 가능한 상품권이 부족합니다. 필요: %d, 가용: %d",
+                                      orderProduct.getName(),
+                                      orderProduct.getQuantity(),
+                                      availableVouchers.size())
+                );
+            }
+
+            // 4. 재고와 상품권 수량 일치 여부 검증
+            if (product.getStockQuantity() < availableVouchers.size()) {
+                throw new IllegalStateException(
+                        String.format("상품 '%s'의 재고와 상품권 수량이 불일치합니다. 재고: %d, 상품권: %d",
+                                      product.getName(),
+                                      product.getStockQuantity(),
+                                      availableVouchers.size())
+                );
+            }
+
+            // 5. 상품권 상태 변경 및 OrderProductVoucher 생성
+            List<OrderProductVoucher> orderProductVouchers = new ArrayList<>();
+
+            for (Voucher voucher : availableVouchers) {
+                // 상품권 상태를 SOLD로 변경
+                voucher.markAsSold();
+
+                // OrderProductVoucher 생성
+                OrderProductVoucher orderProductVoucher = OrderProductVoucher.builder()
+                        .orderProduct(orderProduct)
+                        .code(voucher.getCode())
+                        .remarks(voucher.getRemarks())
+                        .revoked(false)
+                        .build();
+
+                orderProductVouchers.add(orderProductVoucher);
+            }
+
+            // 6. OrderProductVoucher 일괄 저장
+            orderProductVoucherRepository.saveAll(orderProductVouchers);
+
+            // 7. Product 재고 차감
+            int remainingStock = product.getStockQuantity() - orderProduct.getQuantity();
+            product.updateStockQuantity(remainingStock);
+
+            // 8. Product 저장 (도메인 모델의 변경사항이 자동으로 엔티티에 반영됨)
+            productRepository.save(product);
+        }
+
+        return order;
     }
 
     private List<Product>

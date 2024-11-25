@@ -63,6 +63,13 @@ public class Voucher {
                 .build();
     }
 
+    public void markAsSold() {
+        if (this.status != VoucherStatus.PURCHASED) {
+            throw new IllegalStateException("판매 가능한 상태의 상품권만 판매할 수 있습니다.");
+        }
+        this.status = VoucherStatus.SOLD;
+    }
+
     public void
     updateRemarks(String remarks) {
         if (remarks == null || remarks.trim().isEmpty()) {

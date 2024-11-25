@@ -7,8 +7,10 @@ import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
+import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
+import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
 import kr.co.pincoin.api.domain.shop.service.AbstractOrderService;
 import kr.co.pincoin.api.global.utils.ClientUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +25,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderService extends AbstractOrderService {
     public OrderService(OrderRepository orderRepository,
                         ProductRepository productRepository,
-                        OrderProductRepository orderProductRepository) {
-        super(orderRepository, productRepository, orderProductRepository);
+                        OrderProductRepository orderProductRepository,
+                        OrderProductVoucherRepository orderProductVoucherRepository,
+                        VoucherRepository voucherRepository) {
+        super(orderRepository,
+              productRepository,
+              orderProductRepository,
+              orderProductVoucherRepository,
+              voucherRepository);
     }
 
     /**

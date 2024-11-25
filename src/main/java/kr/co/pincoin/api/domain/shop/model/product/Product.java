@@ -174,6 +174,17 @@ public class Product {
                 .build();
     }
 
+    public void updateStockQuantity(int stockQuantity) {
+        this.stockQuantity = stockQuantity;
+    }
+
+    public ProductStock calculateStockStatus() {
+        if (stockQuantity == 0) {
+            return ProductStock.SOLD_OUT;
+        }
+        return this.stock;
+    }
+
     public void
     updateDescription(String description) {
         this.description = description;

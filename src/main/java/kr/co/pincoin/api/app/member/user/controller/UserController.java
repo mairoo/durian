@@ -46,7 +46,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>>
-    find(@PathVariable Long id) {
+    find(@PathVariable Integer id) {
         User user = userService.find(id);
         return ResponseEntity.ok()
                 .body(ApiResponse.of(UserResponse.from(user)));
@@ -62,7 +62,7 @@ public class UserController {
     // Update
     @PatchMapping("/{id}/username")
     public ResponseEntity<ApiResponse<UserResponse>>
-    updateUsername(@PathVariable Long id,
+    updateUsername(@PathVariable Integer id,
                    @Valid @RequestBody UsernameUpdateRequest request) {
         User updatedUser = userService.updateUsername(id, request);
         return ResponseEntity.ok()
@@ -71,7 +71,7 @@ public class UserController {
 
     @PatchMapping("/{id}/email")
     public ResponseEntity<ApiResponse<UserResponse>>
-    updateEmail(@PathVariable Long id,
+    updateEmail(@PathVariable Integer id,
                 @Valid @RequestBody EmailUpdateRequest request) {
         User updatedUser = userService.updateEmail(id, request);
         return ResponseEntity.ok()
@@ -80,7 +80,7 @@ public class UserController {
 
     @PatchMapping("/{id}/password")
     public ResponseEntity<ApiResponse<UserResponse>>
-    updatePassword(@PathVariable Long id,
+    updatePassword(@PathVariable Integer id,
                    @Valid @RequestBody PasswordUpdateRequest request) {
         User updatedUser = userService.updatePassword(id, request);
         return ResponseEntity.ok()

@@ -38,14 +38,14 @@ public class UserService {
 
     // Read
     public User
-    find(Long id) {
+    find(Integer id) {
         return findUser(id);
     }
 
     // Update
     @Transactional
     public User
-    updateUsername(Long id, UsernameUpdateRequest request) {
+    updateUsername(Integer id, UsernameUpdateRequest request) {
         User user = findUser(id);
         user.updateUsername(request.getUsername());
         return userRepository.save(user);
@@ -53,7 +53,7 @@ public class UserService {
 
     @Transactional
     public User
-    updateEmail(Long id, EmailUpdateRequest request) {
+    updateEmail(Integer id, EmailUpdateRequest request) {
         User user = findUser(id);
         user.updateEmail(request.getEmail());
         return userRepository.save(user);
@@ -61,7 +61,7 @@ public class UserService {
 
     @Transactional
     public User
-    updatePassword(Long id, PasswordUpdateRequest request) {
+    updatePassword(Integer id, PasswordUpdateRequest request) {
         User user = findUser(id);
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
@@ -75,7 +75,7 @@ public class UserService {
 
     // Delete
     private User
-    findUser(Long id) {
+    findUser(Integer id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
     }

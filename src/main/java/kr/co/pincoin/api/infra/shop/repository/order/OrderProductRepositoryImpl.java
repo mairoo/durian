@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.infra.shop.repository.order;
 
+import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
@@ -37,6 +38,13 @@ public class OrderProductRepositoryImpl implements OrderProductRepository {
                                                Integer userId) {
         List<OrderProductEntity> entries = orderProductJpaRepository.findAllByOrderNoAndUserIdFetchOrderAndUser(orderNo,
                                                                                                                 userId);
+
+        return orderProductMapper.toModelList(entries);
+    }
+
+    @Override
+    public List<OrderProduct> findAllByOrderFetchOrder(Order order) {
+        List<OrderProductEntity> entries = orderProductJpaRepository.findAllByOrderFetchOrder(order);
 
         return orderProductMapper.toModelList(entries);
     }

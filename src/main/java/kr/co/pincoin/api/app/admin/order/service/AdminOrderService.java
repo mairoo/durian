@@ -8,8 +8,10 @@ import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
+import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
+import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
 import kr.co.pincoin.api.domain.shop.service.AbstractOrderService;
 import kr.co.pincoin.api.global.utils.ClientUtils;
 import org.springframework.data.domain.Page;
@@ -24,12 +26,18 @@ public class AdminOrderService extends AbstractOrderService {
 
     public AdminOrderService(OrderRepository orderRepository,
                              ProductRepository productRepository,
-                             OrderProductRepository orderProductRepository) {
-        super(orderRepository, productRepository, orderProductRepository);
+                             OrderProductRepository orderProductRepository,
+                             OrderProductVoucherRepository orderProductVoucherRepository,
+                             VoucherRepository voucherRepository,
+                             UserRepository userRepository) {
+        super(orderRepository,
+              productRepository,
+              orderProductRepository,
+              orderProductVoucherRepository,
+              voucherRepository);
 
-        this.userRepository = (UserRepository) orderRepository;
+        this.userRepository = userRepository;
     }
-
 
     // 사용자가 주문서 결제완료 처리한다.
 
@@ -128,5 +136,16 @@ public class AdminOrderService extends AbstractOrderService {
                 .orElseThrow(() -> new EntityNotFoundException("사용자를 찾을 수 없습니다: " + userId));
 
         return createReorderInternal(user.getId(), orderNo, clientInfo);
+    }
+
+    /**
+     * 관리자용 수동 발권 처리
+     */
+    @Transactional
+    public Order
+    issueVouchers(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다: " + orderId));
+        return issueVouchers(order);
     }
 }
