@@ -39,6 +39,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
                 .leftJoin(profile)
                 .on(profile.user.eq(user))
                 .where(
+                        userIdEquals(condition.getUserId()),
                         fullnameContains(condition.getFullname()),
                         orderNoEquals(condition.getOrderNo()),
                         emailContains(condition.getEmail()),
@@ -80,6 +81,11 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
     }
 
     // 동적 쿼리 조건 메서드들
+    private BooleanExpression userIdEquals(Integer userId) {
+        QOrderEntity order = QOrderEntity.orderEntity;
+        return userId != null ? order.user.id.eq(userId) : null;
+    }
+
     private BooleanExpression fullnameContains(String fullname) {
         QOrderEntity order = QOrderEntity.orderEntity;
         return StringUtils.hasText(fullname) ? order.fullname.containsIgnoreCase(fullname) : null;

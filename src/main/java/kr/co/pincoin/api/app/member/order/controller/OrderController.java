@@ -10,14 +10,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/orders")
@@ -58,17 +53,9 @@ public class OrderController {
         return ResponseEntity.ok(null);
     }
 
-    private List<Sort.Order> createSortOrders(String[] sort) {
-        return Arrays.stream(sort)
-                .map(s -> {
-                    String[] parts = s.split(",");
-                    return new Sort.Order(
-                            parts.length > 1 && parts[1].equalsIgnoreCase("desc")
-                                    ? Sort.Direction.DESC
-                                    : Sort.Direction.ASC,
-                            parts[0]
-                    );
-                })
-                .collect(Collectors.toList());
-    }
+    // - 주문 영수증 PDF 생성
+    //- 재주문 처리 - POST
+    //- 주문 삭제 - POST
+    //- 주문 숨김 처리 - POST
+    //- 환불 요청 처리 - POST
 }

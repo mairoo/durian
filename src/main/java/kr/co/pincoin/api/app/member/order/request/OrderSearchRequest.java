@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 public class OrderSearchRequest {
     private String orderNo;
+
     private OrderStatus status;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
