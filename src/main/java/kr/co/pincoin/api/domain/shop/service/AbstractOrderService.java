@@ -42,17 +42,24 @@ public abstract class AbstractOrderService {
     protected final VoucherRepository voucherRepository;
 
     /**
-     * 신규 주문
+     * 신규 주문을 생성하는 메소드
+     *
+     * @param user 주문하는 사용자 정보
+     * @param request 주문 생성 요청 정보 (상품 목록, 결제 수단 등)
+     * @param clientInfo 클라이언트 환경 정보 (IP, User-Agent, Accept-Language)
+     * @return 생성된 주문 엔티티
+     * @throws EntityNotFoundException 주문할 상품이 존재하지 않는 경우
+     * @throws IllegalStateException 상품 재고가 부족하거나 판매 불가능한 경우
      */
     @Transactional
     protected Order
     createOrderInternal(User user,
                         OrderCreateRequest request,
                         ClientUtils.ClientInfo clientInfo) {
-        // 1. 주문 상품 유효성 검증
+        // 주문할 상품들의 존재 여부, 상태, 재고를 검증하고 상품 정보 조회
         List<Product> products = validateAndGetProducts(request.getItems());
 
-        // 2. 주문 총액 계산
+        // 주문 총액 계산 (정가, 실제 판매가)
         BigDecimal totalListPrice = BigDecimal.ZERO;
         BigDecimal totalSellingPrice = BigDecimal.ZERO;
 
@@ -60,43 +67,42 @@ public abstract class AbstractOrderService {
             Product product = products.get(i);
             int quantity = request.getItems().get(i).getQuantity();
 
+            // 각 상품의 수량을 곱한 금액을 누적 계산
             totalListPrice = totalListPrice.add(product.getListPrice().multiply(BigDecimal.valueOf(quantity)));
             totalSellingPrice = totalSellingPrice.add(product.getSellingPrice().multiply(BigDecimal.valueOf(quantity)));
         }
 
-        // 3. Order 엔티티 생성
+        // 주문 기본 정보 설정 및 엔티티 생성
         Order order = Order.builder()
-                // id 자동 생성
-                .orderNo(generateOrderNumber())
+                .orderNo(generateOrderNumber())         // UUID 기반 주문번호 생성
                 .fullname(user.getLastName() + user.getFirstName())
-                .userAgent(clientInfo.getUserAgent())
-                .acceptLanguage(clientInfo.getAcceptLanguage())
-                .ipAddress(clientInfo.getIpAddress())
-                .totalListPrice(totalListPrice)
-                .totalSellingPrice(totalSellingPrice)
-                .currency(OrderCurrency.KRW)
-                .parent(null)  // 신규 주문 = null
-                .user(user)
-                // created, modified 자동 생성
-                .paymentMethod(request.getPaymentMethod())
-                .status(OrderStatus.PAYMENT_PENDING)
-                .visibility(OrderVisibility.VISIBLE)
-                .transactionId("") // 결제 전 null (페이팔 또는 PG 결제)
+                .userAgent(clientInfo.getUserAgent())   // 사용자 브라우저/기기 정보
+                .acceptLanguage(clientInfo.getAcceptLanguage())  // 선호 언어
+                .ipAddress(clientInfo.getIpAddress())   // 주문자 IP
+                .totalListPrice(totalListPrice)         // 정가 기준 총액
+                .totalSellingPrice(totalSellingPrice)   // 실제 판매가 기준 총액
+                .currency(OrderCurrency.KRW)            // 원화 주문
+                .parent(null)                           // 신규 주문은 부모 주문 없음
+                .user(user)                             // 주문자 정보
+                .paymentMethod(request.getPaymentMethod())  // 결제 수단
+                .status(OrderStatus.PAYMENT_PENDING)    // 초기 상태: 결제 대기
+                .visibility(OrderVisibility.VISIBLE)    // 주문 노출 여부
+                .transactionId("")                      // 결제 전이므로 거래 ID 없음
                 .message("")
-                .suspicious(false)
-                .removed(false)
+                .suspicious(false)                      // 이상 거래 표시
+                .removed(false)                         // 삭제 표시
                 .build();
 
-        // 4. Order 즉시 저장하여 ID 확보
+        // 주문 저장 후 생성된 ID 획득 (주문상품 연결을 위해 필요)
         Order savedOrder = orderRepository.saveAndFlush(order);
 
-        // 5. OrderProduct 엔티티 생성 및 연결
+        // 주문에 포함된 각 상품들의 주문상품 정보 생성
         List<OrderProduct> orderProducts = new ArrayList<>();
-
         for (int i = 0; i < products.size(); i++) {
             Product product = products.get(i);
             int quantity = request.getItems().get(i).getQuantity();
 
+            // 주문 시점의 상품 정보를 복사하여 주문상품 생성
             OrderProduct orderProduct = OrderProduct.of(
                     product.getName(),
                     product.getSubtitle(),
@@ -109,21 +115,28 @@ public abstract class AbstractOrderService {
             orderProducts.add(orderProduct);
         }
 
-        // 6. OrderProduct 일괄 저장
+        // 생성된 주문상품들 일괄 저장
         orderProductRepository.saveAll(orderProducts);
-
-        // 5. 재고 확인 및 차감 (재고선점 문제는 향후 개선 사항)
 
         return savedOrder;
     }
 
     /**
-     * 재주문
+     * 기존 주문을 기반으로 재주문을 생성하는 메소드
+     *
+     * @param userId 재주문을 요청한 사용자 ID
+     * @param orderNo 원본 주문번호
+     * @param clientInfo 클라이언트 환경 정보
+     * @return 생성된 재주문 엔티티
+     * @throws EntityNotFoundException 원본 주문이 존재하지 않는 경우
+     * @throws IllegalStateException 상품 재고가 부족하거나 판매 불가능한 경우
      */
     @Transactional
     public Order
-    createReorderInternal(Integer userId, String orderNo, ClientUtils.ClientInfo clientInfo) {
-        // 1. 주문상품 목록 조회 (order, user 포함)
+    createReorderInternal(Integer userId,
+                          String orderNo,
+                          ClientUtils.ClientInfo clientInfo) {
+        // 원본 주문의 상품 목록과 주문/사용자 정보를 한 번에 조회
         List<OrderProduct> originalOrderProducts = orderProductRepository
                 .findAllByOrderNoAndUserIdFetchOrderAndUser(orderNo, userId);
 
@@ -131,17 +144,16 @@ public abstract class AbstractOrderService {
             throw new EntityNotFoundException("주문을 찾을 수 없습니다.");
         }
 
-        // 2. 원본 주문 정보 (첫 번째 주문상품의 주문 정보 사용)
+        // 첫 번째 주문상품에서 원본 주문 정보 획득
         Order originalOrder = originalOrderProducts.getFirst().getOrder();
 
-        // 3. 상품 유효성 검증
+        // 원본 주문상품 목록을 OrderLineItem으로 변환하여 재고/상태 검증
         List<OrderLineItem> orderLineItems = originalOrderProducts.stream()
                 .map(op -> new OrderLineItem(op.getCode(), op.getQuantity()))
                 .collect(Collectors.toList());
-
         validateAndGetProducts(orderLineItems);
 
-        // 4. 새로운 주문 생성
+        // 원본 주문 정보를 기반으로 새 주문 생성 (고객 정보, 금액 등 복사)
         Order newOrder = Order.builder()
                 .orderNo(generateOrderNumber())
                 .fullname(originalOrder.getFullname())
@@ -153,9 +165,9 @@ public abstract class AbstractOrderService {
                 .currency(originalOrder.getCurrency())
                 .user(originalOrder.getUser())
                 .paymentMethod(originalOrder.getPaymentMethod())
-                .status(OrderStatus.PAYMENT_PENDING)
+                .status(OrderStatus.PAYMENT_PENDING)    // 초기 상태: 결제 대기
                 .visibility(OrderVisibility.VISIBLE)
-                .transactionId("")
+                .transactionId("")                      // 신규 주문이므로 거래 ID 초기화
                 .message("")
                 .suspicious(false)
                 .removed(false)
@@ -163,7 +175,7 @@ public abstract class AbstractOrderService {
 
         Order savedOrder = orderRepository.saveAndFlush(newOrder);
 
-        // 5. 주문상품 복사하여 새로 생성
+        // 원본 주문상품들을 새 주문에 복사하여 연결
         List<OrderProduct> newOrderProducts = originalOrderProducts.stream()
                 .map(op -> OrderProduct.of(
                         op.getName(),
@@ -180,24 +192,31 @@ public abstract class AbstractOrderService {
         return savedOrder;
     }
 
-    // 별도의 상품권 발권 프로세스
+    /**
+     * 주문에 대한 상품권을 발행하고 재고를 차감하는 메소드
+     *
+     * @param order 상품권을 발행할 주문
+     * @return 상품권이 발행된 주문
+     * @throws EntityNotFoundException 상품이 존재하지 않는 경우
+     * @throws IllegalStateException   상품권 수량 부족 또는 재고 불일치 시
+     */
     @Transactional
-    protected Order issueVouchers(Order order) {
-        // 1. 주문된 모든 상품의 OrderProduct 조회
+    protected Order
+    issueVouchersInternal(Order order) {
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrderFetchOrder(order);
 
         for (OrderProduct orderProduct : orderProducts) {
             Product product = productRepository.findByCode(orderProduct.getCode())
                     .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다: " + orderProduct.getCode()));
 
-            // 2. 각 주문 상품별로 필요한 수량만큼의 미사용 상품권 조회
+            // 해당 상품의 미사용(PURCHASED) 상품권 중 필요 수량만큼 조회
             List<Voucher> availableVouchers = voucherRepository
                     .findTopNByProductCodeAndStatusOrderByIdAsc(
                             orderProduct.getCode(),
-                            VoucherStatus.PURCHASED,  // 구매된(입고된) 상품권
+                            VoucherStatus.PURCHASED,
                             orderProduct.getQuantity());
 
-            // 3. 상품권 수량 검증
+            // 구매 수량만큼 상품권이 존재하는지 검증
             if (availableVouchers.size() < orderProduct.getQuantity()) {
                 throw new IllegalStateException(
                         String.format("상품 '%s'의 사용 가능한 상품권이 부족합니다. 필요: %d, 가용: %d",
@@ -207,7 +226,7 @@ public abstract class AbstractOrderService {
                 );
             }
 
-            // 4. 재고와 상품권 수량 일치 여부 검증
+            // 상품의 실제 재고와 사용 가능한 상품권 수량이 일치하는지 검증
             if (product.getStockQuantity() < availableVouchers.size()) {
                 throw new IllegalStateException(
                         String.format("상품 '%s'의 재고와 상품권 수량이 불일치합니다. 재고: %d, 상품권: %d",
@@ -217,42 +236,44 @@ public abstract class AbstractOrderService {
                 );
             }
 
-            // 5. 상품권 상태 변경 및 OrderProductVoucher 생성
+            // 상품권별 주문상품 연결정보 생성 및 상태 변경
             List<OrderProductVoucher> orderProductVouchers = new ArrayList<>();
-
             for (Voucher voucher : availableVouchers) {
-                // 상품권 상태를 SOLD로 변경
-                voucher.markAsSold();
+                voucher.markAsSold();  // 상품권 상태를 SOLD로 변경
 
-                // OrderProductVoucher 생성
-                OrderProductVoucher orderProductVoucher = OrderProductVoucher.builder()
-                        .orderProduct(orderProduct)
-                        .code(voucher.getCode())
-                        .remarks(voucher.getRemarks())
-                        .revoked(false)
-                        .build();
-
-                orderProductVouchers.add(orderProductVoucher);
+                orderProductVouchers.add(OrderProductVoucher.builder()
+                                                 .orderProduct(orderProduct)
+                                                 .code(voucher.getCode())
+                                                 .remarks(voucher.getRemarks())
+                                                 .revoked(false)
+                                                 .build());
             }
 
-            // 6. OrderProductVoucher 일괄 저장
             orderProductVoucherRepository.saveAll(orderProductVouchers);
 
-            // 7. Product 재고 차감
-            int remainingStock = product.getStockQuantity() - orderProduct.getQuantity();
-            product.updateStockQuantity(remainingStock);
-
-            // 8. Product 저장 (도메인 모델의 변경사항이 자동으로 엔티티에 반영됨)
+            // 상품 재고 차감 처리
+            product.updateStockQuantity(product.getStockQuantity() - orderProduct.getQuantity());
             productRepository.save(product);
         }
 
         return order;
     }
 
+    /**
+     * 주문에 대한 환불 요청을 처리하는 메소드
+     *
+     * @param user    환불을 요청한 사용자
+     * @param order   환불할 주문
+     * @param message 환불 사유
+     * @return 생성된 환불 주문
+     * @throws IllegalStateException 이미 환불 처리된 주문인 경우
+     */
     @Transactional
     protected Order
-    refundRequest(User user, Order order, String message) {
-        // 1. 원본 주문 상태 검증
+    refundRequestInternal(User user,
+                          Order order,
+                          String message) {
+        // 환불 가능한 상태인지 검증
         if (order.getStatus() == OrderStatus.REFUND_REQUESTED
                 || order.getStatus() == OrderStatus.REFUND_PENDING
                 || order.getStatus() == OrderStatus.REFUNDED1
@@ -260,12 +281,12 @@ public abstract class AbstractOrderService {
             throw new IllegalStateException("이미 환불 처리된 주문입니다.");
         }
 
-        // 2. 원본 주문의 상태를 REFUND_REQUESTED로 변경
+        // 원본 주문을 환불 요청 상태로 변경
         order.updateStatus(OrderStatus.REFUND_REQUESTED);
         order.updateMessage(message);
         orderRepository.save(order);
 
-        // 3. 환불 처리를 위한 새로운 주문 생성
+        // 원본 주문 정보를 기반으로 환불 주문 생성
         Order refundOrder = Order.builder()
                 .orderNo(generateOrderNumber())
                 .fullname(order.getFullname())
@@ -275,20 +296,20 @@ public abstract class AbstractOrderService {
                 .totalListPrice(order.getTotalListPrice())
                 .totalSellingPrice(order.getTotalSellingPrice())
                 .currency(order.getCurrency())
-                .parent(order)  // 원본 주문을 parent로 설정
+                .parent(order)                         // 환불 주문은 원본 주문을 부모로 설정
                 .user(user)
                 .paymentMethod(order.getPaymentMethod())
-                .status(OrderStatus.REFUND_PENDING)
+                .status(OrderStatus.REFUND_PENDING)    // 초기 상태: 환불 대기
                 .visibility(OrderVisibility.VISIBLE)
                 .transactionId("")
-                .message(message)
+                .message(message)                      // 환불 사유
                 .suspicious(false)
                 .removed(false)
                 .build();
 
         Order savedRefundOrder = orderRepository.saveAndFlush(refundOrder);
 
-        // 4. 원본 주문의 OrderProduct 복사
+        // 원본 주문상품을 환불 주문에 복사
         List<OrderProduct> originalOrderProducts = orderProductRepository.findAllByOrderFetchOrder(order);
         List<OrderProduct> refundOrderProducts = originalOrderProducts.stream()
                 .map(op -> OrderProduct.of(
@@ -303,14 +324,14 @@ public abstract class AbstractOrderService {
 
         orderProductRepository.saveAll(refundOrderProducts);
 
-        // 5. 원본 주문의 OrderProductVoucher를 revoked 처리
+        // 발행된 상품권들을 무효화하고 상태 변경
         List<OrderProductVoucher> vouchers = orderProductVoucherRepository
                 .findAllByOrderProductOrderId(order.getId());
 
         vouchers.forEach(voucher -> {
-            voucher.revoke();
+            voucher.revoke();  // 주문상품-상품권 연결 무효화
 
-            // 연관된 Voucher 상태를 PURCHASED로 변경
+            // 상품권 상태를 다시 PURCHASED로 변경 (재사용 가능)
             Voucher originalVoucher = voucherRepository.findByCode(voucher.getCode())
                     .orElseThrow(() -> new EntityNotFoundException(
                             "상품권을 찾을 수 없습니다: " + voucher.getCode()));
@@ -324,76 +345,89 @@ public abstract class AbstractOrderService {
         return savedRefundOrder;
     }
 
+    /**
+     * 환불 처리를 완료하는 메소드
+     *
+     * @param refundOrder 처리할 환불 주문
+     * @return 완료된 환불 주문
+     * @throws IllegalStateException 주문 상태가 유효하지 않은 경우
+     */
     @Transactional
     protected Order
-    completeRefund(Order refundOrder) {
-        // 1. 상태 검증
+    completeRefundInternal(Order refundOrder) {
+        // 환불 주문이 대기 상태인지 확인
         if (refundOrder.getStatus() != OrderStatus.REFUND_PENDING) {
             throw new IllegalStateException("환불 처리 대기 상태의 주문이 아닙니다.");
         }
 
-        // 2. 원본 주문(parent) 조회
+        // 원본 주문 조회 및 존재 여부 검증
         Order originalOrder = Optional.ofNullable(refundOrder.getParent())
                 .orElseThrow(() -> new IllegalStateException("환불 처리할 원본 주문을 찾을 수 없습니다."));
 
-        // 3. 원본 주문 상태 검증
+        // 원본 주문이 환불 요청 상태인지 확인
         if (originalOrder.getStatus() != OrderStatus.REFUND_REQUESTED) {
             throw new IllegalStateException("환불 요청 상태의 주문이 아닙니다.");
         }
 
-        // 4. 각각의 주문 상태 업데이트
-        originalOrder.updateStatus(OrderStatus.REFUNDED1);
-        refundOrder.updateStatus(OrderStatus.REFUNDED2);
+        // 원본 주문과 환불 주문의 상태를 환불 완료로 변경
+        originalOrder.updateStatus(OrderStatus.REFUNDED1);  // 원본 주문 환불 완료
+        refundOrder.updateStatus(OrderStatus.REFUNDED2);   // 환불 주문 처리 완료
 
-        // 5. 변경사항 저장
+        // 변경된 상태 저장
         orderRepository.save(originalOrder);
         orderRepository.save(refundOrder);
 
         return refundOrder;
     }
 
+    /**
+     * 주문 상품들의 유효성을 검증하고 상품 정보를 조회하는 메소드
+     *
+     * @param items 검증할 주문 상품 목록
+     * @return 검증된 상품 엔티티 목록 (원본 주문 순서 유지)
+     * @throws EntityNotFoundException 상품이 존재하지 않는 경우
+     * @throws IllegalStateException   상품 상태가 유효하지 않거나 재고가 부족한 경우
+     */
     private List<Product>
     validateAndGetProducts(List<OrderLineItem> items) {
-        // 1. 중복 제거된 상품 코드 목록 추출 (동일 상품 여러 개 주문 시 한 번만 조회)
+        // 중복 제거된 상품 코드 추출 (DB 조회 최소화)
         Set<String> uniqueProductCodes = items.stream()
                 .map(OrderLineItem::getCode)
                 .collect(Collectors.toSet());
 
-        // 2. IN 절로 한 번에 상품 조회
+        // 상품 일괄 조회
         List<Product> products = productRepository.findAllByCodeIn(uniqueProductCodes);
 
-        // 3. 상품 Map 생성 - 코드를 키로 사용
+        // 상품 조회 결과를 Map으로 변환 (코드 -> 상품)
         Map<String, Product> productMap = products.stream()
                 .collect(Collectors.toMap(Product::getCode, Function.identity()));
 
-        // 4. 주문 수량을 미리 집계 (동일 상품 여러 개 주문 시 총 수량 계산)
+        // 상품별 총 주문 수량 집계 (동일 상품 여러개 주문 고려)
         Map<String, Integer> quantityByProductCode = items.stream()
                 .collect(Collectors.groupingBy(OrderLineItem::getCode,
                                                Collectors.summingInt(OrderLineItem::getQuantity)));
 
-        // 5. 누락된 상품 확인
+        // 누락된 상품 검증
         if (products.size() != uniqueProductCodes.size()) {
             Set<String> foundProductCodes = productMap.keySet();
             Set<String> notFoundProductCodes = new HashSet<>(uniqueProductCodes);
             notFoundProductCodes.removeAll(foundProductCodes);
 
-            throw new EntityNotFoundException("일부 상품을 찾을 수 없습니다: " + String.join(", ",
-                                                                                 notFoundProductCodes));
+            throw new EntityNotFoundException("일부 상품을 찾을 수 없습니다: " +
+                                                      String.join(", ", notFoundProductCodes));
         }
 
-        // 6. 상품 상태와 재고 한 번에 검증
+        // 상품 상태 및 재고 검증
         List<String> errors = new ArrayList<>();
-
         quantityByProductCode.forEach((code, totalQuantity) -> {
             Product product = productMap.get(code);
 
-            if (product.getStatus() == ProductStatus.DISABLED || product.getStock() == ProductStock.SOLD_OUT) {
+            if (product.getStatus() == ProductStatus.DISABLED ||
+                    product.getStock() == ProductStock.SOLD_OUT) {
                 errors.add("판매 중인 상품이 아닙니다: " + code);
             } else if (product.getStockQuantity() < totalQuantity) {
                 errors.add(String.format("상품 '%s'의 재고가 부족합니다. 요청: %d, 현재 재고: %d",
-                                         product.getName(),
-                                         totalQuantity,
-                                         product.getStockQuantity()));
+                                         product.getName(), totalQuantity, product.getStockQuantity()));
             }
         });
 
@@ -401,14 +435,18 @@ public abstract class AbstractOrderService {
             throw new IllegalStateException(String.join("\n", errors));
         }
 
-        // 7. 원래 주문 순서대로 상품 리스트 생성
+        // 원본 주문의 상품 순서 유지하여 반환
         return items.stream()
                 .map(item -> productMap.get(item.getCode()))
                 .collect(Collectors.toList());
     }
 
-    private String
-    generateOrderNumber() {
+    /**
+     * UUID 기반의 32자리 주문번호를 생성하는 메소드
+     *
+     * @return 생성된 주문번호 (하이픈 제거된 UUID)
+     */
+    private String generateOrderNumber() {
         return UUID.randomUUID().toString().replace("-", "");
     }
 }

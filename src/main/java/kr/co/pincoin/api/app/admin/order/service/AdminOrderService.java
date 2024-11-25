@@ -39,14 +39,6 @@ public class AdminOrderService extends AbstractOrderService {
         this.userRepository = userRepository;
     }
 
-    // 사용자가 주문서 결제완료 처리한다.
-
-    // 사용자가 주문서를 환불 요청한다.
-
-    // 사용자가 과거 주문 중 하나를 그대로 재주문한다.
-
-    // 사용자가 주문을 숨김 상태로 변경한다.
-
     // 사용자가 주문의 상태를 인증완료 처리로 변경한다.
 
     // 관리자단
@@ -54,10 +46,6 @@ public class AdminOrderService extends AbstractOrderService {
     //- 주문 결제 내역 삭제 - POST
     //- 주문 결제 완료 처리 - POST
     //- 주문 결제 완료 취소 - POST
-    //- 상품권 발송 처리 (재고 차감, 상품권 상태 변경) - POST
-    //- 주문 환불 처리 - POST
-    // 환불 요청하기
-
 
     /**
      * 주문 목록 조회
@@ -146,7 +134,7 @@ public class AdminOrderService extends AbstractOrderService {
     issueVouchers(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다: " + orderId));
-        return issueVouchers(order);
+        return issueVouchersInternal(order);
     }
 
     /**
@@ -158,6 +146,6 @@ public class AdminOrderService extends AbstractOrderService {
         Order refundOrder = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
 
-        return completeRefund(refundOrder);
+        return completeRefundInternal(refundOrder);
     }
 }

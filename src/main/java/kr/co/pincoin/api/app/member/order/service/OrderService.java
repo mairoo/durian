@@ -126,6 +126,6 @@ public class OrderService extends AbstractOrderService {
         Order order = orderRepository.findByOrderNoAndUserId(orderNo, user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
 
-        return refundRequest(user, order, message);
+        return refundRequestInternal(user, order, message);
     }
 }
