@@ -93,7 +93,7 @@ public class OrderService extends AbstractOrderService {
     }
 
     /**
-     * 신규 주문
+     * 고객 신규 주문
      */
     @Transactional
     public Order
@@ -104,7 +104,7 @@ public class OrderService extends AbstractOrderService {
     }
 
     /**
-     * 재주문
+     * 고객 재주문
      */
     @Transactional
     public Order
@@ -112,5 +112,20 @@ public class OrderService extends AbstractOrderService {
             String orderNo,
             ClientUtils.ClientInfo clientInfo) {
         return createReorderInternal(user.getId(), orderNo, clientInfo);
+    }
+
+
+    /**
+     * 고객 환불 요청
+     */
+    @Transactional
+    public Order
+    requestRefund(User user,
+                  String message,
+                  String orderNo) {
+        Order order = orderRepository.findByOrderNoAndUserId(orderNo, user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
+
+        return refundRequest(user, order, message);
     }
 }

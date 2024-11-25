@@ -249,6 +249,109 @@ public abstract class AbstractOrderService {
         return order;
     }
 
+    @Transactional
+    protected Order
+    refundRequest(User user, Order order, String message) {
+        // 1. 원본 주문 상태 검증
+        if (order.getStatus() == OrderStatus.REFUND_REQUESTED
+                || order.getStatus() == OrderStatus.REFUND_PENDING
+                || order.getStatus() == OrderStatus.REFUNDED1
+                || order.getStatus() == OrderStatus.REFUNDED2) {
+            throw new IllegalStateException("이미 환불 처리된 주문입니다.");
+        }
+
+        // 2. 원본 주문의 상태를 REFUND_REQUESTED로 변경
+        order.updateStatus(OrderStatus.REFUND_REQUESTED);
+        order.updateMessage(message);
+        orderRepository.save(order);
+
+        // 3. 환불 처리를 위한 새로운 주문 생성
+        Order refundOrder = Order.builder()
+                .orderNo(generateOrderNumber())
+                .fullname(order.getFullname())
+                .userAgent(order.getUserAgent())
+                .acceptLanguage(order.getAcceptLanguage())
+                .ipAddress(order.getIpAddress())
+                .totalListPrice(order.getTotalListPrice())
+                .totalSellingPrice(order.getTotalSellingPrice())
+                .currency(order.getCurrency())
+                .parent(order)  // 원본 주문을 parent로 설정
+                .user(user)
+                .paymentMethod(order.getPaymentMethod())
+                .status(OrderStatus.REFUND_PENDING)
+                .visibility(OrderVisibility.VISIBLE)
+                .transactionId("")
+                .message(message)
+                .suspicious(false)
+                .removed(false)
+                .build();
+
+        Order savedRefundOrder = orderRepository.saveAndFlush(refundOrder);
+
+        // 4. 원본 주문의 OrderProduct 복사
+        List<OrderProduct> originalOrderProducts = orderProductRepository.findAllByOrderFetchOrder(order);
+        List<OrderProduct> refundOrderProducts = originalOrderProducts.stream()
+                .map(op -> OrderProduct.of(
+                        op.getName(),
+                        op.getSubtitle(),
+                        op.getCode(),
+                        op.getListPrice(),
+                        op.getSellingPrice(),
+                        op.getQuantity(),
+                        savedRefundOrder))
+                .collect(Collectors.toList());
+
+        orderProductRepository.saveAll(refundOrderProducts);
+
+        // 5. 원본 주문의 OrderProductVoucher를 revoked 처리
+        List<OrderProductVoucher> vouchers = orderProductVoucherRepository
+                .findAllByOrderProductOrderId(order.getId());
+
+        vouchers.forEach(voucher -> {
+            voucher.revoke();
+
+            // 연관된 Voucher 상태를 PURCHASED로 변경
+            Voucher originalVoucher = voucherRepository.findByCode(voucher.getCode())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "상품권을 찾을 수 없습니다: " + voucher.getCode()));
+
+            originalVoucher.markAsPurchased();
+            voucherRepository.save(originalVoucher);
+        });
+
+        orderProductVoucherRepository.saveAll(vouchers);
+
+        return savedRefundOrder;
+    }
+
+    @Transactional
+    protected Order
+    completeRefund(Order refundOrder) {
+        // 1. 상태 검증
+        if (refundOrder.getStatus() != OrderStatus.REFUND_PENDING) {
+            throw new IllegalStateException("환불 처리 대기 상태의 주문이 아닙니다.");
+        }
+
+        // 2. 원본 주문(parent) 조회
+        Order originalOrder = Optional.ofNullable(refundOrder.getParent())
+                .orElseThrow(() -> new IllegalStateException("환불 처리할 원본 주문을 찾을 수 없습니다."));
+
+        // 3. 원본 주문 상태 검증
+        if (originalOrder.getStatus() != OrderStatus.REFUND_REQUESTED) {
+            throw new IllegalStateException("환불 요청 상태의 주문이 아닙니다.");
+        }
+
+        // 4. 각각의 주문 상태 업데이트
+        originalOrder.updateStatus(OrderStatus.REFUNDED1);
+        refundOrder.updateStatus(OrderStatus.REFUNDED2);
+
+        // 5. 변경사항 저장
+        orderRepository.save(originalOrder);
+        orderRepository.save(refundOrder);
+
+        return refundOrder;
+    }
+
     private List<Product>
     validateAndGetProducts(List<OrderLineItem> items) {
         // 1. 중복 제거된 상품 코드 목록 추출 (동일 상품 여러 개 주문 시 한 번만 조회)

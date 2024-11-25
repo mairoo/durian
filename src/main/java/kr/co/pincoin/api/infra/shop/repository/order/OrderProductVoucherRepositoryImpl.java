@@ -31,4 +31,13 @@ public class OrderProductVoucherRepositoryImpl implements OrderProductVoucherRep
         // 3. 저장된 Entity -> Domain Model 변환 후 반환
         return orderProductVoucherMapper.toModelList(savedEntities);
     }
+
+    @Override
+    public List<OrderProductVoucher>
+    findAllByOrderProductOrderId(Long orderId) {
+        List<OrderProductVoucherEntity> entries = orderProductVoucherJpaRepository
+                .findAllByOrderProductOrderId(orderId);
+
+        return orderProductVoucherMapper.toModelList(entries);
+    }
 }

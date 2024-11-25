@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,6 +19,17 @@ public class VoucherRepositoryImpl implements VoucherRepository {
     private final VoucherQueryRepository voucherQueryRepository;
 
     private final VoucherMapper voucherMapper;
+
+    @Override
+    public Voucher save(Voucher voucher) {
+        return voucherMapper.toModel(voucherJpaRepository.save(voucherMapper.toEntity(voucher)));
+    }
+
+    @Override
+    public Optional<Voucher> findByCode(String code) {
+        return voucherJpaRepository.findByCode(code)
+                .map(voucherMapper::toModel);
+    }
 
     @Override
     public List<Voucher>

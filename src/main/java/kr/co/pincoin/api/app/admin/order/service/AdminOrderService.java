@@ -148,4 +148,16 @@ public class AdminOrderService extends AbstractOrderService {
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다: " + orderId));
         return issueVouchers(order);
     }
+
+    /**
+     * 관리자용 환불 처리
+     */
+    @Transactional
+    public Order
+    completeRefund(Long orderId) {
+        Order refundOrder = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
+
+        return completeRefund(refundOrder);
+    }
 }

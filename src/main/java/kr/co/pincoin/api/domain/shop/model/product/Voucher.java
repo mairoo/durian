@@ -46,7 +46,6 @@ public class Voucher {
     }
 
     public VoucherEntity toEntity() {
-
         return VoucherEntity.builder()
                 .id(this.getId())
                 .code(this.getCode())
@@ -70,6 +69,10 @@ public class Voucher {
         this.status = VoucherStatus.SOLD;
     }
 
+    public void markAsPurchased() {
+        this.status = VoucherStatus.PURCHASED;
+    }
+
     public void
     updateRemarks(String remarks) {
         if (remarks == null || remarks.trim().isEmpty()) {
@@ -81,6 +84,11 @@ public class Voucher {
     public void
     restore() {
         this.isRemoved = false;
+    }
+
+    public void
+    reinstate() {
+        this.isRemoved = true;
     }
 
     public boolean

@@ -7,9 +7,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VoucherJpaRepository extends JpaRepository<VoucherEntity, Long> {
+    Optional<VoucherEntity> findByCode(String code);
+
     @Query("SELECT v FROM VoucherEntity v " +
             "WHERE v.product.code = :productCode " +
             "AND v.status = :status " +

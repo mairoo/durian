@@ -63,16 +63,8 @@ public class OrderProductVoucher {
     }
 
     public void
-    revoke(String remarks) {
-        if (this.revoked) {
-            throw new IllegalStateException("Voucher is already revoked");
-        }
-        if (remarks == null || remarks.trim().isEmpty()) {
-            throw new IllegalArgumentException("Revocation remarks cannot be empty");
-        }
-
+    revoke() {
         this.revoked = true;
-        this.remarks = remarks;
     }
 
     public void
