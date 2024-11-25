@@ -19,20 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class AdminOrderService extends AbstractOrderService {
-    private final OrderRepository orderRepository;
-
-    private final OrderProductRepository orderProductRepository;
-
-    private final ProductRepository productRepository;
-
     public AdminOrderService(OrderRepository orderRepository,
                              ProductRepository productRepository,
                              OrderProductRepository orderProductRepository) {
         super(orderRepository, productRepository, orderProductRepository);
-
-        this.orderRepository = orderRepository;
-        this.orderProductRepository = orderProductRepository;
-        this.productRepository = productRepository;
     }
 
 

@@ -21,20 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Slf4j
 public class OrderService extends AbstractOrderService {
-    private final OrderRepository orderRepository;
-
-    private final OrderProductRepository orderProductRepository;
-
-    private final ProductRepository productRepository;
-
     public OrderService(OrderRepository orderRepository,
                         ProductRepository productRepository,
                         OrderProductRepository orderProductRepository) {
         super(orderRepository, productRepository, orderProductRepository);
-
-        this.orderRepository = orderRepository;
-        this.orderProductRepository = orderProductRepository;
-        this.productRepository = productRepository;
     }
 
     /**

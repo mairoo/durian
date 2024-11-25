@@ -16,6 +16,7 @@ import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
 import kr.co.pincoin.api.global.utils.ClientUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -23,21 +24,13 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public abstract class AbstractOrderService {
-    private final OrderRepository orderRepository;
+    protected final OrderRepository orderRepository;
 
-    private final ProductRepository productRepository;
+    protected final ProductRepository productRepository;
 
-    private final OrderProductRepository orderProductRepository;
-
-    protected AbstractOrderService(
-            OrderRepository orderRepository,
-            ProductRepository productRepository,
-            OrderProductRepository orderProductRepository) {
-        this.orderRepository = orderRepository;
-        this.productRepository = productRepository;
-        this.orderProductRepository = orderProductRepository;
-    }
+    protected final OrderProductRepository orderProductRepository;
 
     /**
      * 신규 주문
