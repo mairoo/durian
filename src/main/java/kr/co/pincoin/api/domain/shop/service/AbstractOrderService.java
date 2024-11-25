@@ -3,8 +3,11 @@ package kr.co.pincoin.api.domain.shop.service;
 import jakarta.persistence.EntityNotFoundException;
 import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
 import kr.co.pincoin.api.app.member.order.request.OrderLineItem;
+import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
+import kr.co.pincoin.api.domain.auth.repository.profile.ProfileRepository;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
+import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderCurrency;
@@ -15,6 +18,7 @@ import kr.co.pincoin.api.domain.shop.model.product.Voucher;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
+import kr.co.pincoin.api.domain.shop.repository.order.OrderPaymentRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
@@ -35,11 +39,15 @@ public abstract class AbstractOrderService {
 
     protected final ProductRepository productRepository;
 
+    protected final OrderPaymentRepository orderPaymentRepository;
+
     protected final OrderProductRepository orderProductRepository;
 
     protected final OrderProductVoucherRepository orderProductVoucherRepository;
 
     protected final VoucherRepository voucherRepository;
+
+    protected final ProfileRepository profileRepository;
 
     /**
      * 신규 주문을 생성하는 메소드
@@ -378,6 +386,69 @@ public abstract class AbstractOrderService {
         orderRepository.save(refundOrder);
 
         return refundOrder;
+    }
+
+    /**
+     * 주문에 결제 정보를 추가하고 상태를 업데이트하는 메소드
+     *
+     * @param orderId 결제할 주문 ID
+     * @param payment 결제 정보
+     * @return 저장된 결제 정보
+     * @throws EntityNotFoundException 주문 또는 사용자 프로필을 찾을 수 없는 경우
+     */
+    @Transactional
+    public OrderPayment addPayment(Long orderId, OrderPayment payment) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
+
+        OrderPayment savedPayment = orderPaymentRepository.save(payment);
+
+        // 주문의 총 결제금액 계산
+        BigDecimal totalPayments = orderPaymentRepository.findByOrderAndIsRemovedFalse(order)
+                .stream()
+                .map(OrderPayment::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // 주문금액 결제 완료시 본인인증 여부에 따른 상태 변경
+        if (totalPayments.compareTo(order.getTotalSellingPrice()) >= 0) {
+            Profile profile = profileRepository.findByUserWithFetch(order.getUser())
+                    .orElseThrow(() -> new EntityNotFoundException("사용자 프로필을 찾을 수 없습니다."));
+
+            order.updateStatus(profile.isPhoneVerified() && profile.isDocumentVerified()
+                                       ? OrderStatus.PAYMENT_VERIFIED
+                                       : OrderStatus.UNDER_REVIEW);
+
+            orderRepository.save(order);
+        }
+
+        return savedPayment;
+    }
+
+    /**
+     * 결제 정보를 삭제하고 주문 상태를 업데이트하는 메소드
+     *
+     * @param paymentId 삭제할 결제 ID
+     * @throws EntityNotFoundException 결제 정보를 찾을 수 없는 경우
+     */
+    @Transactional
+    public void deletePayment(Long paymentId) {
+        OrderPayment payment = orderPaymentRepository.findById(paymentId)
+                .orElseThrow(() -> new EntityNotFoundException("결제 정보를 찾을 수 없습니다."));
+
+        Order order = payment.getOrder();
+
+        payment.remove(); // soft delete
+        orderPaymentRepository.save(payment);
+
+        BigDecimal totalPayments = orderPaymentRepository.findByOrderAndIsRemovedFalse(order)
+                .stream()
+                .map(OrderPayment::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        if (totalPayments.compareTo(order.getTotalSellingPrice()) < 0) {
+            order.updateStatus(OrderStatus.PAYMENT_PENDING);
+            orderRepository.save(order);
+        }
     }
 
     /**

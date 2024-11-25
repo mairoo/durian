@@ -3,10 +3,12 @@ package kr.co.pincoin.api.app.admin.order.service;
 import jakarta.persistence.EntityNotFoundException;
 import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
+import kr.co.pincoin.api.domain.auth.repository.profile.ProfileRepository;
 import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
+import kr.co.pincoin.api.domain.shop.repository.order.OrderPaymentRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
@@ -26,15 +28,19 @@ public class AdminOrderService extends AbstractOrderService {
 
     public AdminOrderService(OrderRepository orderRepository,
                              ProductRepository productRepository,
+                             OrderPaymentRepository orderPaymentRepository,
                              OrderProductRepository orderProductRepository,
                              OrderProductVoucherRepository orderProductVoucherRepository,
                              VoucherRepository voucherRepository,
+                             ProfileRepository profileRepository,
                              UserRepository userRepository) {
         super(orderRepository,
               productRepository,
+              orderPaymentRepository,
               orderProductRepository,
               orderProductVoucherRepository,
-              voucherRepository);
+              voucherRepository,
+              profileRepository);
 
         this.userRepository = userRepository;
     }

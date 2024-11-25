@@ -3,9 +3,11 @@ package kr.co.pincoin.api.app.member.order.service;
 import jakarta.persistence.EntityNotFoundException;
 import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
+import kr.co.pincoin.api.domain.auth.repository.profile.ProfileRepository;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
+import kr.co.pincoin.api.domain.shop.repository.order.OrderPaymentRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
@@ -25,14 +27,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderService extends AbstractOrderService {
     public OrderService(OrderRepository orderRepository,
                         ProductRepository productRepository,
+                        OrderPaymentRepository orderPaymentRepository,
                         OrderProductRepository orderProductRepository,
                         OrderProductVoucherRepository orderProductVoucherRepository,
-                        VoucherRepository voucherRepository) {
+                        VoucherRepository voucherRepository,
+                        ProfileRepository profileRepository) {
         super(orderRepository,
               productRepository,
+              orderPaymentRepository,
               orderProductRepository,
               orderProductVoucherRepository,
-              voucherRepository);
+              voucherRepository,
+              profileRepository);
     }
 
     /**
