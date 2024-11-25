@@ -2,7 +2,6 @@ package kr.co.pincoin.api.infra.shop.repository.order;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
@@ -49,12 +48,9 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
                         createdBetween(condition.getStartDate(), condition.getEndDate())
                       );
 
-        // 정렬 조건 적용
+        // Sort 처리
         for (Sort.Order o : pageable.getSort()) {
-            PathBuilder<OrderEntity> pathBuilder = new PathBuilder<>(OrderEntity.class, "orderEntity");
-            query.orderBy(new OrderSpecifier<>(
-                    o.isAscending() ? com.querydsl.core.types.Order.ASC : com.querydsl.core.types.Order.DESC,
-                    pathBuilder.getString(o.getProperty())));
+            query.orderBy(getOrderSpecifier(o));
         }
 
         // 페이징 적용
@@ -129,5 +125,24 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
             return order.created.loe(endDate);
         }
         return null;
+    }
+
+    // 정렬 조건 처리를 위한 private 메소드
+    private OrderSpecifier<?> getOrderSpecifier(Sort.Order order) {
+        QOrderEntity orderEntity = QOrderEntity.orderEntity;
+
+        com.querydsl.core.types.Order direction = order.isAscending() ?
+                com.querydsl.core.types.Order.ASC :
+                com.querydsl.core.types.Order.DESC;
+
+        return switch (order.getProperty()) {
+            case "id" -> new OrderSpecifier<>(direction, orderEntity.id);
+            case "created" -> new OrderSpecifier<>(direction, orderEntity.created);
+            case "totalListPrice" -> new OrderSpecifier<>(direction, orderEntity.totalListPrice);
+            case "totalSellingPrice" -> new OrderSpecifier<>(direction, orderEntity.totalSellingPrice);
+            case "status" -> new OrderSpecifier<>(direction, orderEntity.status);
+            case "orderNo" -> new OrderSpecifier<>(direction, orderEntity.orderNo);
+            default -> new OrderSpecifier<>(direction, orderEntity.id);
+        };
     }
 }

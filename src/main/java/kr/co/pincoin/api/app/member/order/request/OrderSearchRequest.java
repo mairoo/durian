@@ -1,4 +1,4 @@
-package kr.co.pincoin.api.app.admin.order.request;
+package kr.co.pincoin.api.app.member.order.request;
 
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import lombok.Builder;

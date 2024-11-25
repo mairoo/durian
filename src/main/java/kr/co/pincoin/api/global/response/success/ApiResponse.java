@@ -10,8 +10,11 @@ import org.springframework.http.HttpStatus;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
     private final Long timestamp;
+
     private final int status;
+
     private final String message;
+
     private final T data;
 
     public static <T> ApiResponse<T> of(T data) {
