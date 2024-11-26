@@ -4,12 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)  // JSON 역직렬화를 위한 기본 생성자
-@AllArgsConstructor(access = AccessLevel.PRIVATE)   // @Builder 사용 private 생성자
-@Builder
 public class UsernameUpdateRequest {
     @NotBlank(message = "아이디는 필수 입력값입니다")
     @Size(min = 4, max = 20, message = "아이디는 4자 이상 20자 이하여야 합니다")
