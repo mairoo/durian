@@ -4,17 +4,14 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderPaymentMethod;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)  // JSON 역직렬화를 위한 기본 생성자
+@AllArgsConstructor(access = AccessLevel.PRIVATE)   // @Builder 사용 private 생성자
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class OrderCreateRequest {
     @NotNull(message = "주문 상품 목록은 필수입니다.")
     @NotEmpty(message = "최소 1개 이상의 상품을 주문해야 합니다.")

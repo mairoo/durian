@@ -1,4 +1,4 @@
-package kr.co.pincoin.api.app.admin.product.response;
+package kr.co.pincoin.api.external.notification.mailgun;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
@@ -7,8 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ProductResponse {
+public class MailgunEmailResponse {
 }

@@ -2,6 +2,8 @@ package kr.co.pincoin.api.global.response.error;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -9,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 @Getter
-@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ErrorResponse {
     private final Long timestamp;  // Unix 타임스탬프
 
