@@ -66,7 +66,7 @@ public class AuthService {
             saveRefreshTokenInfo(refreshToken, user.getEmail(), servletRequest);
         }
 
-        return new TokenPair(new AccessTokenResponse(accessToken, jwtProperties.accessTokenExpiresIn()), refreshToken);
+        return new TokenPair(AccessTokenResponse.of(accessToken, jwtProperties.accessTokenExpiresIn()), refreshToken);
     }
 
     /**
@@ -103,7 +103,7 @@ public class AuthService {
         redisTemplate.delete(refreshToken);
         saveRefreshTokenInfo(newRefreshToken, email, servletRequest);
 
-        return new TokenPair(new AccessTokenResponse(newAccessToken, jwtProperties.accessTokenExpiresIn()),
+        return new TokenPair(AccessTokenResponse.of(newAccessToken, jwtProperties.accessTokenExpiresIn()),
                              newRefreshToken);
     }
 

@@ -23,9 +23,10 @@ public class AccessTokenResponse {
     @JsonProperty("expiresIn")
     private int expiresIn;
 
-    public AccessTokenResponse(String accessToken, int expiresIn) {
-        this.accessToken = accessToken;
-        this.tokenType = "Bearer";  // OAuth 2.0에서 가장 일반적인 타입
-        this.expiresIn = expiresIn; // 초 단위의 만료 시간
+    public static AccessTokenResponse of(String accessToken, int expiresIn) {
+        return AccessTokenResponse.builder()
+                .tokenType("Bearer") // OAuth 2.0에서 가장 일반적인 타입
+                .accessToken(accessToken) // 초 단위의 만료 시간
+                .expiresIn(expiresIn).build();
     }
 }
