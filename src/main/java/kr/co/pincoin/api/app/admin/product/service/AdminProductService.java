@@ -17,4 +17,6 @@ public class AdminProductService {
     // 상품권의 가격을 변경한다.
 
     // 상품권의 재고수량을 변경한다.
+
+    // 상품권의 카테고리를 변경한다.
 }

@@ -6,6 +6,7 @@ import kr.co.pincoin.api.infra.shop.mapper.product.CategoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -32,6 +33,16 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     public Optional<Category> findBySlug(String slug) {
         return categoryJpaRepository.findBySlug(slug)
                 .map(categoryMapper::toModel);
+    }
+
+    @Override
+    public List<Category> findAll() {
+        return categoryMapper.toModelList(categoryJpaRepository.findAll());
+    }
+
+    @Override
+    public boolean existsBySlug(String slug) {
+        return categoryJpaRepository.findBySlug(slug).isPresent();
     }
 
     @Override
