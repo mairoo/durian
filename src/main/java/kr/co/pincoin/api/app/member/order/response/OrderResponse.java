@@ -55,24 +55,20 @@ public class OrderResponse {
     @JsonProperty("removed")
     private final Boolean removed;
 
-    // 생성자 외부 접근 불허 / 자식 허용
-    protected OrderResponse(Order order) {
-        this.id = order.getId();
-        this.orderNo = order.getOrderNo();
-        this.fullname = order.getFullname();
-        this.totalListPrice = order.getTotalListPrice();
-        this.totalSellingPrice = order.getTotalSellingPrice();
-        this.currency = order.getCurrency();
-        this.status = order.getStatus();
-        this.paymentMethod = order.getPaymentMethod();
-        this.created = order.getCreated();
-        this.modified = order.getModified();
-        this.suspicious = order.getSuspicious();
-        this.removed = order.getRemoved();
-    }
-
     // 도메인 모델 객체에서 응답 객체 초기화
     public static OrderResponse from(Order order) {
-        return new OrderResponse(order);
+        return OrderResponse.builder()
+                .id(order.getId())
+                .orderNo(order.getOrderNo())
+                .fullname(order.getFullname())
+                .totalListPrice(order.getTotalListPrice())
+                .totalSellingPrice(order.getTotalSellingPrice())
+                .currency(order.getCurrency())
+                .status(order.getStatus())
+                .paymentMethod(order.getPaymentMethod())
+                .created(order.getCreated())
+                .modified(order.getModified())
+                .suspicious(order.getSuspicious())
+                .removed(order.getRemoved()).build();
     }
 }
