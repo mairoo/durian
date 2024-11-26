@@ -26,6 +26,12 @@ public class VoucherRepositoryImpl implements VoucherRepository {
     }
 
     @Override
+    public Optional<Voucher> findById(Long id) {
+        return voucherJpaRepository.findById(id)
+                .map(voucherMapper::toModel);
+    }
+
+    @Override
     public Optional<Voucher> findByCode(String code) {
         return voucherJpaRepository.findByCode(code)
                 .map(voucherMapper::toModel);
@@ -42,5 +48,57 @@ public class VoucherRepositoryImpl implements VoucherRepository {
                                                             limit);
 
         return voucherMapper.toModelList(savedEntities);
+    }
+
+    @Override
+    public void delete(Voucher voucher) {
+        voucherJpaRepository.delete(voucherMapper.toEntity(voucher));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        voucherJpaRepository.deleteById(id);
+    }
+
+    @Override
+    public void softDelete(Voucher voucher) {
+        Voucher deletedVoucher = findById(voucher.getId())
+                .map(v -> {
+                    v.softDelete();
+                    return v;
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
+        save(deletedVoucher);
+    }
+
+    @Override
+    public void softDeleteById(Long id) {
+        findById(id)
+                .map(v -> {
+                    v.softDelete();
+                    return save(v);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
+    }
+
+    @Override
+    public void restore(Voucher voucher) {
+        Voucher restoredVoucher = findById(voucher.getId())
+                .map(v -> {
+                    v.restore();
+                    return v;
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
+        save(restoredVoucher);
+    }
+
+    @Override
+    public void restoreById(Long id) {
+        findById(id)
+                .map(v -> {
+                    v.restore();
+                    return save(v);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
     }
 }

@@ -91,12 +91,12 @@ public class Voucher {
         this.remarks = remarks;
     }
 
-    public void restore() {
-        this.isRemoved = false;
+    public void softDelete() {
+        this.isRemoved = true;
     }
 
-    public void reinstate() {
-        this.isRemoved = true;
+    public void restore() {
+        this.isRemoved = false;
     }
 
     // 검증 메소드
