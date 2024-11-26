@@ -1,6 +1,6 @@
-package kr.co.pincoin.api.domain.shop.model.order;
+package kr.co.pincoin.api.domain.shop.model.product;
 
-import kr.co.pincoin.api.infra.shop.entity.order.PurchaseOrderEntity;
+import kr.co.pincoin.api.infra.shop.entity.product.PurchaseOrderEntity;
 import lombok.Builder;
 import lombok.Getter;
 

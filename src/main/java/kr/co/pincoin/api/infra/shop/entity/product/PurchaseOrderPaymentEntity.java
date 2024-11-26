@@ -1,4 +1,4 @@
-package kr.co.pincoin.api.infra.shop.entity.order;
+package kr.co.pincoin.api.infra.shop.entity.product;
 
 import jakarta.persistence.*;
 import kr.co.pincoin.api.infra.common.BaseRemovalDateTime;

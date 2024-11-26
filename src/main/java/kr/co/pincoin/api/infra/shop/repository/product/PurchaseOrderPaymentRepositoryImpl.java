@@ -1,7 +1,7 @@
-package kr.co.pincoin.api.infra.shop.repository.order;
+package kr.co.pincoin.api.infra.shop.repository.product;
 
-import kr.co.pincoin.api.domain.shop.repository.order.PurchaseOrderPaymentRepository;
-import kr.co.pincoin.api.infra.shop.mapper.order.PurchaseOrderPaymentMapper;
+import kr.co.pincoin.api.domain.shop.repository.product.PurchaseOrderPaymentRepository;
+import kr.co.pincoin.api.infra.shop.mapper.product.PurchaseOrderPaymentMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

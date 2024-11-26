@@ -1,8 +1,7 @@
-package kr.co.pincoin.api.infra.shop.mapper.order;
+package kr.co.pincoin.api.infra.shop.mapper.product;
 
-import kr.co.pincoin.api.domain.shop.model.order.PurchaseOrderPayment;
-import kr.co.pincoin.api.infra.shop.entity.order.PurchaseOrderPaymentEntity;
-import lombok.RequiredArgsConstructor;
+import kr.co.pincoin.api.domain.shop.model.product.PurchaseOrder;
+import kr.co.pincoin.api.infra.shop.entity.product.PurchaseOrderEntity;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -10,27 +9,26 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
-public class PurchaseOrderPaymentMapper {
-    private final PurchaseOrderMapper purchaseOrderMapper;
-
-    public PurchaseOrderPayment toModel(PurchaseOrderPaymentEntity entity) {
+public class PurchaseOrderMapper {
+    public PurchaseOrder toModel(PurchaseOrderEntity entity) {
         if (entity == null) {
             return null;
         }
 
-        return PurchaseOrderPayment.builder()
+        return PurchaseOrder.builder()
                 .id(entity.getId())
-                .account(entity.getAccount())
+                .title(entity.getTitle())
+                .content(entity.getContent())
+                .paid(entity.getPaid())
+                .bankAccount(entity.getBankAccount())
                 .amount(entity.getAmount())
-                .order(purchaseOrderMapper.toModel(entity.getOrder()))
                 .created(entity.getCreated())
                 .modified(entity.getModified())
                 .isRemoved(entity.isRemoved())
                 .build();
     }
 
-    public PurchaseOrderPaymentEntity toEntity(PurchaseOrderPayment model) {
+    public PurchaseOrderEntity toEntity(PurchaseOrder model) {
         if (model == null) {
             return null;
         }
@@ -38,7 +36,7 @@ public class PurchaseOrderPaymentMapper {
         return model.toEntity();
     }
 
-    public List<PurchaseOrderPayment> toModelList(List<PurchaseOrderPaymentEntity> entities) {
+    public List<PurchaseOrder> toModelList(List<PurchaseOrderEntity> entities) {
         if (entities == null) {
             return Collections.emptyList();
         }
@@ -48,7 +46,7 @@ public class PurchaseOrderPaymentMapper {
                 .collect(Collectors.toList());
     }
 
-    public List<PurchaseOrderPaymentEntity> toEntityList(List<PurchaseOrderPayment> models) {
+    public List<PurchaseOrderEntity> toEntityList(List<PurchaseOrder> models) {
         if (models == null) {
             return Collections.emptyList();
         }
