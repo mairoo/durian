@@ -3,6 +3,7 @@ package kr.co.pincoin.api.app.admin.product.service;
 import kr.co.pincoin.api.app.admin.product.request.ProductCreateRequest;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
+import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
 import kr.co.pincoin.api.domain.shop.repository.product.CategoryRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
@@ -25,7 +26,6 @@ public class AdminProductService {
     private final CategoryRepository categoryRepository;
 
     private final StoreRepository storeRepository;
-
 
     /**
      * 새 상품권 권종을 등록한다. (디폴트 판매 개시)
@@ -51,14 +51,14 @@ public class AdminProductService {
                 request.getName(),
                 request.getSubtitle(),
                 request.getCode(),
+                request.getPg(),
+                store,
+                category,
                 request.getListPrice(),
                 request.getSellingPrice(),
-                request.getPg(),
                 request.getPgSellingPrice(),
                 request.getMinimumStockLevel(),
-                request.getMaximumStockLevel(),
-                category,
-                store);
+                request.getMaximumStockLevel());
 
         return productRepository.save(product);
     }
@@ -73,7 +73,6 @@ public class AdminProductService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
         product.updateStockQuantity(0);
-
         return productRepository.save(product);
     }
 
@@ -86,9 +85,7 @@ public class AdminProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        // TODO: Product 도메인에 상태 변경 메소드 추가 필요
-        // product.updateStatus(ProductStatus.SUSPENDED);
-
+        product.updateStatus(ProductStatus.DISABLED);
         return productRepository.save(product);
     }
 
@@ -113,8 +110,7 @@ public class AdminProductService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        // TODO: Product 도메인에 가격 변경 메소드 추가 필요
-        // product.updatePrices(listPrice, sellingPrice);
+        product.updatePrices(listPrice, sellingPrice);
 
         return productRepository.save(product);
     }
@@ -129,7 +125,6 @@ public class AdminProductService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
         product.updateStockQuantity(stockQuantity);
-
         return productRepository.save(product);
     }
 
@@ -145,9 +140,7 @@ public class AdminProductService {
         Category newCategory = categoryRepository.findById(newCategoryId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
-        // TODO: Product 도메인에 카테고리 변경 메소드 추가 필요
-        // product.updateCategory(newCategory);
-
+        product.updateCategory(newCategory);
         return productRepository.save(product);
     }
 }

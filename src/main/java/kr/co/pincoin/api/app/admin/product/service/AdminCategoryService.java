@@ -63,9 +63,6 @@ public class AdminCategoryService {
     }
 
     public List<Category> getCategoryListByStore(Long storeId) {
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-
         return categoryRepository.findAll().stream()
                 .filter(category -> category.getStore().getId().equals(storeId))
                 .toList();
@@ -81,9 +78,6 @@ public class AdminCategoryService {
     }
 
     public List<Category> getRootCategories(Long storeId) {
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
-
         return categoryRepository.findAll().stream()
                 .filter(category -> category.getStore().getId().equals(storeId))
                 .filter(Category::isRoot)
