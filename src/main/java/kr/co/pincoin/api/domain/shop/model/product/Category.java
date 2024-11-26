@@ -12,44 +12,40 @@ import java.time.LocalDateTime;
 
 @Getter
 public class Category {
+    // 핵심 식별 정보 (불변)
     private final Long id;
-
     private final String title;
-
     private final String slug;
 
+    // 결제 관련 정보 (불변)
     private final Boolean pg;
 
+    // 연관 관계 (불변)
     private final Category parent;
-
     private final Store store;
 
+    // 생성/수정 시간 (불변)
     private final LocalDateTime created;
-
     private final LocalDateTime modified;
 
+    // 이미지 및 설명 (가변)
     private String thumbnail;
-
     private String description;
-
     private String description1;
 
+    // 할인율 정보 (가변)
     private BigDecimal discountRate;
-
     private BigDecimal pgDiscountRate;
 
+    // 네이버 관련 정보 (가변)
     private String naverSearchTag;
-
     private String naverBrandName;
-
     private String naverMakerName;
 
+    // Nested Set Model 정보 (가변)
     private Integer lft;
-
     private Integer rght;
-
     private Integer treeId;
-
     private Integer level;
 
     @Builder
@@ -76,11 +72,16 @@ public class Category {
         this.id = id;
         this.title = title;
         this.slug = slug;
+        this.pg = pg;
+        this.parent = parent;
+        this.store = store;
+        this.created = created;
+        this.modified = modified;
+
         this.thumbnail = thumbnail;
         this.description = description;
         this.description1 = description1;
         this.discountRate = discountRate;
-        this.pg = pg;
         this.pgDiscountRate = pgDiscountRate;
         this.naverSearchTag = naverSearchTag;
         this.naverBrandName = naverBrandName;
@@ -89,14 +90,11 @@ public class Category {
         this.rght = rght;
         this.treeId = treeId;
         this.level = level;
-        this.parent = parent;
-        this.store = store;
-        this.created = created;
-        this.modified = modified;
 
         validateCategory();
     }
 
+    // 팩토리 메소드
     public static Category of(String title,
                               String slug,
                               BigDecimal discountRate,
@@ -115,6 +113,7 @@ public class Category {
                 .build();
     }
 
+    // 엔티티 변환 메소드
     public CategoryEntity toEntity() {
         CategoryEntity parentEntity = null;
 
@@ -144,84 +143,38 @@ public class Category {
                 .build();
     }
 
-    public void
-    updateNestedSetInfo(Integer lft,
-                        Integer rght,
-                        Integer treeId) {
-        if (lft >= rght) {
-            throw new BusinessException(ErrorCode.INVALID_NESTED_SET_VALUES);
-        }
-        this.lft = lft;
-        this.rght = rght;
-        this.treeId = treeId;
-    }
-
-    public void
-    updateThumbnail(String thumbnail) {
-        this.thumbnail = thumbnail;
-    }
-
-    public void
-    updateDescriptions(String description,
-                       String description1) {
-        this.description = description;
-        this.description1 = description1;
-    }
-
-    public void
-    updateDiscountRates(BigDecimal discountRate,
-                        BigDecimal pgDiscountRate) {
-        validateDiscountRates(discountRate, pgDiscountRate);
-        this.discountRate = discountRate;
-        this.pgDiscountRate = pgDiscountRate;
-    }
-
-    public void
-    updateNaverInfo(String searchTag,
-                    String brandName,
-                    String makerName) {
-        this.naverSearchTag = searchTag;
-        this.naverBrandName = brandName;
-        this.naverMakerName = makerName;
-    }
-
-    public boolean
-    isRoot() {
+    // 트리 구조 관련 메소드
+    public boolean isRoot() {
         return this.parent == null;
     }
 
-    public boolean
-    isLeaf() {
+    public boolean isLeaf() {
         return this.rght - this.lft == 1;
     }
 
-    public boolean
-    hasChildren() {
+    public boolean hasChildren() {
         return !isLeaf();
     }
 
-    public boolean
-    isDescendantOf(Category ancestor) {
+    public boolean isDescendantOf(Category ancestor) {
         return this.lft > ancestor.getLft() &&
                 this.rght < ancestor.getRght() &&
                 this.treeId.equals(ancestor.getTreeId());
     }
 
-    public boolean
-    isAncestorOf(Category descendant) {
+    public boolean isAncestorOf(Category descendant) {
         return this.lft < descendant.getLft() &&
                 this.rght > descendant.getRght() &&
                 this.treeId.equals(descendant.getTreeId());
     }
 
-    public int
-    getDescendantCount() {
+    public int getDescendantCount() {
         return (this.rght - this.lft - 1) / 2;
     }
 
-    public BigDecimal
-    calculateDiscountedPrice(BigDecimal originalPrice,
-                             boolean isPgPayment) {
+    // 비즈니스 계산 메소드
+    public BigDecimal calculateDiscountedPrice(BigDecimal originalPrice,
+                                               boolean isPgPayment) {
         if (originalPrice == null || originalPrice.compareTo(BigDecimal.ZERO) <= 0) {
             throw new BusinessException(ErrorCode.INVALID_ORIGINAL_PRICE);
         }
@@ -232,12 +185,48 @@ public class Category {
         }
 
         return originalPrice.multiply(BigDecimal.ONE.subtract(
-                rate.divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP)
-                                                             ));
+                rate.divide(BigDecimal.valueOf(100), 2, java.math.RoundingMode.HALF_UP)));
     }
 
-    private void
-    validateCategory() {
+    // 상태 변경 메소드
+    public void updateNestedSetInfo(Integer lft,
+                                    Integer rght,
+                                    Integer treeId) {
+        if (lft >= rght) {
+            throw new BusinessException(ErrorCode.INVALID_NESTED_SET_VALUES);
+        }
+        this.lft = lft;
+        this.rght = rght;
+        this.treeId = treeId;
+    }
+
+    public void updateThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
+    }
+
+    public void updateDescriptions(String description,
+                                   String description1) {
+        this.description = description;
+        this.description1 = description1;
+    }
+
+    public void updateDiscountRates(BigDecimal discountRate,
+                                    BigDecimal pgDiscountRate) {
+        validateDiscountRates(discountRate, pgDiscountRate);
+        this.discountRate = discountRate;
+        this.pgDiscountRate = pgDiscountRate;
+    }
+
+    public void updateNaverInfo(String searchTag,
+                                String brandName,
+                                String makerName) {
+        this.naverSearchTag = searchTag;
+        this.naverBrandName = brandName;
+        this.naverMakerName = makerName;
+    }
+
+    // 검증 메소드
+    private void validateCategory() {
         if (title == null || title.trim().isEmpty()) {
             throw new BusinessException(ErrorCode.INVALID_CATEGORY_TITLE);
         }
@@ -250,9 +239,8 @@ public class Category {
         validateDiscountRates(discountRate, pgDiscountRate);
     }
 
-    private void
-    validateDiscountRates(BigDecimal discountRate,
-                          BigDecimal pgDiscountRate) {
+    private void validateDiscountRates(BigDecimal discountRate,
+                                       BigDecimal pgDiscountRate) {
         if (discountRate != null &&
                 (discountRate.compareTo(BigDecimal.ZERO) < 0 ||
                         discountRate.compareTo(BigDecimal.valueOf(100)) > 0)) {

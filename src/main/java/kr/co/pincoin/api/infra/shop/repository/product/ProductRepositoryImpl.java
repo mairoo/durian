@@ -50,4 +50,56 @@ public class ProductRepositoryImpl implements ProductRepository {
                 .map(productMapper::toModel)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void delete(Product product) {
+        productJpaRepository.delete(productMapper.toEntity(product));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        productJpaRepository.deleteById(id);
+    }
+
+    @Override
+    public void softDelete(Product product) {
+        Product deletedProduct = findById(product.getId())
+                .map(p -> {
+                    p.softDelete();
+                    return p;
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+        save(deletedProduct);
+    }
+
+    @Override
+    public void softDeleteById(Long id) {
+        findById(id)
+                .map(p -> {
+                    p.softDelete();
+                    return save(p);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+    }
+
+    @Override
+    public void restore(Product product) {
+        Product restoredProduct = findById(product.getId())
+                .map(p -> {
+                    p.restore();
+                    return p;
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+        save(restoredProduct);
+    }
+
+    @Override
+    public void restoreById(Long id) {
+        findById(id)
+                .map(p -> {
+                    p.restore();
+                    return save(p);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+    }
 }

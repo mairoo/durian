@@ -16,4 +16,16 @@ public interface ProductRepository {
     List<Product> findAllByIdIn(Collection<Long> ids);
 
     List<Product> findAllByCodeIn(Collection<String> codes);
+
+    void delete(Product product);
+
+    void deleteById(Long id);
+
+    void softDelete(Product product);
+
+    void softDeleteById(Long id);
+
+    void restore(Product product);
+
+    void restoreById(Long id);
 }

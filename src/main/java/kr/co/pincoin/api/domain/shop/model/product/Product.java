@@ -13,56 +13,46 @@ import java.time.LocalDateTime;
 
 @Getter
 public class Product {
+    // 핵심 식별 정보 (불변)
     private final Long id;
-
-    private final String name;
-
-    private final String subtitle;
-
     private final String code;
 
+    // 상품 기본 정보 (불변)
+    private final String name;
+    private final String subtitle;
     private final BigDecimal listPrice;
-
     private final BigDecimal sellingPrice;
-
     private final Boolean pg;
-
     private final BigDecimal pgSellingPrice;
-
     private final Integer minimumStockLevel;
-
     private final Integer maximumStockLevel;
 
+    // 네이버 관련 정보 (불변)
     private final Boolean naverPartner;
-
     private final String naverPartnerTitle;
-
     private final String naverPartnerTitlePg;
-
     private final String naverAttribute;
 
+    // 연관 관계 (불변)
     private final Category category;
-
     private final Store store;
 
+    // 생성/수정 시간 (불변)
     private final LocalDateTime created;
-
     private final LocalDateTime modified;
 
+    // 상태 및 재고 정보 (가변)
     private String description;
-
     private Integer position;
-
     private final ProductStatus status;
-
     private Integer stockQuantity;
-
     private final ProductStock stock;
 
+    // 리뷰 카운트 (가변)
     private Integer reviewCount;
-
     private Integer reviewCountPg;
 
+    // 삭제 상태 (가변)
     private Boolean isRemoved;
 
     @Builder
@@ -93,22 +83,15 @@ public class Product {
                     LocalDateTime modified,
                     Boolean isRemoved) {
         this.id = id;
+        this.code = code;
         this.name = name;
         this.subtitle = subtitle;
-        this.code = code;
         this.listPrice = listPrice;
         this.sellingPrice = sellingPrice;
         this.pg = pg;
         this.pgSellingPrice = pgSellingPrice;
-        this.description = description;
-        this.position = position;
-        this.status = status;
-        this.stockQuantity = stockQuantity;
-        this.stock = stock;
         this.minimumStockLevel = minimumStockLevel;
         this.maximumStockLevel = maximumStockLevel;
-        this.reviewCount = reviewCount;
-        this.reviewCountPg = reviewCountPg;
         this.naverPartner = naverPartner;
         this.naverPartnerTitle = naverPartnerTitle;
         this.naverPartnerTitlePg = naverPartnerTitlePg;
@@ -117,9 +100,44 @@ public class Product {
         this.store = store;
         this.created = created;
         this.modified = modified;
+        this.description = description;
+        this.position = position;
+        this.status = status;
+        this.stockQuantity = stockQuantity;
+        this.stock = stock;
+        this.reviewCount = reviewCount;
+        this.reviewCountPg = reviewCountPg;
         this.isRemoved = isRemoved;
     }
 
+    // 팩토리 메소드
+    public static Product of(String name,
+                             String subtitle,
+                             String code,
+                             BigDecimal listPrice,
+                             BigDecimal sellingPrice,
+                             Boolean pg,
+                             BigDecimal pgSellingPrice,
+                             Integer minimumStockLevel,
+                             Integer maximumStockLevel,
+                             Category category,
+                             Store store) {
+        return Product.builder()
+                .name(name)
+                .subtitle(subtitle)
+                .code(code)
+                .listPrice(listPrice)
+                .sellingPrice(sellingPrice)
+                .pg(pg)
+                .pgSellingPrice(pgSellingPrice)
+                .minimumStockLevel(minimumStockLevel)
+                .maximumStockLevel(maximumStockLevel)
+                .category(category)
+                .store(store)
+                .build();
+    }
+
+    // 엔티티 변환 메소드
     public ProductEntity toEntity() {
         return ProductEntity.builder()
                 .id(this.getId())
@@ -148,36 +166,7 @@ public class Product {
                 .build();
     }
 
-    public static Product of(String name,
-                             String subtitle,
-                             String code,
-                             BigDecimal listPrice,
-                             BigDecimal sellingPrice,
-                             Boolean pg,
-                             BigDecimal pgSellingPrice,
-                             Integer minimumStockLevel,
-                             Integer maximumStockLevel,
-                             Category category,
-                             Store store) {
-        return Product.builder()
-                .name(name)
-                .subtitle(subtitle)
-                .code(code)
-                .listPrice(listPrice)
-                .sellingPrice(sellingPrice)
-                .pg(pg)
-                .pgSellingPrice(pgSellingPrice)
-                .minimumStockLevel(minimumStockLevel)
-                .maximumStockLevel(maximumStockLevel)
-                .category(category)
-                .store(store)
-                .build();
-    }
-
-    public void updateStockQuantity(int stockQuantity) {
-        this.stockQuantity = stockQuantity;
-    }
-
+    // 비즈니스 계산 메소드
     public ProductStock calculateStockStatus() {
         if (stockQuantity == 0) {
             return ProductStock.SOLD_OUT;
@@ -185,36 +174,11 @@ public class Product {
         return this.stock;
     }
 
-    public void
-    updateDescription(String description) {
-        this.description = description;
-    }
-
-    public void
-    updatePosition(Integer position) {
-        this.position = position;
-    }
-
-    public void
-    incrementReviewCount(boolean isPgPurchase) {
-        if (isPgPurchase) {
-            this.reviewCountPg++;
-        }
-        this.reviewCount++;
-    }
-
-    public void
-    restore() {
-        this.isRemoved = false;
-    }
-
-    public BigDecimal
-    getDiscountAmount() {
+    public BigDecimal getDiscountAmount() {
         return this.listPrice.subtract(this.sellingPrice);
     }
 
-    public double
-    getDiscountRate() {
+    public double getDiscountRate() {
         if (this.listPrice.compareTo(BigDecimal.ZERO) == 0) {
             return 0.0;
         }
@@ -222,5 +186,33 @@ public class Product {
                 .divide(this.listPrice, 4, RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100))
                 .doubleValue();
+    }
+
+    // 상태 변경 메소드
+    public void updateStockQuantity(int stockQuantity) {
+        this.stockQuantity = stockQuantity;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
+    }
+
+    public void updatePosition(Integer position) {
+        this.position = position;
+    }
+
+    public void incrementReviewCount(boolean isPgPurchase) {
+        if (isPgPurchase) {
+            this.reviewCountPg++;
+        }
+        this.reviewCount++;
+    }
+
+    public void softDelete() {
+        this.isRemoved = true;
+    }
+
+    public void restore() {
+        this.isRemoved = false;
     }
 }
