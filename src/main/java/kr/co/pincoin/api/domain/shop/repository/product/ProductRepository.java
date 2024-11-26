@@ -13,9 +13,13 @@ public interface ProductRepository {
 
     Optional<Product> findByCode(String code);
 
+    List<Product> findAll();
+
     List<Product> findAllByIdIn(Collection<Long> ids);
 
     List<Product> findAllByCodeIn(Collection<String> codes);
+
+    boolean existsBySlug(String code);
 
     void delete(Product product);
 

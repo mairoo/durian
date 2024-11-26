@@ -84,6 +84,10 @@ public class Voucher {
         this.status = VoucherStatus.PURCHASED;
     }
 
+    public void markAsRevoked() {
+        this.status = VoucherStatus.REVOKED;
+    }
+
     public void updateRemarks(String remarks) {
         if (remarks == null || remarks.trim().isEmpty()) {
             throw new IllegalArgumentException("Remarks cannot be empty");

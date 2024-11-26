@@ -8,8 +8,10 @@ import kr.co.pincoin.api.infra.shop.mapper.product.VoucherMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,6 +28,13 @@ public class VoucherRepositoryImpl implements VoucherRepository {
     }
 
     @Override
+    public List<Voucher> saveAll(Collection<Voucher> vouchers) {
+        return voucherMapper.toModelList(voucherJpaRepository
+                                                 .saveAll(voucherMapper.toEntityList(vouchers.stream()
+                                                                                             .toList())));
+    }
+
+    @Override
     public Optional<Voucher> findById(Long id) {
         return voucherJpaRepository.findById(id)
                 .map(voucherMapper::toModel);
@@ -35,6 +44,20 @@ public class VoucherRepositoryImpl implements VoucherRepository {
     public Optional<Voucher> findByCode(String code) {
         return voucherJpaRepository.findByCode(code)
                 .map(voucherMapper::toModel);
+    }
+
+    @Override
+    public List<Voucher> findAllByIdIn(Collection<Long> ids) {
+        return voucherJpaRepository.findAllByIdIn(ids).stream()
+                .map(voucherMapper::toModel)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Voucher> findAllByCodeIn(Collection<String> codes) {
+        return voucherJpaRepository.findAllByCodeIn(codes).stream()
+                .map(voucherMapper::toModel)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -48,6 +71,11 @@ public class VoucherRepositoryImpl implements VoucherRepository {
                                                             limit);
 
         return voucherMapper.toModelList(savedEntities);
+    }
+
+    @Override
+    public boolean existsByCode(String code) {
+        return voucherJpaRepository.findByCode(code).isPresent();
     }
 
     @Override

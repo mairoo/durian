@@ -17,8 +17,14 @@ public enum ErrorCode {
     INVALID_DISCOUNT_RATE(HttpStatus.BAD_REQUEST, "할인율은 0에서 100 사이여야 합니다"),
     INVALID_PG_DISCOUNT_RATE(HttpStatus.BAD_REQUEST, "PG 할인율은 0에서 100 사이여야 합니다"),
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "상점을 찾을 수 없습니다."),
-    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "카테고리를 찾을 수 없습니다."),
+    CATEGORY_NOT_FOUND(HttpStatus.CONFLICT, "카테고리를 찾을 수 없습니다."),
     DUPLICATE_CATEGORY_SLUG(HttpStatus.BAD_REQUEST, "카테고리 slug 중복입니다."),
+    PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "상품을 찾을 수 없습니다"),
+    DUPLICATE_PRODUCT_CODE(HttpStatus.CONFLICT, "상품 코드가 중복입니다."),
+    VOUCHER_NOT_FOUND(HttpStatus.NOT_FOUND, "상품권을 찾을 수 없습니다."),
+    INVALID_VOUCHER_STATUS(HttpStatus.BAD_REQUEST, "잘못된 상품권 상태입니다."),
+    DUPLICATE_VOUCHER_CODE(HttpStatus.CONFLICT, "상품권 번호가 중복입니다. [개별]"),
+    DUPLICATE_VOUCHER_CODES(HttpStatus.CONFLICT, "상품권 번호가 중복입니다. [일괄]"),
 
     // 공통
     INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "잘못된 입력값입니다."),

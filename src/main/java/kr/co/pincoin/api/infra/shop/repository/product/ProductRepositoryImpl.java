@@ -38,6 +38,11 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public List<Product> findAll() {
+        return productMapper.toModelList(productJpaRepository.findAll());
+    }
+
+    @Override
     public List<Product> findAllByIdIn(Collection<Long> ids) {
         return productJpaRepository.findAllByIdIn(ids).stream()
                 .map(productMapper::toModel)
@@ -49,6 +54,11 @@ public class ProductRepositoryImpl implements ProductRepository {
         return productJpaRepository.findAllByCodeIn(codes).stream()
                 .map(productMapper::toModel)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean existsBySlug(String code) {
+        return productJpaRepository.findByCode(code).isPresent();
     }
 
     @Override
