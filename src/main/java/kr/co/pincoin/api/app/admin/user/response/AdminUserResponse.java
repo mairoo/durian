@@ -9,6 +9,7 @@ import lombok.Getter;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AdminUserResponse extends MyUserResponse {
+    // 관리자용 필드
     @JsonProperty("isSuperuser")
     private final boolean isSuperuser;
 
@@ -17,6 +18,7 @@ public class AdminUserResponse extends MyUserResponse {
 
     private AdminUserResponse(User user) {
         super(user);
+
         this.isSuperuser = user.isSuperuser();
         this.isStaff = user.isStaff();
     }

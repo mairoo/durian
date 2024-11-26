@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Getter
 public class MyUserResponse extends UserResponse {
+    // 개인정보 - 타인 열람 불가
     @JsonProperty("email")
     private final String email;
 

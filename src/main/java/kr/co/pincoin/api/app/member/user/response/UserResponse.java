@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResponse {
-    // 기본 사용자 정보 (타인 열람 가능)
+    // 기본 사용자 정보 - 타인 열람 가능
 
     @JsonProperty("id")
     private final Integer id;
