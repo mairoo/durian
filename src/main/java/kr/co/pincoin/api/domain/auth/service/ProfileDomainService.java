@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class ProfileService {
+public class ProfileDomainService {
     private final ProfileRepository profileRepository;
 
     public Page<Profile>

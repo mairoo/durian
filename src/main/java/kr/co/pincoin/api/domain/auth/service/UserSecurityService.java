@@ -19,7 +19,7 @@ public class UserSecurityService {
 
     private final UserValidationService userValidationService;
 
-    private final ProfileService profileService;
+    private final ProfileDomainService profileDomainService;
 
     @Transactional
     public Profile
@@ -37,7 +37,7 @@ public class UserSecurityService {
 
         User savedUser = userRepository.save(user);
 
-        return profileService.createProfile(savedUser);
+        return profileDomainService.createProfile(savedUser);
     }
 
     @Transactional
@@ -53,7 +53,7 @@ public class UserSecurityService {
         user.updateEmail(newEmail);
         userRepository.save(user);
 
-        return profileService.createProfile(user);
+        return profileDomainService.createProfile(user);
     }
 
     @Transactional
@@ -70,7 +70,7 @@ public class UserSecurityService {
         user.updatePassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
-        return profileService.createProfile(user);
+        return profileDomainService.createProfile(user);
     }
 
     @Transactional
@@ -81,6 +81,6 @@ public class UserSecurityService {
         user.updatePassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
-        return profileService.createProfile(user);
+        return profileDomainService.createProfile(user);
     }
 }

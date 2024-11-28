@@ -8,7 +8,7 @@ import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.auth.repository.profile.ProfileRepository;
 import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
-import kr.co.pincoin.api.domain.auth.service.ProfileService;
+import kr.co.pincoin.api.domain.auth.service.ProfileDomainService;
 import kr.co.pincoin.api.domain.auth.service.UserSecurityService;
 import kr.co.pincoin.api.domain.auth.service.UserValidationService;
 import kr.co.pincoin.api.global.exception.BusinessException;
@@ -21,10 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class UserService {
+public class ProfileService {
     private final UserSecurityService userSecurityService;
 
-    private final ProfileService profileService;
+    private final ProfileDomainService profileDomainService;
 
     private final UserValidationService userValidationService;
 
@@ -79,7 +79,7 @@ public class UserService {
     @Transactional
     public Profile
     updatePhone(Integer userId, String newPhone) {
-        return profileService.updatePhone(userId, newPhone);
+        return profileDomainService.updatePhone(userId, newPhone);
     }
 
     @Transactional

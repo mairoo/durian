@@ -1,7 +1,7 @@
 package kr.co.pincoin.api.app.admin.user.controller;
 
 import kr.co.pincoin.api.app.admin.user.response.AdminUserResponse;
-import kr.co.pincoin.api.app.admin.user.service.AdminUserService;
+import kr.co.pincoin.api.app.admin.user.service.AdminProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 public class AdminProfileController {
-    private final AdminUserService adminUserService;
+    private final AdminProfileService adminProfileService;
 
     @PostMapping
     public void createUser() {

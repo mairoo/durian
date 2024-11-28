@@ -4,7 +4,7 @@ import kr.co.pincoin.api.domain.auth.model.phone.enums.PhoneVerifiedStatus;
 import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
-import kr.co.pincoin.api.domain.auth.service.ProfileService;
+import kr.co.pincoin.api.domain.auth.service.ProfileDomainService;
 import kr.co.pincoin.api.domain.auth.service.UserSecurityService;
 import kr.co.pincoin.api.domain.auth.service.UserValidationService;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
-public class AdminUserService {
+public class AdminProfileService {
     private final UserSecurityService userSecurityService;
 
-    private final ProfileService profileService;
+    private final ProfileDomainService profileDomainService;
 
     private final UserValidationService userValidationService;
 
@@ -58,14 +58,14 @@ public class AdminUserService {
     public Profile
     updatePhoneVerification(Integer userId,
                             PhoneVerifiedStatus status) {
-        return profileService.updatePhoneVerification(userId, status);
+        return profileDomainService.updatePhoneVerification(userId, status);
     }
 
     @Transactional
     public Profile
     updateDocumentVerification(Integer userId,
                                boolean verified) {
-        return profileService.updateDocumentVerification(userId, verified);
+        return profileDomainService.updateDocumentVerification(userId, verified);
     }
 
     @Transactional
@@ -91,11 +91,11 @@ public class AdminUserService {
 
     public Page<Profile>
     findProfiles(Pageable pageable) {
-        return profileService.findProfiles(pageable);
+        return profileDomainService.findProfiles(pageable);
     }
 
     public Profile
     findProfile(Integer userId) {
-        return profileService.findProfile(userId);
+        return profileDomainService.findProfile(userId);
     }
 }
