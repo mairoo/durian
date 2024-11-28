@@ -14,6 +14,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
@@ -112,6 +113,21 @@ public class GlobalExceptionHandler {
     }
 
     // 4. HTTP 관련 예외
+    /**
+     * 정적 리소스를 찾지 못했을 때의 예외 처리
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    protected ResponseEntity<ErrorResponse>
+    handleNoResourceFoundException(NoResourceFoundException e,
+                                   HttpServletRequest request) {
+        log.error("[Page Not Found] {}", e.getMessage());
+        return ResponseEntity
+                .status(ErrorCode.RESOURCE_NOT_FOUND.getStatus())
+                .body(ErrorResponse.of(request,
+                                       ErrorCode.RESOURCE_NOT_FOUND.getStatus(),
+                                       ErrorCode.RESOURCE_NOT_FOUND.getMessage()));
+    }
+
     /**
      * HTTP 메소드 오류 처리
      * 지원하지 않는 HTTP 메소드 호출 시 발생하는 예외 처리
