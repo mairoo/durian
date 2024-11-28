@@ -4,6 +4,7 @@ import kr.co.pincoin.api.app.member.user.request.EmailUpdateRequest;
 import kr.co.pincoin.api.app.member.user.request.PasswordUpdateRequest;
 import kr.co.pincoin.api.app.member.user.request.UserCreateRequest;
 import kr.co.pincoin.api.app.member.user.request.UsernameUpdateRequest;
+import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
 import kr.co.pincoin.api.domain.auth.service.ProfileService;
@@ -31,7 +32,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public User
+    public Profile
     createUser(UserCreateRequest request) {
         return userSecurityService.createUser(request.getEmail(),
                                               request.getPassword(),
@@ -41,27 +42,31 @@ public class UserService {
                                               false);
     }
 
-    public User
+    public Profile
     find(Integer userId) {
-        return userValidationService.findUser(userId);
+        return userValidationService.findProfile(userId);
     }
 
     @Transactional
-    public User
+    public Profile
     updateUsername(Integer userId, UsernameUpdateRequest request) {
-        User user = userValidationService.findUser(userId);
+        Profile profile = userValidationService.findProfile(userId);
+
+        User user = profile.getUser();
         user.updateUsername(request.getUsername());
-        return userRepository.save(user);
+        userRepository.save(user);
+
+        return profile;
     }
 
     @Transactional
-    public User
+    public Profile
     updateEmail(Integer userId, EmailUpdateRequest request) {
         return userSecurityService.updateEmail(userId, request.getEmail());
     }
 
     @Transactional
-    public User
+    public Profile
     updatePassword(Integer userId, PasswordUpdateRequest request) {
         return userSecurityService.updatePassword(userId,
                                                   request.getCurrentPassword(),
@@ -69,7 +74,7 @@ public class UserService {
     }
 
     @Transactional
-    public User
+    public Profile
     updatePhone(Integer userId, String newPhone) {
         return profileService.updatePhone(userId, newPhone);
     }

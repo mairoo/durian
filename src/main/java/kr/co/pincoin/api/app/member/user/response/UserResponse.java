@@ -2,6 +2,7 @@ package kr.co.pincoin.api.app.member.user.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import lombok.Getter;
 
@@ -27,7 +28,7 @@ public class UserResponse {
     }
 
     // 도메인 모델 객체에서 응답 객체 초기화
-    public static UserResponse from(User user) {
-        return new UserResponse(user);
+    public static UserResponse from(Profile profile) {
+        return new UserResponse(profile.getUser());
     }
 }

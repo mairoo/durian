@@ -8,6 +8,7 @@ import kr.co.pincoin.api.app.member.user.request.UsernameUpdateRequest;
 import kr.co.pincoin.api.app.member.user.response.MyUserResponse;
 import kr.co.pincoin.api.app.member.user.response.UserResponse;
 import kr.co.pincoin.api.app.member.user.service.UserService;
+import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import kr.co.pincoin.api.global.security.annotation.CurrentUser;
@@ -26,60 +27,61 @@ public class UserController {
     @PostMapping
     public ResponseEntity<ApiResponse<UserResponse>>
     create(@Valid @RequestBody UserCreateRequest request) {
-        User user = userService.createUser(request);
+        Profile profile = userService.createUser(request);
         return ResponseEntity.ok()
-                .body(ApiResponse.of(UserResponse.from(user)));
+                .body(ApiResponse.of(UserResponse.from(profile)));
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<UserResponse>>
     find(@PathVariable Integer userId) {
-        User user = userService.find(userId);
+        Profile profile = userService.find(userId);
         return ResponseEntity.ok()
-                .body(ApiResponse.of(UserResponse.from(user)));
+                .body(ApiResponse.of(UserResponse.from(profile)));
     }
 
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<MyUserResponse>>
     findMe(@CurrentUser User user) {
+        Profile profile = userService.find(user.getId());
         return ResponseEntity.ok()
-                .body(ApiResponse.of(MyUserResponse.from(user)));
+                .body(ApiResponse.of(MyUserResponse.from(profile)));
     }
 
     @PatchMapping("/{userId}/username")
     public ResponseEntity<ApiResponse<UserResponse>>
     updateUsername(@PathVariable Integer userId,
                    @Valid @RequestBody UsernameUpdateRequest request) {
-        User updatedUser = userService.updateUsername(userId, request);
+        Profile updatedProfile = userService.updateUsername(userId, request);
         return ResponseEntity.ok()
-                .body(ApiResponse.of(UserResponse.from(updatedUser)));
+                .body(ApiResponse.of(UserResponse.from(updatedProfile)));
     }
 
     @PatchMapping("/{userId}/email")
     public ResponseEntity<ApiResponse<UserResponse>>
     updateEmail(@PathVariable Integer userId,
                 @Valid @RequestBody EmailUpdateRequest request) {
-        User updatedUser = userService.updateEmail(userId, request);
+        Profile updatedProfile = userService.updateEmail(userId, request);
         return ResponseEntity.ok()
-                .body(ApiResponse.of(UserResponse.from(updatedUser)));
+                .body(ApiResponse.of(UserResponse.from(updatedProfile)));
     }
 
     @PatchMapping("/{userId}/password")
     public ResponseEntity<ApiResponse<UserResponse>>
     updatePassword(@PathVariable Integer userId,
                    @Valid @RequestBody PasswordUpdateRequest request) {
-        User updatedUser = userService.updatePassword(userId, request);
+        Profile updatedProfile = userService.updatePassword(userId, request);
         return ResponseEntity.ok()
-                .body(ApiResponse.of(UserResponse.from(updatedUser)));
+                .body(ApiResponse.of(UserResponse.from(updatedProfile)));
     }
 
     @PatchMapping("/{id}/phone")
     public ResponseEntity<ApiResponse<UserResponse>>
     updatePhone(@PathVariable Integer id,
                 @RequestParam String newPhone) {
-        User updatedUser = userService.updatePhone(id, newPhone);
+        Profile updatedProfile = userService.updatePhone(id, newPhone);
         return ResponseEntity.ok()
-                .body(ApiResponse.of(UserResponse.from(updatedUser)));
+                .body(ApiResponse.of(UserResponse.from(updatedProfile)));
     }
 
     @DeleteMapping("/{id}")

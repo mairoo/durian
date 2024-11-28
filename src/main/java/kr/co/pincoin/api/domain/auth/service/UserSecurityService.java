@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.auth.service;
 
+import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
 import kr.co.pincoin.api.global.exception.BusinessException;
@@ -21,7 +22,7 @@ public class UserSecurityService {
     private final ProfileService profileService;
 
     @Transactional
-    public User
+    public Profile
     createUser(String email,
                String password,
                String username,
@@ -35,13 +36,12 @@ public class UserSecurityService {
                 User.of(email, passwordEncoder.encode(password), username, firstName, lastName);
 
         User savedUser = userRepository.save(user);
-        profileService.createProfile(savedUser);
 
-        return savedUser;
+        return profileService.createProfile(savedUser);
     }
 
     @Transactional
-    public User
+    public Profile
     updateEmail(Integer userId,
                 String newEmail) {
         User user = userValidationService.findUser(userId);
@@ -51,11 +51,13 @@ public class UserSecurityService {
         }
 
         user.updateEmail(newEmail);
-        return userRepository.save(user);
+        userRepository.save(user);
+
+        return profileService.createProfile(user);
     }
 
     @Transactional
-    public User
+    public Profile
     updatePassword(Integer userId,
                    String currentPassword,
                    String newPassword) {
@@ -66,15 +68,19 @@ public class UserSecurityService {
         }
 
         user.updatePassword(passwordEncoder.encode(newPassword));
-        return userRepository.save(user);
+        userRepository.save(user);
+
+        return profileService.createProfile(user);
     }
 
     @Transactional
-    public User
+    public Profile
     resetPassword(Integer userId,
                   String newPassword) {
         User user = userValidationService.findUser(userId);
         user.updatePassword(passwordEncoder.encode(newPassword));
-        return userRepository.save(user);
+        userRepository.save(user);
+
+        return profileService.createProfile(user);
     }
 }

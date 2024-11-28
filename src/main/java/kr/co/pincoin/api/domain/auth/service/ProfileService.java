@@ -36,17 +36,17 @@ public class ProfileService {
     }
 
     @Transactional
-    public User
+    public Profile
     updatePhone(Integer userId,
                 String newPhone) {
         Profile profile = findProfile(userId);
         profile.verifyPhone(newPhone);
         profileRepository.save(profile);
-        return profile.getUser();
+        return profile;
     }
 
     @Transactional
-    public User
+    public Profile
     updatePhoneVerification(Integer userId,
                             PhoneVerifiedStatus status) {
         Profile profile = findProfile(userId);
@@ -64,11 +64,11 @@ public class ProfileService {
         }
 
         profileRepository.save(profile);
-        return profile.getUser();
+        return profile;
     }
 
     @Transactional
-    public User
+    public Profile
     updateDocumentVerification(Integer userId,
                                boolean verified) {
         Profile profile = findProfile(userId);
@@ -78,6 +78,6 @@ public class ProfileService {
             profile.revokeDocumentVerification();
         }
         profileRepository.save(profile);
-        return profile.getUser();
+        return profile;
     }
 }

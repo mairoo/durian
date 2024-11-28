@@ -1,6 +1,8 @@
 package kr.co.pincoin.api.domain.auth.service;
 
+import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
+import kr.co.pincoin.api.domain.auth.repository.profile.ProfileRepository;
 import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
 import kr.co.pincoin.api.global.exception.BusinessException;
 import kr.co.pincoin.api.global.exception.ErrorCode;
@@ -14,7 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserValidationService {
     private final UserRepository userRepository;
 
-    public void validateNewUser(String email, String username) {
+    private final ProfileRepository profileRepository;
+
+    public void
+    validateNewUser(String email, String username) {
         if (userRepository.existsByEmail(email)) {
             throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
         }
@@ -24,8 +29,15 @@ public class UserValidationService {
         }
     }
 
-    public User findUser(Integer userId) {
+    public User
+    findUser(Integer userId) {
         return userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
+    }
+
+    public Profile
+    findProfile(Integer userId) {
+        return profileRepository.findByUserIdWithFetch(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
     }
 }

@@ -28,7 +28,7 @@ public class AdminUserService {
     private final UserRepository userRepository;
 
     @Transactional
-    public User
+    public Profile
     createUser(String email,
                String password,
                String username,
@@ -38,7 +38,7 @@ public class AdminUserService {
     }
 
     @Transactional
-    public User
+    public Profile
     createAdmin(String email,
                 String password,
                 String username,
@@ -48,21 +48,21 @@ public class AdminUserService {
     }
 
     @Transactional
-    public User
+    public Profile
     resetPassword(Integer userId,
                   String newPassword) {
         return userSecurityService.resetPassword(userId, newPassword);
     }
 
     @Transactional
-    public User
+    public Profile
     updatePhoneVerification(Integer userId,
                             PhoneVerifiedStatus status) {
         return profileService.updatePhoneVerification(userId, status);
     }
 
     @Transactional
-    public User
+    public Profile
     updateDocumentVerification(Integer userId,
                                boolean verified) {
         return profileService.updateDocumentVerification(userId, verified);
