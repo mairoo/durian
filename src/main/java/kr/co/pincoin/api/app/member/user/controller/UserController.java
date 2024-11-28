@@ -1,10 +1,7 @@
 package kr.co.pincoin.api.app.member.user.controller;
 
 import jakarta.validation.Valid;
-import kr.co.pincoin.api.app.member.user.request.EmailUpdateRequest;
-import kr.co.pincoin.api.app.member.user.request.PasswordUpdateRequest;
-import kr.co.pincoin.api.app.member.user.request.UserCreateRequest;
-import kr.co.pincoin.api.app.member.user.request.UsernameUpdateRequest;
+import kr.co.pincoin.api.app.member.user.request.*;
 import kr.co.pincoin.api.app.member.user.response.MyUserResponse;
 import kr.co.pincoin.api.app.member.user.response.UserResponse;
 import kr.co.pincoin.api.app.member.user.service.UserService;
@@ -84,11 +81,19 @@ public class UserController {
                 .body(ApiResponse.of(UserResponse.from(updatedProfile)));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}/withdrawal")
     public ResponseEntity<Void>
     withdrawUser(@PathVariable Integer id,
-                 @RequestParam String currentPassword) {
-        userService.withdrawUser(id, currentPassword);
+                 @Valid @RequestBody UserDeleteRequest request) {
+        userService.withdrawUser(id, request.getPassword());
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void>
+    deleteUser(@PathVariable Integer id,
+               @Valid @RequestBody UserDeleteRequest request) {
+        userService.deleteUser(id, request.getPassword());
         return ResponseEntity.noContent().build();
     }
 }

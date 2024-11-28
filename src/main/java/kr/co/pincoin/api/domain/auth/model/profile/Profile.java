@@ -148,6 +148,36 @@ public class Profile {
     public static Profile of(User user) {
         return Profile.builder()
                 .user(user)
+                // 기본 정보 초기값 설정
+                .address("")
+                .phone("")
+                .phoneVerified(false)
+                .phoneVerifiedStatus(PhoneVerifiedStatus.UNVERIFIED)
+                .documentVerified(false)
+                .allowOrder(false)
+                .photoId("")
+                .card("")
+                .memo("")
+
+                // 개인 정보
+                .gender(Gender.MALE)
+                .domestic(Domestic.DOMESTIC)
+                .telecom("")
+
+                // 구매 통계 (NOT NULL인 필드들)
+                .totalOrderCount(0)
+                .notPurchasedMonths(false)
+                .maxPrice(BigDecimal.ZERO)
+                .totalListPrice(BigDecimal.ZERO)
+                .totalSellingPrice(BigDecimal.ZERO)
+                .averagePrice(BigDecimal.ZERO)
+                .mileage(BigDecimal.ZERO)
+
+                // 날짜 관련 필드들은 NULL 허용이므로 기본값 설정 불필요
+                // - first_purchased (nullable)
+                // - last_purchased (nullable)
+                // - repurchased (nullable)
+                // - date_of_birth (nullable)
                 .build();
     }
 

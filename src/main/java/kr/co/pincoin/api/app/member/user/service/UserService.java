@@ -6,6 +6,7 @@ import kr.co.pincoin.api.app.member.user.request.UserCreateRequest;
 import kr.co.pincoin.api.app.member.user.request.UsernameUpdateRequest;
 import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
+import kr.co.pincoin.api.domain.auth.repository.profile.ProfileRepository;
 import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
 import kr.co.pincoin.api.domain.auth.service.ProfileService;
 import kr.co.pincoin.api.domain.auth.service.UserSecurityService;
@@ -28,6 +29,8 @@ public class UserService {
     private final UserValidationService userValidationService;
 
     private final UserRepository userRepository;
+
+    private final ProfileRepository profileRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -81,14 +84,28 @@ public class UserService {
 
     @Transactional
     public void
-    withdrawUser(Integer userId, String currentPassword) {
+    withdrawUser(Integer userId, String password) {
         User user = userValidationService.findUser(userId);
 
-        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
         }
 
         user.deactivate();
         userRepository.save(user);
+    }
+
+    @Transactional
+    public void
+    deleteUser(Integer userId, String password) {
+        Profile profile = userValidationService.findProfile(userId);
+        User user = profile.getUser();
+
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+        }
+
+        profileRepository.delete(profile);
+        userRepository.delete(user);
     }
 }
