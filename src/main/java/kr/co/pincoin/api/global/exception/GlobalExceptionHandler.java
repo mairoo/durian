@@ -11,6 +11,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -110,6 +111,21 @@ public class GlobalExceptionHandler {
                 .body(ErrorResponse.of(request,
                                        ErrorCode.REQUEST_BODY_MISSING.getStatus(),
                                        ErrorCode.REQUEST_BODY_MISSING.getMessage()));
+    }
+
+    /**
+     * 필수 쿠키가 없는 경우 예외 처리
+     */
+    @ExceptionHandler(MissingRequestCookieException.class)
+    protected ResponseEntity<ErrorResponse>
+    handleMissingRequestCookieException(MissingRequestCookieException e,
+                                        HttpServletRequest request) {
+        log.error("[Missing Cookie] {}", e.getMessage());
+        return ResponseEntity
+                .status(ErrorCode.REQUEST_COOKIE_MISSING.getStatus())
+                .body(ErrorResponse.of(request,
+                                       ErrorCode.REQUEST_COOKIE_MISSING.getStatus(),
+                                       ErrorCode.REQUEST_COOKIE_MISSING.getMessage()));
     }
 
     // 4. HTTP 관련 예외

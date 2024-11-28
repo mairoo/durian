@@ -31,6 +31,7 @@ public enum ErrorCode {
     REQUEST_BODY_MISSING(HttpStatus.BAD_REQUEST, "요청 본문이 없거나 형식이 잘못되었습니다"),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "지원하지 않는 HTTP 메서드입니다"),
     UNSUPPORTED_MEDIA_TYPE(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "지원하지 않는 미디어 타입입니다"),
+    REQUEST_COOKIE_MISSING(HttpStatus.BAD_REQUEST, "요청 쿠키가 없습니다."),
     FILE_SIZE_EXCEEDED(HttpStatus.PAYLOAD_TOO_LARGE, "업로드 파일 크기가 제한을 초과했습니다"),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다."),
     NO_INSTANCE_ALLOWED(HttpStatus.INTERNAL_SERVER_ERROR, "상수 클래스는 인스턴스화할 수 없습니다"),
