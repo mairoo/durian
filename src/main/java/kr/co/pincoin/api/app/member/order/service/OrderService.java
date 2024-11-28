@@ -7,7 +7,7 @@ import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
-import kr.co.pincoin.api.domain.shop.service.OrderDomainService;
+import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
 import kr.co.pincoin.api.global.utils.ClientUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class OrderService {
-    private final OrderDomainService orderDomainService;
+    private final OrderPersistenceService orderPersistenceService;
 
     private final OrderRepository orderRepository;
 
@@ -93,7 +93,7 @@ public class OrderService {
     createOrder(OrderCreateRequest request,
                 User user,
                 ClientUtils.ClientInfo clientInfo) {
-        return orderDomainService.createOrder(user, request, clientInfo);
+        return orderPersistenceService.createOrder(user, request, clientInfo);
     }
 
     /**
@@ -104,7 +104,7 @@ public class OrderService {
     reorder(User user,
             String orderNo,
             ClientUtils.ClientInfo clientInfo) {
-        return orderDomainService.createReorder(user.getId(), orderNo, clientInfo);
+        return orderPersistenceService.createReorder(user.getId(), orderNo, clientInfo);
     }
 
     /**
@@ -117,7 +117,7 @@ public class OrderService {
                   String orderNo) {
         Order order = findMyOrder(user.getId(), orderNo);
 
-        return orderDomainService.requestRefund(user, order, message);
+        return orderPersistenceService.requestRefund(user, order, message);
     }
 
     private Order

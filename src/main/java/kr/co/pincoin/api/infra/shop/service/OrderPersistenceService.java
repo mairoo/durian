@@ -1,4 +1,4 @@
-package kr.co.pincoin.api.domain.shop.service;
+package kr.co.pincoin.api.infra.shop.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class OrderDomainService {
+public class OrderPersistenceService {
     private final OrderRepository orderRepository;
 
     private final ProductRepository productRepository;

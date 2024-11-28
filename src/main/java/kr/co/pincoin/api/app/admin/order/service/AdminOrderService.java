@@ -9,7 +9,7 @@ import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
-import kr.co.pincoin.api.domain.shop.service.OrderDomainService;
+import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
 import kr.co.pincoin.api.global.utils.ClientUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class AdminOrderService {
-    private final OrderDomainService orderDomainService;
+    private final OrderPersistenceService orderPersistenceService;
 
     private final OrderRepository orderRepository;
 
@@ -97,7 +97,7 @@ public class AdminOrderService {
                 ClientUtils.ClientInfo clientInfo) {
         User user = findUser(userId);
 
-        return orderDomainService.createOrder(user, request, clientInfo);
+        return orderPersistenceService.createOrder(user, request, clientInfo);
     }
 
     /**
@@ -110,7 +110,7 @@ public class AdminOrderService {
             ClientUtils.ClientInfo clientInfo) {
         User user = findUser(userId);
 
-        return orderDomainService.createReorder(user.getId(), orderNo, clientInfo);
+        return orderPersistenceService.createReorder(user.getId(), orderNo, clientInfo);
     }
 
     /**
@@ -121,7 +121,7 @@ public class AdminOrderService {
     issueVouchers(Long orderId) {
         Order order = findOrder(orderId);
 
-        return orderDomainService.issueVouchers(order);
+        return orderPersistenceService.issueVouchers(order);
     }
 
     /**
@@ -130,7 +130,7 @@ public class AdminOrderService {
     @Transactional
     public Order
     completeRefund(Long orderId) {
-        return orderDomainService.completeRefund(findOrder(orderId));
+        return orderPersistenceService.completeRefund(findOrder(orderId));
     }
 
     /**
