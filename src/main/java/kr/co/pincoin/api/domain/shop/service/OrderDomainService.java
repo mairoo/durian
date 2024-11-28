@@ -26,6 +26,7 @@ import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
 import kr.co.pincoin.api.global.utils.ClientUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -33,22 +34,23 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
+@Service
 @Transactional(readOnly = true)
-public abstract class AbstractOrderService {
-    protected final OrderRepository orderRepository;
+@RequiredArgsConstructor
+public class OrderDomainService {
+    private final OrderRepository orderRepository;
 
-    protected final ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
-    protected final OrderPaymentRepository orderPaymentRepository;
+    private final OrderPaymentRepository orderPaymentRepository;
 
-    protected final OrderProductRepository orderProductRepository;
+    private final OrderProductRepository orderProductRepository;
 
-    protected final OrderProductVoucherRepository orderProductVoucherRepository;
+    private final OrderProductVoucherRepository orderProductVoucherRepository;
 
-    protected final VoucherRepository voucherRepository;
+    private final VoucherRepository voucherRepository;
 
-    protected final ProfileRepository profileRepository;
+    private final ProfileRepository profileRepository;
 
     /**
      * 신규 주문을 생성하는 메소드
@@ -61,10 +63,10 @@ public abstract class AbstractOrderService {
      * @throws IllegalStateException 상품 재고가 부족하거나 판매 불가능한 경우
      */
     @Transactional
-    protected Order
-    createOrderInternal(User user,
-                        OrderCreateRequest request,
-                        ClientUtils.ClientInfo clientInfo) {
+    public Order
+    createOrder(User user,
+                OrderCreateRequest request,
+                ClientUtils.ClientInfo clientInfo) {
         // 주문할 상품들의 존재 여부, 상태, 재고를 검증하고 상품 정보 조회
         List<Product> products = validateAndGetProducts(request.getItems());
 
@@ -142,9 +144,9 @@ public abstract class AbstractOrderService {
      */
     @Transactional
     public Order
-    createReorderInternal(Integer userId,
-                          String orderNo,
-                          ClientUtils.ClientInfo clientInfo) {
+    createReorder(Integer userId,
+                  String orderNo,
+                  ClientUtils.ClientInfo clientInfo) {
         // 원본 주문의 상품 목록과 주문/사용자 정보를 한 번에 조회
         List<OrderProduct> originalOrderProducts = orderProductRepository
                 .findAllByOrderNoAndUserIdFetchOrderAndUser(orderNo, userId);
@@ -210,8 +212,8 @@ public abstract class AbstractOrderService {
      * @throws IllegalStateException   상품권 수량 부족 또는 재고 불일치 시
      */
     @Transactional
-    protected Order
-    issueVouchersInternal(Order order) {
+    public Order
+    issueVouchers(Order order) {
         List<OrderProduct> orderProducts = orderProductRepository.findAllByOrderFetchOrder(order);
 
         for (OrderProduct orderProduct : orderProducts) {
@@ -278,10 +280,10 @@ public abstract class AbstractOrderService {
      * @throws IllegalStateException 이미 환불 처리된 주문인 경우
      */
     @Transactional
-    protected Order
-    refundRequestInternal(User user,
-                          Order order,
-                          String message) {
+    public Order
+    requestRefund(User user,
+                  Order order,
+                  String message) {
         // 환불 가능한 상태인지 검증
         if (order.getStatus() == OrderStatus.REFUND_REQUESTED
                 || order.getStatus() == OrderStatus.REFUND_PENDING
@@ -362,8 +364,8 @@ public abstract class AbstractOrderService {
      * @throws IllegalStateException 주문 상태가 유효하지 않은 경우
      */
     @Transactional
-    protected Order
-    completeRefundInternal(Order refundOrder) {
+    public Order
+    completeRefund(Order refundOrder) {
         // 환불 주문이 대기 상태인지 확인
         if (refundOrder.getStatus() != OrderStatus.REFUND_PENDING) {
             throw new IllegalStateException("환불 처리 대기 상태의 주문이 아닙니다.");
@@ -398,7 +400,8 @@ public abstract class AbstractOrderService {
      * @throws EntityNotFoundException 주문 또는 사용자 프로필을 찾을 수 없는 경우
      */
     @Transactional
-    public OrderPayment addPayment(Long orderId, OrderPayment payment) {
+    public OrderPayment
+    addPayment(Long orderId, OrderPayment payment) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
 
@@ -432,7 +435,8 @@ public abstract class AbstractOrderService {
      * @throws EntityNotFoundException 결제 정보를 찾을 수 없는 경우
      */
     @Transactional
-    public void deletePayment(Long paymentId) {
+    public void
+    deletePayment(Long paymentId) {
         OrderPayment payment = orderPaymentRepository.findById(paymentId)
                 .orElseThrow(() -> new EntityNotFoundException("결제 정보를 찾을 수 없습니다."));
 
@@ -518,7 +522,8 @@ public abstract class AbstractOrderService {
      *
      * @return 생성된 주문번호 (하이픈 제거된 UUID)
      */
-    private String generateOrderNumber() {
+    private String
+    generateOrderNumber() {
         return UUID.randomUUID().toString().replace("-", "");
     }
 }

@@ -42,6 +42,10 @@ public class OrderSearchCondition {
     }
 
     // 정적 팩토리 메서드들
+    public static OrderSearchCondition empty() {
+        return OrderSearchCondition.builder().build();
+    }
+
     public static OrderSearchCondition ofUserId(Integer userId) {
         return OrderSearchCondition.builder()
                 .userId(userId)

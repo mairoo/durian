@@ -39,7 +39,7 @@ public class OrderController {
     getMyOrders(@CurrentUser User user,
                 @ModelAttribute OrderSearchCondition condition,
                 @PageableDefault(size = 20) Pageable pageable) {
-        Page<Order> orders = orderService.getMyOrders(user.getId(), condition, pageable);
+        Page<Order> orders = orderService.getMyOrders(user, condition, pageable);
         Page<OrderResponse> responses = orders.map(OrderResponse::from);
 
         return ResponseEntity.ok(ApiResponse.of(PageResponse.from(responses)));
@@ -52,7 +52,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<OrderResponse>>
     getMyOrder(@CurrentUser User user,
                @PathVariable String orderNo) {
-        Order order = orderService.getMyOrder(user.getId(), orderNo);
+        Order order = orderService.getMyOrder(user, orderNo);
         return ResponseEntity.ok(ApiResponse.of(OrderResponse.from(order)));
     }
 
@@ -63,7 +63,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<Void>>
     deleteMyOrder(@CurrentUser User user,
                   @PathVariable String orderNo) {
-        orderService.deleteMyOrder(user.getId(), orderNo);
+        orderService.deleteMyOrder(user, orderNo);
         return ResponseEntity.ok(ApiResponse.of(null, "주문이 삭제되었습니다."));
     }
 
@@ -72,9 +72,9 @@ public class OrderController {
      */
     @PostMapping("/{orderNo}/hide")
     public ResponseEntity<ApiResponse<Void>>
-    hideMyOrder(@PathVariable String orderNo,
-                @CurrentUser User user) {
-        orderService.hideMyOrder(user.getId(), orderNo);
+    hideMyOrder(@CurrentUser User user,
+                @PathVariable String orderNo) {
+        orderService.hideMyOrder(user, orderNo);
         return ResponseEntity.ok(ApiResponse.of(null, "주문이 숨김 처리되었습니다."));
     }
 
@@ -88,7 +88,7 @@ public class OrderController {
                 HttpServletRequest servletRequest) {
         ClientUtils.ClientInfo clientInfo = ClientUtils.getClientInfo(servletRequest);
 
-        Order createdOrder = orderService.createOrder(user, request, clientInfo);
+        Order createdOrder = orderService.createOrder(request, user, clientInfo);
 
         return ResponseEntity.ok(ApiResponse.of(OrderResponse.from(createdOrder),
                                                 "주문이 성공적으로 생성되었습니다."));
