@@ -15,10 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/profiles")
 @RequiredArgsConstructor
 @Slf4j
-public class UserController {
+public class ProfileController {
     private final UserService userService;
 
     @PostMapping
