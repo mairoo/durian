@@ -1,10 +1,13 @@
 package kr.co.pincoin.api.app.admin.user.service;
 
 import kr.co.pincoin.api.domain.auth.model.phone.enums.PhoneVerifiedStatus;
+import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.auth.repository.profile.ProfileRepository;
 import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
 import kr.co.pincoin.api.domain.auth.service.AbstractUserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,10 +53,37 @@ public class AdminUserService extends AbstractUserService {
         return updateDocumentVerificationInternal(userId, verified);
     }
 
-    // 고객 목록
-    // 고객 정보 보기
-    // 고객 비활성화 처리
-    // 고객 탈퇴 처리
+    @Transactional
+    public void
+    forceWithdrawUser(Integer userId) {
+        User user = findUser(userId);
+        user.deactivate();
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void
+    toggleUserActivation(Integer userId, boolean active) {
+        User user = findUser(userId);
+
+        if (active) {
+            user.activate();
+        } else {
+            user.deactivate();
+        }
+
+        userRepository.save(user);
+    }
+
+    public Page<Profile>
+    findAllProfiles(Pageable pageable) {
+        return profileRepository.findAllWithUserFetch(pageable);
+    }
+
+    public Profile
+    getProfileDetails(Integer userId) {
+        return findProfile(userId);
+    }
     //- 고객 문의 목록
     //- 고객 문의 상세, 답변하기
     //- 이용후기 목록

@@ -8,6 +8,8 @@ import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.auth.repository.profile.ProfileRepository;
 import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
 import kr.co.pincoin.api.domain.auth.service.AbstractUserService;
+import kr.co.pincoin.api.global.exception.BusinessException;
+import kr.co.pincoin.api.global.exception.ErrorCode;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,5 +63,17 @@ public class UserService extends AbstractUserService {
     public User
     updatePhone(Integer userId, String newPhone) {
         return updatePhoneInternal(userId, newPhone);
+    }
+
+    @Transactional
+    public void withdrawUser(Integer userId, String currentPassword) {
+        User user = findUser(userId);
+
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+        }
+
+        user.deactivate();
+        userRepository.save(user);
     }
 }

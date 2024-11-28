@@ -2,11 +2,15 @@ package kr.co.pincoin.api.domain.auth.repository.profile;
 
 import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
 public interface ProfileRepository {
     Profile save(Profile profile);
+
+    Page<Profile> findAllWithUserFetch(Pageable pageable);
 
     Optional<Profile> findByUserIdWithFetch(Integer userId);
 
