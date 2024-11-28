@@ -34,6 +34,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public abstract class AbstractOrderService {
     protected final OrderRepository orderRepository;
 

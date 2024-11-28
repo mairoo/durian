@@ -67,6 +67,7 @@ public class AdminOrderService extends AbstractOrderService {
     /**
      * 주문 삭제 처리 (soft delete)
      */
+    @Transactional
     public void
     deleteOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
@@ -83,6 +84,7 @@ public class AdminOrderService extends AbstractOrderService {
     /**
      * 주문 숨김 처리
      */
+    @Transactional
     public void
     hideOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
