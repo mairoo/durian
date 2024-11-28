@@ -6,5 +6,11 @@ import kr.co.pincoin.api.domain.auth.model.user.User;
 import java.util.Optional;
 
 public interface ProfileRepository {
+    Profile save(Profile profile);
+
+    Optional<Profile> findByUserIdWithFetch(Long userId);
+
     Optional<Profile> findByUserWithFetch(User user);
+
+    void delete(Profile profile);
 }

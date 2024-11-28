@@ -11,6 +11,9 @@ import java.util.Optional;
 
 @Repository
 public interface ProfileJpaRepository extends JpaRepository<ProfileEntity, Long> {
+    @Query("SELECT p FROM ProfileEntity p JOIN FETCH p.user u WHERE u.id = :userId")
+    Optional<ProfileEntity> findByUserIdWithFetch(@Param("userId") Long userId);
+    
     @Query("SELECT p FROM ProfileEntity p JOIN FETCH p.user WHERE p.user = :user")
     Optional<ProfileEntity> findByUserWithFetch(@Param("user") User user);
 }

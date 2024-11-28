@@ -19,8 +19,24 @@ public class ProfileRepositoryImpl implements ProfileRepository {
     private final ProfileMapper profileMapper;
 
     @Override
+    public Profile save(Profile profile) {
+        return profileMapper.toModel(profileJpaRepository.save(profileMapper.toEntity(profile)));
+    }
+
+    @Override
+    public Optional<Profile> findByUserIdWithFetch(Long userId) {
+        return profileJpaRepository.findByUserIdWithFetch(userId)
+                .map(profileMapper::toModel);
+    }
+
+    @Override
     public Optional<Profile> findByUserWithFetch(User user) {
         return profileJpaRepository.findByUserWithFetch(user)
                 .map(profileMapper::toModel);
+    }
+
+    @Override
+    public void delete(Profile profile) {
+        profileJpaRepository.delete(profileMapper.toEntity(profile));
     }
 }
