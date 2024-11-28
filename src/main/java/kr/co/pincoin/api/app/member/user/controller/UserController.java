@@ -1,7 +1,6 @@
 package kr.co.pincoin.api.app.member.user.controller;
 
 import jakarta.validation.Valid;
-import kr.co.pincoin.api.app.admin.user.service.AdminUserService;
 import kr.co.pincoin.api.app.member.user.request.EmailUpdateRequest;
 import kr.co.pincoin.api.app.member.user.request.PasswordUpdateRequest;
 import kr.co.pincoin.api.app.member.user.request.UserCreateRequest;
@@ -17,18 +16,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
-    private final AdminUserService adminUserService;
     private final UserService userService;
 
-    // Create
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<ApiResponse<UserResponse>>
     create(@Valid @RequestBody UserCreateRequest request) {
         User user = userService.createUser(request);
@@ -36,18 +31,10 @@ public class UserController {
                 .body(ApiResponse.of(UserResponse.from(user)));
     }
 
-    // Read
-    @GetMapping("")
-    public ResponseEntity<ApiResponse<List<UserResponse>>>
-    findAll() {
-        // Implementation
-        return null;
-    }
-
-    @GetMapping("/{id}")
+    @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<UserResponse>>
-    find(@PathVariable Integer id) {
-        User user = userService.find(id);
+    find(@PathVariable Integer userId) {
+        User user = userService.find(userId);
         return ResponseEntity.ok()
                 .body(ApiResponse.of(UserResponse.from(user)));
     }
@@ -59,39 +46,47 @@ public class UserController {
                 .body(ApiResponse.of(MyUserResponse.from(user)));
     }
 
-    // Update
-    @PatchMapping("/{id}/username")
+    @PatchMapping("/{userId}/username")
     public ResponseEntity<ApiResponse<UserResponse>>
-    updateUsername(@PathVariable Integer id,
+    updateUsername(@PathVariable Integer userId,
                    @Valid @RequestBody UsernameUpdateRequest request) {
-        User updatedUser = userService.updateUsername(id, request);
+        User updatedUser = userService.updateUsername(userId, request);
         return ResponseEntity.ok()
                 .body(ApiResponse.of(UserResponse.from(updatedUser)));
     }
 
-    @PatchMapping("/{id}/email")
+    @PatchMapping("/{userId}/email")
     public ResponseEntity<ApiResponse<UserResponse>>
-    updateEmail(@PathVariable Integer id,
+    updateEmail(@PathVariable Integer userId,
                 @Valid @RequestBody EmailUpdateRequest request) {
-        User updatedUser = userService.updateEmail(id, request);
+        User updatedUser = userService.updateEmail(userId, request);
         return ResponseEntity.ok()
                 .body(ApiResponse.of(UserResponse.from(updatedUser)));
     }
 
-    @PatchMapping("/{id}/password")
+    @PatchMapping("/{userId}/password")
     public ResponseEntity<ApiResponse<UserResponse>>
-    updatePassword(@PathVariable Integer id,
+    updatePassword(@PathVariable Integer userId,
                    @Valid @RequestBody PasswordUpdateRequest request) {
-        User updatedUser = userService.updatePassword(id, request);
+        User updatedUser = userService.updatePassword(userId, request);
         return ResponseEntity.ok()
                 .body(ApiResponse.of(UserResponse.from(updatedUser)));
     }
 
-    // Delete
+    @PatchMapping("/{id}/phone")
+    public ResponseEntity<ApiResponse<UserResponse>>
+    updatePhone(@PathVariable Integer id,
+                @RequestParam String newPhone) {
+        User updatedUser = userService.updatePhone(id, newPhone);
+        return ResponseEntity.ok()
+                .body(ApiResponse.of(UserResponse.from(updatedUser)));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void>
-    delete(@PathVariable Long id) {
-        // Implementation
+    withdrawUser(@PathVariable Integer id,
+                 @RequestParam String currentPassword) {
+        userService.withdrawUser(id, currentPassword);
         return ResponseEntity.noContent().build();
     }
 }
