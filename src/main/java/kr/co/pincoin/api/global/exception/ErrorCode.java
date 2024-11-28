@@ -47,6 +47,11 @@ public enum ErrorCode {
     AUTHENTICATION_REQUIRED(HttpStatus.UNAUTHORIZED, "로그인이 필요한 서비스입니다"),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다"),
     DUPLICATE_USERNAME(HttpStatus.CONFLICT, "이미 사용 중인 아이디입니다"),
+    INVALID_PHONE_NUMBER(HttpStatus.BAD_REQUEST, "잘못된 휴대폰번호 형식입니다"),
+    PHONE_NOT_VERIFIED(HttpStatus.BAD_REQUEST, "휴대폰 인증이 완료되지 않았습니다"),
+    INVALID_PURCHASE_AMOUNT(HttpStatus.BAD_REQUEST, "잘못된 구매액입니다"),
+    INSUFFICIENT_MILEAGE(HttpStatus.BAD_REQUEST, "마일리지가 부족합니다"),
+    ORDER_NOT_ALLOWED(HttpStatus.FORBIDDEN, "주문 허용되지 않았습니다."),
 
     // 리소스/엔티티 관련
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청한 리소스를 찾을 수 없습니다"),

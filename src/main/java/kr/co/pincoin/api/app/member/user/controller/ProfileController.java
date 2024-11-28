@@ -22,78 +22,91 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<UserResponse>>
-    create(@Valid @RequestBody UserCreateRequest request) {
+    public ResponseEntity<ApiResponse<UserResponse>> create(
+            @Valid @RequestBody UserCreateRequest request) {
         Profile profile = profileService.createUser(request);
         return ResponseEntity.ok()
                 .body(ApiResponse.of(UserResponse.from(profile)));
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<UserResponse>>
-    find(@PathVariable Integer userId) {
-        Profile profile = profileService.find(userId);
+    public ResponseEntity<ApiResponse<UserResponse>> getProfile(
+            @PathVariable Integer userId) {
+        Profile profile = profileService.getProfile(userId);
         return ResponseEntity.ok()
                 .body(ApiResponse.of(UserResponse.from(profile)));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<MyUserResponse>>
-    findMe(@CurrentUser User user) {
-        Profile profile = profileService.find(user.getId());
+    public ResponseEntity<ApiResponse<MyUserResponse>> getMyProfile(
+            @CurrentUser User user) {
+        Profile profile = profileService.getProfile(user.getId());
         return ResponseEntity.ok()
                 .body(ApiResponse.of(MyUserResponse.from(profile)));
     }
 
     @PatchMapping("/{userId}/username")
-    public ResponseEntity<ApiResponse<UserResponse>>
-    updateUsername(@PathVariable Integer userId,
-                   @Valid @RequestBody UsernameUpdateRequest request) {
-        Profile updatedProfile = profileService.updateUsername(userId, request);
+    public ResponseEntity<ApiResponse<UserResponse>> updateUsername(
+            @PathVariable Integer userId,
+            @Valid @RequestBody UsernameUpdateRequest request) {
+        Profile profile = profileService.updateUsername(userId, request);
         return ResponseEntity.ok()
-                .body(ApiResponse.of(UserResponse.from(updatedProfile)));
+                .body(ApiResponse.of(UserResponse.from(profile)));
     }
 
     @PatchMapping("/{userId}/email")
-    public ResponseEntity<ApiResponse<UserResponse>>
-    updateEmail(@PathVariable Integer userId,
-                @Valid @RequestBody EmailUpdateRequest request) {
-        Profile updatedProfile = profileService.updateEmail(userId, request);
+    public ResponseEntity<ApiResponse<UserResponse>> updateEmail(
+            @PathVariable Integer userId,
+            @Valid @RequestBody EmailUpdateRequest request) {
+        Profile profile = profileService.updateEmail(userId, request);
         return ResponseEntity.ok()
-                .body(ApiResponse.of(UserResponse.from(updatedProfile)));
+                .body(ApiResponse.of(UserResponse.from(profile)));
     }
 
     @PatchMapping("/{userId}/password")
-    public ResponseEntity<ApiResponse<UserResponse>>
-    updatePassword(@PathVariable Integer userId,
-                   @Valid @RequestBody PasswordUpdateRequest request) {
-        Profile updatedProfile = profileService.updatePassword(userId, request);
+    public ResponseEntity<ApiResponse<UserResponse>> updatePassword(
+            @PathVariable Integer userId,
+            @Valid @RequestBody PasswordUpdateRequest request) {
+        Profile profile = profileService.updatePassword(userId, request);
         return ResponseEntity.ok()
-                .body(ApiResponse.of(UserResponse.from(updatedProfile)));
+                .body(ApiResponse.of(UserResponse.from(profile)));
     }
 
-    @PatchMapping("/{id}/phone")
-    public ResponseEntity<ApiResponse<UserResponse>>
-    updatePhone(@PathVariable Integer id,
-                @RequestParam String newPhone) {
-        Profile updatedProfile = profileService.updatePhone(id, newPhone);
+    @PatchMapping("/{userId}/phone")
+    public ResponseEntity<ApiResponse<UserResponse>> updatePhone(
+            @PathVariable Integer userId,
+            @RequestParam String newPhone) {
+        Profile profile = profileService.updatePhone(userId, newPhone);
         return ResponseEntity.ok()
-                .body(ApiResponse.of(UserResponse.from(updatedProfile)));
+                .body(ApiResponse.of(UserResponse.from(profile)));
     }
 
-    @DeleteMapping("/{id}/withdrawal")
-    public ResponseEntity<Void>
-    withdrawUser(@PathVariable Integer id,
-                 @Valid @RequestBody UserDeleteRequest request) {
-        profileService.withdrawUser(id, request.getPassword());
+    @PatchMapping("/{userId}/profile")
+    public ResponseEntity<ApiResponse<UserResponse>> updateProfile(
+            @PathVariable Integer userId,
+            @Valid @RequestBody FullnameUpdateRequest request) {
+        Profile profile = profileService.updateProfile(
+                userId,
+                request.getFirstName(),
+                request.getLastName()
+                                                      );
+        return ResponseEntity.ok()
+                .body(ApiResponse.of(UserResponse.from(profile)));
+    }
+
+    @DeleteMapping("/{userId}/withdrawal")
+    public ResponseEntity<Void> withdrawUser(
+            @PathVariable Integer userId,
+            @Valid @RequestBody UserDeleteRequest request) {
+        profileService.withdrawUser(userId, request.getPassword());
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void>
-    deleteUser(@PathVariable Integer id,
-               @Valid @RequestBody UserDeleteRequest request) {
-        profileService.deleteUser(id, request.getPassword());
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable Integer userId,
+            @Valid @RequestBody UserDeleteRequest request) {
+        profileService.deleteUser(userId, request.getPassword());
         return ResponseEntity.noContent().build();
     }
 }

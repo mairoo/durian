@@ -1,9 +1,12 @@
 package kr.co.pincoin.api.domain.auth.model.user;
 
 import kr.co.pincoin.api.app.member.user.request.UserCreateRequest;
+import kr.co.pincoin.api.global.exception.BusinessException;
+import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -152,72 +155,94 @@ public class User {
                 .build();
     }
 
-    // 2. 인증 정보 변경 메서드
-    public void
-    updatePassword(String newPassword) {
-        this.password = newPassword;
+    // 인증 관련
+    public void validateCredentials(PasswordEncoder encoder, String rawPassword) {
+        if (!encoder.matches(rawPassword, this.password)) {
+            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+        }
     }
 
-    public void
-    updateEmail(String email) {
+    public void resetPassword(PasswordEncoder encoder, String newPassword) {
+        this.password = encoder.encode(newPassword);
+        this.updateLoginTime();
+    }
+
+    public void updatePassword(PasswordEncoder encoder, String newPassword) {
+        this.password = encoder.encode(newPassword);
+    }
+
+    public void validateNewEmail(String newEmail, boolean exists) {
+        if (!this.email.equals(newEmail) && exists) {
+            throw new BusinessException(ErrorCode.DUPLICATE_EMAIL);
+        }
+    }
+
+    public void updateEmail(String email) {
         this.email = email;
     }
 
-    public void
-    updateLoginTime() {
+    public void updateLoginTime() {
         this.lastLogin = LocalDateTime.now();
     }
 
-    // 3. 개인 정보 변경 메서드
-    public void
-    updateUsername(String username) {
+    // 개인정보 관리
+    public void validateNewUsername(String newUsername, boolean exists) {
+        if (!this.username.equals(newUsername) && exists) {
+            throw new BusinessException(ErrorCode.DUPLICATE_USERNAME);
+        }
+    }
+
+    public void updateUsername(String username) {
         this.username = username;
     }
 
-    public void
-    updateProfile(String firstName, String lastName) {
+    public void updateProfile(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
-    public String
-    getFullName() {
+    public String getFullName() {
         return String.format("%s %s", lastName, firstName).trim();
     }
 
-    // 4. 권한 정보 변경 메서드
-    public void
-    activate() {
+    // 계정 상태 관련
+    public void activate() {
         this.isActive = true;
     }
 
-    public void
-    deactivate() {
+    public void deactivate() {
         this.isActive = false;
     }
 
-    public void
-    grantStaffPrivileges() {
+    public void grantStaffPrivileges() {
         this.isStaff = true;
     }
 
-    public void
-    revokeStaffPrivileges() {
+    public void revokeStaffPrivileges() {
         this.isStaff = false;
     }
 
-    public void
-    grantSuperuserPrivileges() {
+    public void grantSuperuserPrivileges() {
         this.isSuperuser = true;
     }
 
-    public void
-    revokeSuperuserPrivileges() {
+    public void revokeSuperuserPrivileges() {
         this.isSuperuser = false;
     }
 
-    public boolean
-    isAdmin() {
+    public boolean isAdmin() {
         return this.isSuperuser && this.isStaff;
+    }
+
+    public boolean isWithdrawn() {
+        return !this.isActive;
+    }
+
+    public boolean canLogin() {
+        return this.isActive && !this.isSuperuser;
+    }
+
+    public boolean canLoginAsAdmin() {
+        return this.isActive && this.isSuperuser && this.isStaff;
     }
 }

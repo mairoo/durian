@@ -4,6 +4,8 @@ import kr.co.pincoin.api.domain.auth.model.phone.enums.Domestic;
 import kr.co.pincoin.api.domain.auth.model.phone.enums.Gender;
 import kr.co.pincoin.api.domain.auth.model.phone.enums.PhoneVerifiedStatus;
 import kr.co.pincoin.api.domain.auth.model.user.User;
+import kr.co.pincoin.api.global.exception.BusinessException;
+import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.infra.auth.entity.profile.ProfileEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -218,56 +220,88 @@ public class Profile {
                 .build();
     }
 
-    public void
-    verifyPhone(String phone) {
+    // Phone & Document Verification
+    public void verifyPhoneWithStatus(PhoneVerifiedStatus status) {
+        switch (status) {
+            case VERIFIED -> verifyPhone(this.phone);
+            case UNVERIFIED, REVOKED -> revokePhoneVerification();
+            default -> throw new BusinessException(ErrorCode.INVALID_PHONE_VERIFICATION_STATUS);
+        }
+    }
+
+    public void validatePhoneVerification(String phone) {
+        if (phone == null || phone.isBlank()) {
+            throw new BusinessException(ErrorCode.INVALID_PHONE_NUMBER);
+        }
+    }
+
+    public void verifyPhone(String phone) {
+        validatePhoneVerification(phone);
         this.phone = phone;
         this.phoneVerified = true;
         this.phoneVerifiedStatus = PhoneVerifiedStatus.VERIFIED;
     }
 
-    public void
-    verifyDocument() {
-        this.documentVerified = true;
-    }
-
-    public void
-    revokePhoneVerification() {
+    public void revokePhoneVerification() {
         this.phoneVerified = false;
         this.phoneVerifiedStatus = PhoneVerifiedStatus.REVOKED;
     }
 
-    public void
-    revokeDocumentVerification() {
+    public void validateDocumentVerification() {
+        if (!this.phoneVerified) {
+            throw new BusinessException(ErrorCode.PHONE_NOT_VERIFIED);
+        }
+    }
+
+    public void verifyDocument() {
+        validateDocumentVerification();
+        this.documentVerified = true;
+    }
+
+    public void revokeDocumentVerification() {
         this.documentVerified = false;
     }
 
-    public void
-    updateAddress(String address) {
+    // Order & Purchase Management
+    public void validateOrderPermission() {
+        if (!canOrder()) {
+            throw new BusinessException(ErrorCode.ORDER_NOT_ALLOWED);
+        }
+    }
+
+    public void validatePurchaseAmount(BigDecimal amount) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(ErrorCode.INVALID_PURCHASE_AMOUNT);
+        }
+    }
+
+    public void validateMileageDeduction(BigDecimal amount) {
+        if (this.mileage.compareTo(amount) < 0) {
+            throw new BusinessException(ErrorCode.INSUFFICIENT_MILEAGE);
+        }
+    }
+
+    public void updateAddress(String address) {
         this.address = address;
     }
 
-    public void
-    uploadPhotoId(String photoId) {
+    public void uploadPhotoId(String photoId) {
         this.photoId = photoId;
     }
 
-    public void
-    updateCard(String card) {
+    public void updateCard(String card) {
         this.card = card;
     }
 
-    public void
-    allowOrder() {
+    public void allowOrder() {
         this.allowOrder = true;
     }
 
-    public void
-    disallowOrder() {
+    public void disallowOrder() {
         this.allowOrder = false;
     }
 
-    public void
-    updatePersonalInfo(LocalDate dateOfBirth,
+    public void updatePersonalInfo(LocalDate dateOfBirth,
                                    Gender gender,
                                    Domestic domestic,
                                    String telecom) {
@@ -277,22 +311,11 @@ public class Profile {
         this.telecom = telecom;
     }
 
-    public void
-    addMileage(BigDecimal amount) {
-        this.mileage = this.mileage.add(amount);
-    }
+    // Purchase & Mileage Recording
+    public void recordPurchase(BigDecimal listPrice, BigDecimal sellingPrice) {
+        validatePurchaseAmount(listPrice);
+        validatePurchaseAmount(sellingPrice);
 
-    public void
-    subtractMileage(BigDecimal amount) {
-        BigDecimal newMileage = this.mileage.subtract(amount);
-        if (newMileage.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IllegalArgumentException("Mileage cannot be negative");
-        }
-        this.mileage = newMileage;
-    }
-
-    public void
-    recordPurchase(BigDecimal listPrice, BigDecimal sellingPrice) {
         this.totalOrderCount++;
         this.totalListPrice = this.totalListPrice.add(listPrice);
         this.totalSellingPrice = this.totalSellingPrice.add(sellingPrice);
@@ -303,47 +326,53 @@ public class Profile {
             this.maxPrice = sellingPrice;
         }
 
+        LocalDateTime now = LocalDateTime.now();
         if (this.firstPurchased == null) {
-            this.firstPurchased = LocalDateTime.now();
+            this.firstPurchased = now;
         }
-        this.lastPurchased = LocalDateTime.now();
+        this.lastPurchased = now;
 
         if (this.notPurchasedMonths) {
-            this.repurchased = LocalDateTime.now();
+            this.repurchased = now;
         }
         this.notPurchasedMonths = false;
     }
 
-    public void
-    updateMemo(String memo) {
+    public void addMileage(BigDecimal amount) {
+        validatePurchaseAmount(amount);
+        this.mileage = this.mileage.add(amount);
+    }
+
+    public void subtractMileage(BigDecimal amount) {
+        validateMileageDeduction(amount);
+        this.mileage = this.mileage.subtract(amount);
+    }
+
+    public void updateMemo(String memo) {
         this.memo = memo;
     }
 
-    public boolean
-    canOrder() {
+    // Status & Statistics Methods
+    public boolean canOrder() {
         return this.allowOrder && this.phoneVerified && this.documentVerified;
     }
 
-    public int
-    getAge() {
+    public int getAge() {
         if (this.dateOfBirth == null) {
             return 0;
         }
         return Period.between(this.dateOfBirth, LocalDate.now()).getYears();
     }
 
-    public boolean
-    isRegularCustomer() {
+    public boolean isRegularCustomer() {
         return this.totalOrderCount >= 5;
     }
 
-    public BigDecimal
-    getTotalDiscount() {
+    public BigDecimal getTotalDiscount() {
         return this.totalListPrice.subtract(this.totalSellingPrice);
     }
 
-    public double
-    getAverageDiscountRate() {
+    public double getAverageDiscountRate() {
         if (this.totalListPrice.compareTo(BigDecimal.ZERO) == 0) {
             return 0.0;
         }
@@ -351,5 +380,18 @@ public class Profile {
                 .divide(this.totalListPrice, 4, RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100))
                 .doubleValue();
+    }
+
+    public boolean needsPurchaseHistory() {
+        return this.firstPurchased == null;
+    }
+
+    public boolean isLongTermCustomer() {
+        return this.firstPurchased != null &&
+                Period.between(this.firstPurchased.toLocalDate(), LocalDate.now()).getYears() >= 1;
+    }
+
+    public boolean hasHighValuePurchase() {
+        return this.maxPrice != null && this.maxPrice.compareTo(new BigDecimal("1000000")) >= 0;
     }
 }
