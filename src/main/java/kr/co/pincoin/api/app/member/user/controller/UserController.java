@@ -31,7 +31,7 @@ public class UserController {
     @PostMapping("")
     public ResponseEntity<ApiResponse<UserResponse>>
     create(@Valid @RequestBody UserCreateRequest request) {
-        User user = userService.create(request);
+        User user = userService.createUser(request);
         return ResponseEntity.ok()
                 .body(ApiResponse.of(UserResponse.from(user)));
     }

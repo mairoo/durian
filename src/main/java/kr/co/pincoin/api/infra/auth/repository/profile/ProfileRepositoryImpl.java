@@ -24,7 +24,7 @@ public class ProfileRepositoryImpl implements ProfileRepository {
     }
 
     @Override
-    public Optional<Profile> findByUserIdWithFetch(Long userId) {
+    public Optional<Profile> findByUserIdWithFetch(Integer userId) {
         return profileJpaRepository.findByUserIdWithFetch(userId)
                 .map(profileMapper::toModel);
     }

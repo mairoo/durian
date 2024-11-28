@@ -201,6 +201,17 @@ public class Profile {
     }
 
     public void
+    revokePhoneVerification() {
+        this.phoneVerified = false;
+        this.phoneVerifiedStatus = PhoneVerifiedStatus.REVOKED;
+    }
+
+    public void
+    revokeDocumentVerification() {
+        this.documentVerified = false;
+    }
+
+    public void
     updateAddress(String address) {
         this.address = address;
     }
