@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -73,26 +72,6 @@ public class OrderRepositoryImpl implements OrderRepository {
         return orderJpaRepository.findSuspiciousOrders().stream()
                 .map(orderMapper::toModel)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public void updateOrderStatus(Long orderId, OrderStatus status) {
-        orderJpaRepository.updateOrderStatus(orderId, status);
-    }
-
-    @Override
-    public void updateTransactionId(Long orderId, String transactionId) {
-        orderJpaRepository.updateTransactionId(orderId, transactionId);
-    }
-
-    @Override
-    public void markAsSuspicious(Long orderId) {
-        orderJpaRepository.markAsSuspicious(orderId);
-    }
-
-    @Override
-    public void softDelete(Long orderId) {
-        orderJpaRepository.softDelete(orderId, LocalDateTime.now());
     }
 
     @Override

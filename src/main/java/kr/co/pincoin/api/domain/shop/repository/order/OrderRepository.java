@@ -26,13 +26,5 @@ public interface OrderRepository {
 
     List<Order> findSuspiciousOrders();
 
-    void updateOrderStatus(Long orderId, OrderStatus status);
-
-    void updateTransactionId(Long orderId, String transactionId);
-
-    void markAsSuspicious(Long orderId);
-
-    void softDelete(Long orderId);
-
     Page<Order> searchOrders(OrderSearchCondition condition, Pageable pageable);
 }

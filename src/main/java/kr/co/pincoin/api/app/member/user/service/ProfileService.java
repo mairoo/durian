@@ -39,7 +39,8 @@ public class ProfileService {
         return persistenceService.createUserAndProfile(user);
     }
 
-    public Profile getProfile(Integer userId) {
+    public Profile
+    getProfile(Integer userId) {
         return persistenceService.findProfile(userId);
     }
 
