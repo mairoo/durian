@@ -4,16 +4,16 @@ import lombok.Getter;
 
 @Getter
 public enum ProductStatus {
-    ENABLED(0),
-    DISABLED(1);
+  ENABLED(0),
+  DISABLED(1);
 
-    private final Integer value;
+  private final Integer value;
 
-    ProductStatus(Integer value) {
-        this.value = value;
-    }
+  ProductStatus(Integer value) {
+    this.value = value;
+  }
 
-    public Integer getValue() {
-        return value;
-    }
+  public Integer getValue() {
+    return value;
+  }
 }

@@ -9,5 +9,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin/sms")
 @RequiredArgsConstructor
 @Slf4j
-public class AdminSmsController {
-}
+public class AdminSmsController {}

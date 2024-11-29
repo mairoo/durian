@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class VoucherQueryRepositoryImpl implements VoucherQueryRepository {
-    private final JPAQueryFactory queryFactory;
+  private final JPAQueryFactory queryFactory;
 }

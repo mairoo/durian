@@ -1,4 +1,3 @@
 package kr.co.pincoin.api.domain.shop.repository.product;
 
-public interface ProductListRepository {
-}
+public interface ProductListRepository {}

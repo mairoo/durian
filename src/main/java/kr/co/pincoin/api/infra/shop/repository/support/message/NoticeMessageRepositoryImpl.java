@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class NoticeMessageRepositoryImpl implements NoticeMessageRepository {
-    private final NoticeMessageJpaRepository noticeMessageJpaRepository;
+  private final NoticeMessageJpaRepository noticeMessageJpaRepository;
 
-    private final NoticeMessageQueryRepository noticeMessageQueryRepository;
+  private final NoticeMessageQueryRepository noticeMessageQueryRepository;
 
-    private final NoticeMessageMapper noticeMessageMapper;
+  private final NoticeMessageMapper noticeMessageMapper;
 }

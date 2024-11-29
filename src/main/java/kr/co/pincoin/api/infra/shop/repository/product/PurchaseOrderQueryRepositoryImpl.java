@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class PurchaseOrderQueryRepositoryImpl implements PurchaseOrderQueryRepository {
-    private final JPAQueryFactory queryFactory;
+  private final JPAQueryFactory queryFactory;
 }

@@ -11,15 +11,15 @@ import lombok.*;
 @Builder
 @Getter
 public class CustomerQuestionAnswerEntity extends BaseDateTime {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "content")
-    private String content;
+  @Column(name = "content")
+  private String content;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id")
-    private CustomerQuestionEntity question;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "question_id")
+  private CustomerQuestionEntity question;
 }

@@ -16,133 +16,119 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ProfileService {
-    private final UserProfilePersistenceService persistenceService;
+  private final UserProfilePersistenceService persistenceService;
 
-    private final PasswordEncoder passwordEncoder;
+  private final PasswordEncoder passwordEncoder;
 
-    @Transactional
-    public Profile
-    createUser(UserCreateRequest request) {
-        // 중복 검증
-        persistenceService.existsByEmail(request.getEmail());
-        persistenceService.existsByUsername(request.getUsername());
+  @Transactional
+  public Profile createUser(UserCreateRequest request) {
+    // 중복 검증
+    persistenceService.existsByEmail(request.getEmail());
+    persistenceService.existsByUsername(request.getUsername());
 
-        // 일반 사용자 생성
-        User user = User.of(
-                request.getEmail(),
-                passwordEncoder.encode(request.getPassword()),
-                request.getUsername(),
-                request.getFirstName(),
-                request.getLastName()
-                           );
+    // 일반 사용자 생성
+    User user =
+        User.of(
+            request.getEmail(),
+            passwordEncoder.encode(request.getPassword()),
+            request.getUsername(),
+            request.getFirstName(),
+            request.getLastName());
 
-        return persistenceService.createUserAndProfile(user);
-    }
+    return persistenceService.createUserAndProfile(user);
+  }
 
-    public Profile
-    getProfile(Integer userId) {
-        return persistenceService.findProfile(userId);
-    }
+  public Profile getProfile(Integer userId) {
+    return persistenceService.findProfile(userId);
+  }
 
-    @Transactional
-    public Profile
-    updateUsername(Integer userId, UsernameUpdateRequest request) {
-        Profile profile = persistenceService.findProfile(userId);
-        User user = profile.getUser();
+  @Transactional
+  public Profile updateUsername(Integer userId, UsernameUpdateRequest request) {
+    Profile profile = persistenceService.findProfile(userId);
+    User user = profile.getUser();
 
-        // 사용자명 중복 검증
-        user.validateNewUsername(request.getUsername(),
-                                 persistenceService.existsByUsername(request.getUsername()));
+    // 사용자명 중복 검증
+    user.validateNewUsername(
+        request.getUsername(), persistenceService.existsByUsername(request.getUsername()));
 
-        user.updateUsername(request.getUsername());
-        return persistenceService.updateUser(user);
-    }
+    user.updateUsername(request.getUsername());
+    return persistenceService.updateUser(user);
+  }
 
-    @Transactional
-    public Profile
-    updateEmail(Integer userId, EmailUpdateRequest request) {
-        Profile profile = persistenceService.findProfile(userId);
-        User user = profile.getUser();
+  @Transactional
+  public Profile updateEmail(Integer userId, EmailUpdateRequest request) {
+    Profile profile = persistenceService.findProfile(userId);
+    User user = profile.getUser();
 
-        // 이메일 중복 검증
-        user.validateNewEmail(request.getEmail(),
-                              persistenceService.existsByEmail(request.getEmail()));
+    // 이메일 중복 검증
+    user.validateNewEmail(request.getEmail(), persistenceService.existsByEmail(request.getEmail()));
 
-        user.updateEmail(request.getEmail());
-        return persistenceService.updateUser(user);
-    }
+    user.updateEmail(request.getEmail());
+    return persistenceService.updateUser(user);
+  }
 
-    @Transactional
-    public Profile
-    updatePassword(Integer userId, PasswordUpdateRequest request) {
-        Profile profile = persistenceService.findProfile(userId);
-        User user = profile.getUser();
+  @Transactional
+  public Profile updatePassword(Integer userId, PasswordUpdateRequest request) {
+    Profile profile = persistenceService.findProfile(userId);
+    User user = profile.getUser();
 
-        // 현재 비밀번호 검증
-        user.validateCredentials(passwordEncoder, request.getCurrentPassword());
+    // 현재 비밀번호 검증
+    user.validateCredentials(passwordEncoder, request.getCurrentPassword());
 
-        user.updatePassword(passwordEncoder, request.getNewPassword());
-        return persistenceService.updateUser(user);
-    }
+    user.updatePassword(passwordEncoder, request.getNewPassword());
+    return persistenceService.updateUser(user);
+  }
 
-    @Transactional
-    public Profile
-    updatePhone(Integer userId, String newPhone) {
-        Profile profile = persistenceService.findProfile(userId);
-        profile.verifyPhone(newPhone);
-        return persistenceService.updateProfile(profile);
-    }
+  @Transactional
+  public Profile updatePhone(Integer userId, String newPhone) {
+    Profile profile = persistenceService.findProfile(userId);
+    profile.verifyPhone(newPhone);
+    return persistenceService.updateProfile(profile);
+  }
 
-    @Transactional
-    public void
-    withdrawUser(Integer userId, String password) {
-        Profile profile = persistenceService.findProfile(userId);
-        User user = profile.getUser();
+  @Transactional
+  public void withdrawUser(Integer userId, String password) {
+    Profile profile = persistenceService.findProfile(userId);
+    User user = profile.getUser();
 
-        // 비밀번호 검증
-        user.validateCredentials(passwordEncoder, password);
+    // 비밀번호 검증
+    user.validateCredentials(passwordEncoder, password);
 
-        user.deactivate();
-        persistenceService.updateUser(user);
-    }
+    user.deactivate();
+    persistenceService.updateUser(user);
+  }
 
-    @Transactional
-    public void
-    deleteUser(Integer userId, String password) {
-        Profile profile = persistenceService.findProfile(userId);
-        User user = profile.getUser();
+  @Transactional
+  public void deleteUser(Integer userId, String password) {
+    Profile profile = persistenceService.findProfile(userId);
+    User user = profile.getUser();
 
-        // 비밀번호 검증
-        user.validateCredentials(passwordEncoder, password);
+    // 비밀번호 검증
+    user.validateCredentials(passwordEncoder, password);
 
-        persistenceService.deleteUserAndProfile(userId);
-    }
+    persistenceService.deleteUserAndProfile(userId);
+  }
 
-    @Transactional
-    public Profile
-    updateProfile(Integer userId,
-                                 String firstName,
-                                 String lastName) {
-        Profile profile = persistenceService.findProfile(userId);
-        User user = profile.getUser();
+  @Transactional
+  public Profile updateProfile(Integer userId, String firstName, String lastName) {
+    Profile profile = persistenceService.findProfile(userId);
+    User user = profile.getUser();
 
-        user.updateProfile(firstName, lastName);
-        return persistenceService.updateUser(user);
-    }
+    user.updateProfile(firstName, lastName);
+    return persistenceService.updateUser(user);
+  }
 
-    @Transactional
-    public Profile
-    updateAddress(Integer userId, String address) {
-        Profile profile = persistenceService.findProfile(userId);
-        profile.updateAddress(address);
-        return persistenceService.updateProfile(profile);
-    }
+  @Transactional
+  public Profile updateAddress(Integer userId, String address) {
+    Profile profile = persistenceService.findProfile(userId);
+    profile.updateAddress(address);
+    return persistenceService.updateProfile(profile);
+  }
 
-    @Transactional
-    public Profile
-    updateCard(Integer userId, String card) {
-        Profile profile = persistenceService.findProfile(userId);
-        profile.updateCard(card);
-        return persistenceService.updateProfile(profile);
-    }
+  @Transactional
+  public Profile updateCard(Integer userId, String card) {
+    Profile profile = persistenceService.findProfile(userId);
+    profile.updateCard(card);
+    return persistenceService.updateProfile(profile);
+  }
 }

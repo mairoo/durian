@@ -9,5 +9,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin/categories")
 @RequiredArgsConstructor
 @Slf4j
-public class AdminCategoryController {
-}
+public class AdminCategoryController {}

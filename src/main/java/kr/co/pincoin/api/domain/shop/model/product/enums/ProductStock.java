@@ -4,16 +4,16 @@ import lombok.Getter;
 
 @Getter
 public enum ProductStock {
-    SOLD_OUT(0),
-    IN_STOCK(1);
+  SOLD_OUT(0),
+  IN_STOCK(1);
 
-    private final Integer value;
+  private final Integer value;
 
-    ProductStock(Integer value) {
-        this.value = value;
-    }
+  ProductStock(Integer value) {
+    this.value = value;
+  }
 
-    public Integer getValue() {
-        return value;
-    }
+  public Integer getValue() {
+    return value;
+  }
 }

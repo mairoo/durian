@@ -1,22 +1,21 @@
 package kr.co.pincoin.api.domain.shop.repository.product;
 
-import kr.co.pincoin.api.domain.shop.model.product.Category;
-
 import java.util.List;
 import java.util.Optional;
+import kr.co.pincoin.api.domain.shop.model.product.Category;
 
 public interface CategoryRepository {
-    Category save(Category category);
+  Category save(Category category);
 
-    Optional<Category> findById(Long id);
+  Optional<Category> findById(Long id);
 
-    Optional<Category> findBySlug(String slug);
+  Optional<Category> findBySlug(String slug);
 
-    List<Category> findAll();
+  List<Category> findAll();
 
-    boolean existsBySlug(String slug);
+  boolean existsBySlug(String slug);
 
-    void delete(Category category);
+  void delete(Category category);
 
-    void deleteById(Long id);
+  void deleteById(Long id);
 }

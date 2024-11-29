@@ -21,56 +21,58 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthController {
-    private final AuthService authService;
+  private final AuthService authService;
 
-    private final JwtProperties jwtProperties;
+  private final JwtProperties jwtProperties;
 
-    @PostMapping("/sign-in")
-    public ResponseEntity<ApiResponse<AccessTokenResponse>>
-    signIn(@Valid @RequestBody SignInRequest request,
-           HttpServletRequest servletRequest) {
-        TokenPair tokenPair = authService.login(request, servletRequest);
+  @PostMapping("/sign-in")
+  public ResponseEntity<ApiResponse<AccessTokenResponse>> signIn(
+      @Valid @RequestBody SignInRequest request, HttpServletRequest servletRequest) {
+    TokenPair tokenPair = authService.login(request, servletRequest);
 
-        return ResponseEntity.ok()
-                .headers(createRefreshTokenCookie(tokenPair.getRefreshToken()))
-                .body(ApiResponse.of(tokenPair.getAccessToken()));
-    }
+    return ResponseEntity.ok()
+        .headers(createRefreshTokenCookie(tokenPair.getRefreshToken()))
+        .body(ApiResponse.of(tokenPair.getAccessToken()));
+  }
 
-    @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<AccessTokenResponse>>
-    refresh(@CookieValue(name = CookieKey.REFRESH_TOKEN_NAME) String refreshToken,
-            HttpServletRequest servletRequest) {
-        TokenPair tokenPair = authService.refresh(refreshToken, servletRequest);
+  @PostMapping("/refresh")
+  public ResponseEntity<ApiResponse<AccessTokenResponse>> refresh(
+      @CookieValue(name = CookieKey.REFRESH_TOKEN_NAME) String refreshToken,
+      HttpServletRequest servletRequest) {
+    TokenPair tokenPair = authService.refresh(refreshToken, servletRequest);
 
-        return ResponseEntity.ok()
-                .headers(createRefreshTokenCookie(tokenPair.getRefreshToken()))
-                .body(ApiResponse.of(tokenPair.getAccessToken()));
-    }
+    return ResponseEntity.ok()
+        .headers(createRefreshTokenCookie(tokenPair.getRefreshToken()))
+        .body(ApiResponse.of(tokenPair.getAccessToken()));
+  }
 
-    @PostMapping("/sign-out")
-    public ResponseEntity<ApiResponse<Void>>
-    signOut(@CookieValue(name = CookieKey.REFRESH_TOKEN_NAME, required = false) String refreshToken) {
-        authService.logout(refreshToken);
+  @PostMapping("/sign-out")
+  public ResponseEntity<ApiResponse<Void>> signOut(
+      @CookieValue(name = CookieKey.REFRESH_TOKEN_NAME, required = false) String refreshToken) {
+    authService.logout(refreshToken);
 
-        return ResponseEntity.ok()
-                .headers(createRefreshTokenCookie("")) // 쿠키 삭제 효과
-                .body(ApiResponse.of(null));
-    }
+    return ResponseEntity.ok()
+        .headers(createRefreshTokenCookie("")) // 쿠키 삭제 효과
+        .body(ApiResponse.of(null));
+  }
 
-    private HttpHeaders createRefreshTokenCookie(String refreshToken) {
-        HttpHeaders headers = new HttpHeaders();
+  private HttpHeaders createRefreshTokenCookie(String refreshToken) {
+    HttpHeaders headers = new HttpHeaders();
 
-        ResponseCookie cookie = ResponseCookie.from(CookieKey.REFRESH_TOKEN_NAME,
-                                                    refreshToken != null ? refreshToken : "")
-                .httpOnly(true)
-                .secure(true)
-                .path(CookieKey.PATH)
-                .maxAge(refreshToken != null && !refreshToken.isEmpty() ? jwtProperties.refreshTokenExpiresIn() : 0)
-                .sameSite(CookieKey.SAME_SITE)
-                .domain(jwtProperties.cookieDomain())
-                .build();
+    ResponseCookie cookie =
+        ResponseCookie.from(CookieKey.REFRESH_TOKEN_NAME, refreshToken != null ? refreshToken : "")
+            .httpOnly(true)
+            .secure(true)
+            .path(CookieKey.PATH)
+            .maxAge(
+                refreshToken != null && !refreshToken.isEmpty()
+                    ? jwtProperties.refreshTokenExpiresIn()
+                    : 0)
+            .sameSite(CookieKey.SAME_SITE)
+            .domain(jwtProperties.cookieDomain())
+            .build();
 
-        headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
-        return headers;
-    }
+    headers.add(HttpHeaders.SET_COOKIE, cookie.toString());
+    return headers;
+  }
 }

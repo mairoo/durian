@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class TokenPair {
-    private AccessTokenResponse accessToken; // 클라이언트에 전달될 JSON 응답
+  private AccessTokenResponse accessToken; // 클라이언트에 전달될 JSON 응답
 
-    private String refreshToken; // 쿠키에 설정될 토큰 (nullable)
+  private String refreshToken; // 쿠키에 설정될 토큰 (nullable)
 }

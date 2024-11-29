@@ -1,5 +1,7 @@
 package kr.co.pincoin.api.app.admin.product.service;
 
+import java.math.BigDecimal;
+import java.util.List;
 import kr.co.pincoin.api.app.admin.product.request.ProductCreateRequest;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
@@ -14,133 +16,129 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AdminProductService {
-    private final ProductRepository productRepository;
+  private final ProductRepository productRepository;
 
-    private final CategoryRepository categoryRepository;
+  private final CategoryRepository categoryRepository;
 
-    private final StoreRepository storeRepository;
+  private final StoreRepository storeRepository;
 
-    /**
-     * 새 상품권 권종을 등록한다. (디폴트 판매 개시)
-     */
-    @Transactional
-    public Product
-    createProduct(ProductCreateRequest request) {
-        // Store 조회
-        Store store = storeRepository.findById(request.getStoreId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
+  /** 새 상품권 권종을 등록한다. (디폴트 판매 개시) */
+  @Transactional
+  public Product createProduct(ProductCreateRequest request) {
+    // Store 조회
+    Store store =
+        storeRepository
+            .findById(request.getStoreId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-        // Category 조회
-        Category category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+    // Category 조회
+    Category category =
+        categoryRepository
+            .findById(request.getCategoryId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
-        // 상품 코드 중복 검사
-        if (productRepository.existsBySlug(request.getCode())) {
-            throw new BusinessException(ErrorCode.DUPLICATE_PRODUCT_CODE);
-        }
-
-        // Product 생성
-        Product product = Product.of(
-                request.getName(),
-                request.getSubtitle(),
-                request.getCode(),
-                request.getPg(),
-                store,
-                category,
-                request.getListPrice(),
-                request.getSellingPrice(),
-                request.getPgSellingPrice(),
-                request.getMinimumStockLevel(),
-                request.getMaximumStockLevel());
-
-        return productRepository.save(product);
+    // 상품 코드 중복 검사
+    if (productRepository.existsBySlug(request.getCode())) {
+      throw new BusinessException(ErrorCode.DUPLICATE_PRODUCT_CODE);
     }
 
-    /**
-     * 상품권 품절 처리한다.
-     */
-    @Transactional
-    public Product
-    markAsSoldOut(Long productId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+    // Product 생성
+    Product product =
+        Product.of(
+            request.getName(),
+            request.getSubtitle(),
+            request.getCode(),
+            request.getPg(),
+            store,
+            category,
+            request.getListPrice(),
+            request.getSellingPrice(),
+            request.getPgSellingPrice(),
+            request.getMinimumStockLevel(),
+            request.getMaximumStockLevel());
 
-        product.updateStockQuantity(0);
-        return productRepository.save(product);
-    }
+    return productRepository.save(product);
+  }
 
-    /**
-     * 상품권 판매 중지한다.
-     */
-    @Transactional
-    public Product
-    suspendSale(Long productId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+  /** 상품권 품절 처리한다. */
+  @Transactional
+  public Product markAsSoldOut(Long productId) {
+    Product product =
+        productRepository
+            .findById(productId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        product.updateStatus(ProductStatus.DISABLED);
-        return productRepository.save(product);
-    }
+    product.updateStockQuantity(0);
+    return productRepository.save(product);
+  }
 
-    /**
-     * 특정 카테고리 안에 상품권을 모두 가져온다.
-     */
-    public List<Product>
-    getProductsByCategory(Long categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+  /** 상품권 판매 중지한다. */
+  @Transactional
+  public Product suspendSale(Long productId) {
+    Product product =
+        productRepository
+            .findById(productId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        return productRepository.findAll().stream()
-                .filter(product -> product.getCategory().getId().equals(categoryId))
-                .toList();
-    }
+    product.updateStatus(ProductStatus.DISABLED);
+    return productRepository.save(product);
+  }
 
-    /**
-     * 상품권의 가격을 변경한다.
-     */
-    @Transactional
-    public Product updatePrice(Long productId, BigDecimal listPrice, BigDecimal sellingPrice) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+  /** 특정 카테고리 안에 상품권을 모두 가져온다. */
+  public List<Product> getProductsByCategory(Long categoryId) {
+    Category category =
+        categoryRepository
+            .findById(categoryId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
-        product.updatePrices(listPrice, sellingPrice);
+    return productRepository.findAll().stream()
+        .filter(product -> product.getCategory().getId().equals(categoryId))
+        .toList();
+  }
 
-        return productRepository.save(product);
-    }
+  /** 상품권의 가격을 변경한다. */
+  @Transactional
+  public Product updatePrice(Long productId, BigDecimal listPrice, BigDecimal sellingPrice) {
+    Product product =
+        productRepository
+            .findById(productId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
-    /**
-     * 상품권의 재고수량을 변경한다.
-     */
-    @Transactional
-    public Product
-    updateStockQuantity(Long productId, Integer stockQuantity) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+    product.updatePrices(listPrice, sellingPrice);
 
-        product.updateStockQuantity(stockQuantity);
-        return productRepository.save(product);
-    }
+    return productRepository.save(product);
+  }
 
-    /**
-     * 상품권의 카테고리를 변경한다.
-     */
-    @Transactional
-    public Product
-    updateCategory(Long productId, Long newCategoryId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+  /** 상품권의 재고수량을 변경한다. */
+  @Transactional
+  public Product updateStockQuantity(Long productId, Integer stockQuantity) {
+    Product product =
+        productRepository
+            .findById(productId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
-        Category newCategory = categoryRepository.findById(newCategoryId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+    product.updateStockQuantity(stockQuantity);
+    return productRepository.save(product);
+  }
 
-        product.updateCategory(newCategory);
-        return productRepository.save(product);
-    }
+  /** 상품권의 카테고리를 변경한다. */
+  @Transactional
+  public Product updateCategory(Long productId, Long newCategoryId) {
+    Product product =
+        productRepository
+            .findById(productId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+
+    Category newCategory =
+        categoryRepository
+            .findById(newCategoryId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+
+    product.updateCategory(newCategory);
+    return productRepository.save(product);
+  }
 }

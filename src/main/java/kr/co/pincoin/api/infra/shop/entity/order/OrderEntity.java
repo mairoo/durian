@@ -1,6 +1,7 @@
 package kr.co.pincoin.api.infra.shop.entity.order;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderCurrency;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderPaymentMethod;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
@@ -9,8 +10,6 @@ import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
 import kr.co.pincoin.api.infra.common.BaseRemovalDateTime;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @Entity
 @Table(name = "shop_order")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -18,62 +17,62 @@ import java.math.BigDecimal;
 @Builder
 @Getter
 public class OrderEntity extends BaseRemovalDateTime {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "order_no", columnDefinition = "CHAR(32)")
-    private String orderNo;
+  @Column(name = "order_no", columnDefinition = "CHAR(32)")
+  private String orderNo;
 
-    @Column(name = "fullname")
-    private String fullname;
+  @Column(name = "fullname")
+  private String fullname;
 
-    @Column(name = "user_agent")
-    private String userAgent;
+  @Column(name = "user_agent")
+  private String userAgent;
 
-    @Column(name = "accept_language")
-    private String acceptLanguage;
+  @Column(name = "accept_language")
+  private String acceptLanguage;
 
-    @Column(name = "ip_address", columnDefinition = "CHAR(39)")
-    private String ipAddress;
+  @Column(name = "ip_address", columnDefinition = "CHAR(39)")
+  private String ipAddress;
 
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "payment_method", columnDefinition = "INT")
-    private OrderPaymentMethod paymentMethod;
+  @Enumerated(EnumType.ORDINAL)
+  @Column(name = "payment_method", columnDefinition = "INT")
+  private OrderPaymentMethod paymentMethod;
 
-    @Column(name = "transaction_id")
-    private String transactionId;
+  @Column(name = "transaction_id")
+  private String transactionId;
 
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "status", columnDefinition = "INT")
-    private OrderStatus status;
+  @Enumerated(EnumType.ORDINAL)
+  @Column(name = "status", columnDefinition = "INT")
+  private OrderStatus status;
 
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "visible", columnDefinition = "INT")
-    private OrderVisibility visibility;
+  @Enumerated(EnumType.ORDINAL)
+  @Column(name = "visible", columnDefinition = "INT")
+  private OrderVisibility visibility;
 
-    @Column(name = "total_list_price")
-    private BigDecimal totalListPrice;
+  @Column(name = "total_list_price")
+  private BigDecimal totalListPrice;
 
-    @Column(name = "total_selling_price")
-    private BigDecimal totalSellingPrice;
+  @Column(name = "total_selling_price")
+  private BigDecimal totalSellingPrice;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "currency")
-    private OrderCurrency currency;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "currency")
+  private OrderCurrency currency;
 
-    @Column(name = "message")
-    private String message;
+  @Column(name = "message")
+  private String message;
 
-    @Column(name = "suspicious")
-    private Boolean suspicious;
+  @Column(name = "suspicious")
+  private Boolean suspicious;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
-    private OrderEntity parent;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "parent_id")
+  private OrderEntity parent;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private UserEntity user;
 }

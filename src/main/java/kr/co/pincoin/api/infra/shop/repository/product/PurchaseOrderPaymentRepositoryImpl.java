@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class PurchaseOrderPaymentRepositoryImpl implements PurchaseOrderPaymentRepository {
-    private final PurchaseOrderPaymentJpaRepository purchaseOrderPaymentJpaRepository;
+  private final PurchaseOrderPaymentJpaRepository purchaseOrderPaymentJpaRepository;
 
-    private final PurchaseOrderPaymentQueryRepository purchaseOrderPaymentQueryRepository;
+  private final PurchaseOrderPaymentQueryRepository purchaseOrderPaymentQueryRepository;
 
-    private final PurchaseOrderPaymentMapper purchaseOrderPaymentMapper;
+  private final PurchaseOrderPaymentMapper purchaseOrderPaymentMapper;
 }

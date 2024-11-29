@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.infra.shop.repository.order;
 
+import java.util.List;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherRepository;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductVoucherEntity;
@@ -7,37 +8,34 @@ import kr.co.pincoin.api.infra.shop.mapper.order.OrderProductVoucherMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 @RequiredArgsConstructor
 public class OrderProductVoucherRepositoryImpl implements OrderProductVoucherRepository {
-    private final OrderProductVoucherJpaRepository orderProductVoucherJpaRepository;
+  private final OrderProductVoucherJpaRepository orderProductVoucherJpaRepository;
 
-    private final OrderProductVoucherQueryRepository orderProductVoucherQueryRepository;
+  private final OrderProductVoucherQueryRepository orderProductVoucherQueryRepository;
 
-    private final OrderProductVoucherMapper orderProductVoucherMapper;
+  private final OrderProductVoucherMapper orderProductVoucherMapper;
 
-    @Override
-    public List<OrderProductVoucher>
-    saveAll(List<OrderProductVoucher> orderProductsVouchers) {
-        // 1. Domain Model -> JPA Entity 변환
-        List<OrderProductVoucherEntity> orderProductEntities = orderProductVoucherMapper
-                .toEntityList(orderProductsVouchers);
+  @Override
+  public List<OrderProductVoucher> saveAll(List<OrderProductVoucher> orderProductsVouchers) {
+    // 1. Domain Model -> JPA Entity 변환
+    List<OrderProductVoucherEntity> orderProductEntities =
+        orderProductVoucherMapper.toEntityList(orderProductsVouchers);
 
-        // 2. JPA Repository 일괄 저장
-        List<OrderProductVoucherEntity> savedEntities = orderProductVoucherJpaRepository.saveAll(orderProductEntities);
+    // 2. JPA Repository 일괄 저장
+    List<OrderProductVoucherEntity> savedEntities =
+        orderProductVoucherJpaRepository.saveAll(orderProductEntities);
 
-        // 3. 저장된 Entity -> Domain Model 변환 후 반환
-        return orderProductVoucherMapper.toModelList(savedEntities);
-    }
+    // 3. 저장된 Entity -> Domain Model 변환 후 반환
+    return orderProductVoucherMapper.toModelList(savedEntities);
+  }
 
-    @Override
-    public List<OrderProductVoucher>
-    findAllByOrderProductOrderId(Long orderId) {
-        List<OrderProductVoucherEntity> entries = orderProductVoucherJpaRepository
-                .findAllByOrderProductOrderId(orderId);
+  @Override
+  public List<OrderProductVoucher> findAllByOrderProductOrderId(Long orderId) {
+    List<OrderProductVoucherEntity> entries =
+        orderProductVoucherJpaRepository.findAllByOrderProductOrderId(orderId);
 
-        return orderProductVoucherMapper.toModelList(entries);
-    }
+    return orderProductVoucherMapper.toModelList(entries);
+  }
 }

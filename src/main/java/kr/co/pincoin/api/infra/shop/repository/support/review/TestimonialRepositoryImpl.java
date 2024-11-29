@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class TestimonialRepositoryImpl implements TestimonialRepository {
-    private final TestimonialJpaRepository testimonialJpaRepository;
+  private final TestimonialJpaRepository testimonialJpaRepository;
 
-    private final TestimonialQueryRepository testimonialQueryRepository;
+  private final TestimonialQueryRepository testimonialQueryRepository;
 
-    private final TestimonialMapper testimonialMapper;
+  private final TestimonialMapper testimonialMapper;
 }

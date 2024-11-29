@@ -1,191 +1,195 @@
 package kr.co.pincoin.api.domain.shop.model.store;
 
+import java.time.LocalDateTime;
 import kr.co.pincoin.api.infra.shop.entity.store.StoreEntity;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Getter
 public class Store {
-    private final Long id;
+  private final Long id;
 
-    private final String name;
+  private final String name;
 
-    private final String code;
+  private final String code;
 
-    private final LocalDateTime created;
+  private final LocalDateTime created;
 
-    private final LocalDateTime modified;
+  private final LocalDateTime modified;
 
-    private String theme;
+  private String theme;
 
-    private String phone;
+  private String phone;
 
-    private String phone1;
+  private String phone1;
 
-    private String kakao;
+  private String kakao;
 
-    private String bankAccount;
+  private String bankAccount;
 
-    private String escrowAccount;
+  private String escrowAccount;
 
-    private Integer chunkSize;
+  private Integer chunkSize;
 
-    private Integer blockSize;
+  private Integer blockSize;
 
-    private Boolean signupOpen;
+  private Boolean signupOpen;
 
-    private Boolean underAttack;
+  private Boolean underAttack;
 
-    @Builder
-    private Store(Long id, String name, String code, String theme,
-                  String phone, String phone1, String kakao,
-                  String bankAccount, String escrowAccount,
-                  Integer chunkSize, Integer blockSize,
-                  Boolean signupOpen, Boolean underAttack,
-                  LocalDateTime created, LocalDateTime modified) {
-        this.id = id;
-        this.name = name;
-        this.code = code;
-        this.theme = theme;
-        this.phone = phone;
-        this.phone1 = phone1;
-        this.kakao = kakao;
-        this.bankAccount = bankAccount;
-        this.escrowAccount = escrowAccount;
-        this.chunkSize = chunkSize;
-        this.blockSize = blockSize;
-        this.signupOpen = signupOpen;
-        this.underAttack = underAttack;
-        this.created = created;
-        this.modified = modified;
+  @Builder
+  private Store(
+      Long id,
+      String name,
+      String code,
+      String theme,
+      String phone,
+      String phone1,
+      String kakao,
+      String bankAccount,
+      String escrowAccount,
+      Integer chunkSize,
+      Integer blockSize,
+      Boolean signupOpen,
+      Boolean underAttack,
+      LocalDateTime created,
+      LocalDateTime modified) {
+    this.id = id;
+    this.name = name;
+    this.code = code;
+    this.theme = theme;
+    this.phone = phone;
+    this.phone1 = phone1;
+    this.kakao = kakao;
+    this.bankAccount = bankAccount;
+    this.escrowAccount = escrowAccount;
+    this.chunkSize = chunkSize;
+    this.blockSize = blockSize;
+    this.signupOpen = signupOpen;
+    this.underAttack = underAttack;
+    this.created = created;
+    this.modified = modified;
 
-        validateStore();
+    validateStore();
+  }
+
+  public StoreEntity toEntity() {
+    return StoreEntity.builder()
+        .id(this.getId())
+        .name(this.getName())
+        .code(this.getCode())
+        .theme(this.getTheme())
+        .phone(this.getPhone())
+        .phone1(this.getPhone1())
+        .kakao(this.getKakao())
+        .bankAccount(this.getBankAccount())
+        .escrowAccount(this.getEscrowAccount())
+        .chunkSize(this.getChunkSize())
+        .blockSize(this.getBlockSize())
+        .signupOpen(this.getSignupOpen())
+        .underAttack(this.getUnderAttack())
+        .build();
+  }
+
+  public static Store of(
+      String name,
+      String code,
+      String theme,
+      String phone,
+      String phone1,
+      String kakao,
+      String bankAccount,
+      String escrowAccount,
+      Integer chunkSize,
+      Integer blockSize) {
+    return Store.builder()
+        .name(name)
+        .code(code)
+        .theme(theme)
+        .phone(phone)
+        .phone1(phone1)
+        .kakao(kakao)
+        .bankAccount(bankAccount)
+        .escrowAccount(escrowAccount)
+        .chunkSize(chunkSize)
+        .blockSize(blockSize)
+        .build();
+  }
+
+  public void updateTheme(String theme) {
+    if (theme == null || theme.trim().isEmpty()) {
+      throw new IllegalArgumentException("Theme cannot be empty");
+    }
+    this.theme = theme;
+  }
+
+  public void updateContactInfo(String phone, String phone1, String kakao) {
+    this.phone = phone;
+    this.phone1 = phone1;
+    this.kakao = kakao;
+  }
+
+  public void updateBankAccounts(String bankAccount, String escrowAccount) {
+    this.bankAccount = bankAccount;
+    this.escrowAccount = escrowAccount;
+  }
+
+  public void updatePagination(Integer chunkSize, Integer blockSize) {
+    if (chunkSize != null && chunkSize <= 0) {
+      throw new IllegalArgumentException("Chunk size must be positive");
+    }
+    if (blockSize != null && blockSize <= 0) {
+      throw new IllegalArgumentException("Block size must be positive");
     }
 
-    public StoreEntity toEntity() {
-        return StoreEntity.builder()
-                .id(this.getId())
-                .name(this.getName())
-                .code(this.getCode())
-                .theme(this.getTheme())
-                .phone(this.getPhone())
-                .phone1(this.getPhone1())
-                .kakao(this.getKakao())
-                .bankAccount(this.getBankAccount())
-                .escrowAccount(this.getEscrowAccount())
-                .chunkSize(this.getChunkSize())
-                .blockSize(this.getBlockSize())
-                .signupOpen(this.getSignupOpen())
-                .underAttack(this.getUnderAttack())
-                .build();
-    }
+    this.chunkSize = chunkSize;
+    this.blockSize = blockSize;
+  }
 
-    public static Store of(String name, String code, String theme,
-                           String phone, String phone1, String kakao,
-                           String bankAccount, String escrowAccount,
-                           Integer chunkSize, Integer blockSize) {
-        return Store.builder()
-                .name(name)
-                .code(code)
-                .theme(theme)
-                .phone(phone)
-                .phone1(phone1)
-                .kakao(kakao)
-                .bankAccount(bankAccount)
-                .escrowAccount(escrowAccount)
-                .chunkSize(chunkSize)
-                .blockSize(blockSize)
-                .build();
-    }
+  public void openSignup() {
+    this.signupOpen = true;
+  }
 
-    public void
-    updateTheme(String theme) {
-        if (theme == null || theme.trim().isEmpty()) {
-            throw new IllegalArgumentException("Theme cannot be empty");
-        }
-        this.theme = theme;
-    }
+  public void closeSignup() {
+    this.signupOpen = false;
+  }
 
-    public void
-    updateContactInfo(String phone, String phone1, String kakao) {
-        this.phone = phone;
-        this.phone1 = phone1;
-        this.kakao = kakao;
-    }
+  public void markAsUnderAttack() {
+    this.underAttack = true;
+    this.closeSignup();
+  }
 
-    public void
-    updateBankAccounts(String bankAccount, String escrowAccount) {
-        this.bankAccount = bankAccount;
-        this.escrowAccount = escrowAccount;
-    }
+  public void markAsSafe() {
+    this.underAttack = false;
+  }
 
-    public void
-    updatePagination(Integer chunkSize, Integer blockSize) {
-        if (chunkSize != null && chunkSize <= 0) {
-            throw new IllegalArgumentException("Chunk size must be positive");
-        }
-        if (blockSize != null && blockSize <= 0) {
-            throw new IllegalArgumentException("Block size must be positive");
-        }
+  public boolean isAcceptingSignups() {
+    return this.signupOpen && !this.underAttack;
+  }
 
-        this.chunkSize = chunkSize;
-        this.blockSize = blockSize;
-    }
+  public boolean hasValidContactInfo() {
+    return (phone != null && !phone.trim().isEmpty())
+        || (phone1 != null && !phone1.trim().isEmpty())
+        || (kakao != null && !kakao.trim().isEmpty());
+  }
 
-    public void
-    openSignup() {
-        this.signupOpen = true;
-    }
+  public boolean hasValidBankInfo() {
+    return (bankAccount != null && !bankAccount.trim().isEmpty())
+        || (escrowAccount != null && !escrowAccount.trim().isEmpty());
+  }
 
-    public void
-    closeSignup() {
-        this.signupOpen = false;
+  private void validateStore() {
+    if (name == null || name.trim().isEmpty()) {
+      throw new IllegalArgumentException("Store name cannot be empty");
     }
-
-    public void
-    markAsUnderAttack() {
-        this.underAttack = true;
-        this.closeSignup();
+    if (code == null || code.trim().isEmpty()) {
+      throw new IllegalArgumentException("Store code cannot be empty");
     }
-
-    public void
-    markAsSafe() {
-        this.underAttack = false;
+    if (chunkSize != null && chunkSize <= 0) {
+      throw new IllegalArgumentException("Chunk size must be positive");
     }
-
-    public boolean
-    isAcceptingSignups() {
-        return this.signupOpen && !this.underAttack;
+    if (blockSize != null && blockSize <= 0) {
+      throw new IllegalArgumentException("Block size must be positive");
     }
-
-    public boolean
-    hasValidContactInfo() {
-        return (phone != null && !phone.trim().isEmpty()) ||
-                (phone1 != null && !phone1.trim().isEmpty()) ||
-                (kakao != null && !kakao.trim().isEmpty());
-    }
-
-    public boolean
-    hasValidBankInfo() {
-        return (bankAccount != null && !bankAccount.trim().isEmpty()) ||
-                (escrowAccount != null && !escrowAccount.trim().isEmpty());
-    }
-
-    private void
-    validateStore() {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Store name cannot be empty");
-        }
-        if (code == null || code.trim().isEmpty()) {
-            throw new IllegalArgumentException("Store code cannot be empty");
-        }
-        if (chunkSize != null && chunkSize <= 0) {
-            throw new IllegalArgumentException("Chunk size must be positive");
-        }
-        if (blockSize != null && blockSize <= 0) {
-            throw new IllegalArgumentException("Block size must be positive");
-        }
-    }
+  }
 }

@@ -1,7 +1,12 @@
 package kr.co.pincoin.api.infra.auth.repository.email;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import kr.co.pincoin.api.domain.auth.model.email.BannedEmail;
 import kr.co.pincoin.api.domain.auth.model.email.condition.BannedEmailSearchCondition;
 import kr.co.pincoin.api.domain.auth.repository.email.BannedEmailRepository;
@@ -19,242 +24,214 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Import({BannedEmailRepositoryImpl.class, BannedEmailMapper.class, BannedEmailQueryRepositoryImpl.class, BannedEmailRepositoryTest.TestConfig.class})
+@Import({
+  BannedEmailRepositoryImpl.class,
+  BannedEmailMapper.class,
+  BannedEmailQueryRepositoryImpl.class,
+  BannedEmailRepositoryTest.TestConfig.class
+})
 @ActiveProfiles("test")
 class BannedEmailRepositoryTest {
-    @Autowired
-    private TestEntityManager entityManager;
+  @Autowired private TestEntityManager entityManager;
 
-    @Autowired
-    private BannedEmailRepository bannedEmailRepository;
+  @Autowired private BannedEmailRepository bannedEmailRepository;
 
-    @Autowired
-    private BannedEmailMapper bannedEmailMapper;
+  @Autowired private BannedEmailMapper bannedEmailMapper;
 
-    private BannedEmailEntity testBannedEmailEntity;
+  private BannedEmailEntity testBannedEmailEntity;
 
-    @BeforeEach
-    void setUp() {
-        testBannedEmailEntity = BannedEmailEntity.builder()
-                .email("test@example.com")
-                .build();
+  @BeforeEach
+  void setUp() {
+    testBannedEmailEntity = BannedEmailEntity.builder().email("test@example.com").build();
 
-        entityManager.persistAndFlush(testBannedEmailEntity);
-        entityManager.clear();
+    entityManager.persistAndFlush(testBannedEmailEntity);
+    entityManager.clear();
+  }
+
+  @TestConfiguration
+  static class TestConfig {
+    @Bean
+    public JPAQueryFactory jpaQueryFactory(EntityManager entityManager) {
+      return new JPAQueryFactory(entityManager);
     }
+  }
 
-    @TestConfiguration
-    static class TestConfig {
-        @Bean
-        public JPAQueryFactory jpaQueryFactory(EntityManager entityManager) {
-            return new JPAQueryFactory(entityManager);
-        }
-    }
+  @Test
+  @DisplayName("이메일 차단 저장 테스트")
+  void saveBannedEmail() {
+    // when
+    BannedEmail bannedEmail = bannedEmailMapper.toModel(testBannedEmailEntity);
+    BannedEmail savedEmail = bannedEmailRepository.save(bannedEmail);
 
-    @Test
-    @DisplayName("이메일 차단 저장 테스트")
-    void saveBannedEmail() {
-        // when
-        BannedEmail bannedEmail = bannedEmailMapper.toModel(testBannedEmailEntity);
-        BannedEmail savedEmail = bannedEmailRepository.save(bannedEmail);
+    // then
+    assertNotNull(savedEmail.getId());
+    assertEquals(testBannedEmailEntity.getEmail(), savedEmail.getEmail());
+    assertFalse(savedEmail.isRemoved());
+  }
 
-        // then
-        assertNotNull(savedEmail.getId());
-        assertEquals(testBannedEmailEntity.getEmail(), savedEmail.getEmail());
-        assertFalse(savedEmail.isRemoved());
-    }
+  @Test
+  @DisplayName("ID로 이메일 차단 조회 테스트")
+  void findBannedEmailById() {
+    // given
+    BannedEmail bannedEmail = bannedEmailMapper.toModel(testBannedEmailEntity);
+    BannedEmail savedEmail = bannedEmailRepository.save(bannedEmail);
 
-    @Test
-    @DisplayName("ID로 이메일 차단 조회 테스트")
-    void findBannedEmailById() {
-        // given
-        BannedEmail bannedEmail = bannedEmailMapper.toModel(testBannedEmailEntity);
-        BannedEmail savedEmail = bannedEmailRepository.save(bannedEmail);
+    // when
+    Optional<BannedEmail> found = bannedEmailRepository.findById(savedEmail.getId());
 
-        // when
-        Optional<BannedEmail> found = bannedEmailRepository.findById(savedEmail.getId());
+    // then
+    assertTrue(found.isPresent());
+    assertEquals(savedEmail.getEmail(), found.get().getEmail());
+  }
 
-        // then
-        assertTrue(found.isPresent());
-        assertEquals(savedEmail.getEmail(), found.get().getEmail());
-    }
+  @Test
+  @DisplayName("이메일로 차단 조회 테스트")
+  void findByEmail() {
+    // given
+    BannedEmail bannedEmail = bannedEmailMapper.toModel(testBannedEmailEntity);
+    bannedEmailRepository.save(bannedEmail);
 
-    @Test
-    @DisplayName("이메일로 차단 조회 테스트")
-    void findByEmail() {
-        // given
-        BannedEmail bannedEmail = bannedEmailMapper.toModel(testBannedEmailEntity);
-        bannedEmailRepository.save(bannedEmail);
+    // when
+    Optional<BannedEmail> found = bannedEmailRepository.findByEmail("test@example.com");
 
-        // when
-        Optional<BannedEmail> found = bannedEmailRepository.findByEmail("test@example.com");
+    // then
+    assertTrue(found.isPresent());
+    assertEquals(testBannedEmailEntity.getEmail(), found.get().getEmail());
+  }
 
-        // then
-        assertTrue(found.isPresent());
-        assertEquals(testBannedEmailEntity.getEmail(), found.get().getEmail());
-    }
+  @Test
+  @DisplayName("활성화된 차단 이메일 목록 조회 테스트")
+  void findActiveEmails() {
+    // given
+    BannedEmailEntity active1 = BannedEmailEntity.builder().email("active1@example.com").build();
+    BannedEmailEntity active2 = BannedEmailEntity.builder().email("active2@example.com").build();
+    BannedEmailEntity removed = BannedEmailEntity.builder().email("removed@example.com").build();
 
-    @Test
-    @DisplayName("활성화된 차단 이메일 목록 조회 테스트")
-    void findActiveEmails() {
-        // given
-        BannedEmailEntity active1 = BannedEmailEntity.builder()
-                .email("active1@example.com")
-                .build();
-        BannedEmailEntity active2 = BannedEmailEntity.builder()
-                .email("active2@example.com")
-                .build();
-        BannedEmailEntity removed = BannedEmailEntity.builder()
-                .email("removed@example.com")
-                .build();
+    entityManager.persist(active1);
+    entityManager.persist(active2);
+    entityManager.persist(removed);
+    entityManager.flush();
+    entityManager.clear();
 
-        entityManager.persist(active1);
-        entityManager.persist(active2);
-        entityManager.persist(removed);
-        entityManager.flush();
-        entityManager.clear();
+    // when
+    List<BannedEmail> activeEmails = bannedEmailRepository.findActiveEmails();
 
-        // when
-        List<BannedEmail> activeEmails = bannedEmailRepository.findActiveEmails();
+    // then
+    assertEquals(4, activeEmails.size());
+    assertTrue(activeEmails.stream().noneMatch(BannedEmail::isRemoved));
+  }
 
-        // then
-        assertEquals(4, activeEmails.size());
-        assertTrue(activeEmails.stream()
-                           .noneMatch(BannedEmail::isRemoved));
-    }
+  @Test
+  @DisplayName("이메일 존재 여부 확인 테스트")
+  void existsByEmail() {
+    // given
+    BannedEmail bannedEmail = bannedEmailMapper.toModel(testBannedEmailEntity);
+    bannedEmailRepository.save(bannedEmail);
 
-    @Test
-    @DisplayName("이메일 존재 여부 확인 테스트")
-    void existsByEmail() {
-        // given
-        BannedEmail bannedEmail = bannedEmailMapper.toModel(testBannedEmailEntity);
-        bannedEmailRepository.save(bannedEmail);
+    // when
+    boolean exists = bannedEmailRepository.existsByEmail("test@example.com");
+    boolean notExists = bannedEmailRepository.existsByEmail("nonexistent@example.com");
 
-        // when
-        boolean exists = bannedEmailRepository.existsByEmail("test@example.com");
-        boolean notExists = bannedEmailRepository.existsByEmail("nonexistent@example.com");
+    // then
+    assertTrue(exists);
+    assertFalse(notExists);
+  }
 
-        // then
-        assertTrue(exists);
-        assertFalse(notExists);
-    }
+  @Test
+  @DisplayName("차단 이메일 삭제 테스트")
+  void deleteBannedEmail() {
+    // given
+    BannedEmail bannedEmail = bannedEmailMapper.toModel(testBannedEmailEntity);
+    BannedEmail savedEmail = bannedEmailRepository.save(bannedEmail);
 
-    @Test
-    @DisplayName("차단 이메일 삭제 테스트")
-    void deleteBannedEmail() {
-        // given
-        BannedEmail bannedEmail = bannedEmailMapper.toModel(testBannedEmailEntity);
-        BannedEmail savedEmail = bannedEmailRepository.save(bannedEmail);
+    // when
+    bannedEmailRepository.delete(savedEmail);
+    Optional<BannedEmail> found = bannedEmailRepository.findById(savedEmail.getId());
 
-        // when
-        bannedEmailRepository.delete(savedEmail);
-        Optional<BannedEmail> found = bannedEmailRepository.findById(savedEmail.getId());
+    // then
+    assertTrue(found.isEmpty());
+  }
 
-        // then
-        assertTrue(found.isEmpty());
-    }
+  @Test
+  @DisplayName("도메인으로 차단된 이메일 검색 테스트")
+  void findEmailsContainingDomain() {
+    // given
+    BannedEmailEntity email1 = BannedEmailEntity.builder().email("test1@domain.com").build();
+    BannedEmailEntity email2 = BannedEmailEntity.builder().email("test2@domain.com").build();
+    BannedEmailEntity email3 = BannedEmailEntity.builder().email("test@otherdomain.com").build();
 
-    @Test
-    @DisplayName("도메인으로 차단된 이메일 검색 테스트")
-    void findEmailsContainingDomain() {
-        // given
-        BannedEmailEntity email1 = BannedEmailEntity.builder()
-                .email("test1@domain.com")
-                .build();
-        BannedEmailEntity email2 = BannedEmailEntity.builder()
-                .email("test2@domain.com")
-                .build();
-        BannedEmailEntity email3 = BannedEmailEntity.builder()
-                .email("test@otherdomain.com")
-                .build();
+    entityManager.persist(email1);
+    entityManager.persist(email2);
+    entityManager.persist(email3);
+    entityManager.flush();
+    entityManager.clear();
 
-        entityManager.persist(email1);
-        entityManager.persist(email2);
-        entityManager.persist(email3);
-        entityManager.flush();
-        entityManager.clear();
+    // when
+    List<BannedEmail> foundEmails =
+        ((BannedEmailRepositoryImpl) bannedEmailRepository)
+            .findEmailsContainingDomain("domain.com");
 
-        // when
-        List<BannedEmail> foundEmails = ((BannedEmailRepositoryImpl) bannedEmailRepository)
-                .findEmailsContainingDomain("domain.com");
+    // then
+    assertEquals(0, foundEmails.size());
+    assertTrue(foundEmails.stream().allMatch(email -> email.getEmail().endsWith("domain.com")));
+  }
 
-        // then
-        assertEquals(0, foundEmails.size());
-        assertTrue(foundEmails.stream()
-                           .allMatch(email -> email.getEmail().endsWith("domain.com")));
-    }
+  @Test
+  @DisplayName("검색 조건을 사용한 차단 이메일 검색 테스트")
+  void searchBannedEmails() {
+    // given
+    LocalDateTime startDate = LocalDateTime.now().minusDays(1);
+    LocalDateTime endDate = LocalDateTime.now().plusDays(1);
 
-    @Test
-    @DisplayName("검색 조건을 사용한 차단 이메일 검색 테스트")
-    void searchBannedEmails() {
-        // given
-        LocalDateTime startDate = LocalDateTime.now().minusDays(1);
-        LocalDateTime endDate = LocalDateTime.now().plusDays(1);
+    BannedEmailEntity email1 = BannedEmailEntity.builder().email("test1@example.com").build();
+    BannedEmailEntity email2 = BannedEmailEntity.builder().email("test2@example.com").build();
 
-        BannedEmailEntity email1 = BannedEmailEntity.builder()
-                .email("test1@example.com")
-                .build();
-        BannedEmailEntity email2 = BannedEmailEntity.builder()
-                .email("test2@example.com")
-                .build();
+    entityManager.persist(email1);
+    entityManager.persist(email2);
+    entityManager.flush();
+    entityManager.clear();
 
-        entityManager.persist(email1);
-        entityManager.persist(email2);
-        entityManager.flush();
-        entityManager.clear();
+    BannedEmailSearchCondition condition =
+        BannedEmailSearchCondition.builder()
+            .emailPattern("%example.com")
+            .isRemoved(false)
+            .startDate(startDate)
+            .endDate(endDate)
+            .build();
 
-        BannedEmailSearchCondition condition = BannedEmailSearchCondition.builder()
-                .emailPattern("%example.com")
-                .isRemoved(false)
-                .startDate(startDate)
-                .endDate(endDate)
-                .build();
+    // when
+    List<BannedEmail> searchResults =
+        ((BannedEmailRepositoryImpl) bannedEmailRepository).searchBannedEmails(condition);
 
-        // when
-        List<BannedEmail> searchResults = ((BannedEmailRepositoryImpl) bannedEmailRepository)
-                .searchBannedEmails(condition);
+    // then
+    assertTrue(searchResults.isEmpty());
+    assertTrue(searchResults.stream().allMatch(email -> email.getEmail().endsWith("example.com")));
+    assertTrue(searchResults.stream().noneMatch(BannedEmail::isRemoved));
+  }
 
-        // then
-        assertTrue(searchResults.isEmpty());
-        assertTrue(searchResults.stream()
-                           .allMatch(email -> email.getEmail().endsWith("example.com")));
-        assertTrue(searchResults.stream()
-                           .noneMatch(BannedEmail::isRemoved));
-    }
+  @Test
+  @DisplayName("이메일 매칭 패턴 테스트")
+  void testEmailMatching() {
+    // given
+    BannedEmailEntity wildcardEmail = BannedEmailEntity.builder().email("*@domain.com").build();
+    BannedEmailEntity exactEmail = BannedEmailEntity.builder().email("exact@domain.com").build();
 
-    @Test
-    @DisplayName("이메일 매칭 패턴 테스트")
-    void testEmailMatching() {
-        // given
-        BannedEmailEntity wildcardEmail = BannedEmailEntity.builder()
-                .email("*@domain.com")
-                .build();
-        BannedEmailEntity exactEmail = BannedEmailEntity.builder()
-                .email("exact@domain.com")
-                .build();
+    entityManager.persist(wildcardEmail);
+    entityManager.persist(exactEmail);
+    entityManager.flush();
+    entityManager.clear();
 
-        entityManager.persist(wildcardEmail);
-        entityManager.persist(exactEmail);
-        entityManager.flush();
-        entityManager.clear();
+    BannedEmail wildcardModel = bannedEmailMapper.toModel(wildcardEmail);
+    BannedEmail exactModel = bannedEmailMapper.toModel(exactEmail);
 
-        BannedEmail wildcardModel = bannedEmailMapper.toModel(wildcardEmail);
-        BannedEmail exactModel = bannedEmailMapper.toModel(exactEmail);
+    // when & then
+    assertTrue(wildcardModel.matches("test@domain.com"));
+    assertTrue(wildcardModel.matches("another@domain.com"));
+    assertFalse(wildcardModel.matches("test@otherdomain.com"));
 
-        // when & then
-        assertTrue(wildcardModel.matches("test@domain.com"));
-        assertTrue(wildcardModel.matches("another@domain.com"));
-        assertFalse(wildcardModel.matches("test@otherdomain.com"));
-
-        assertTrue(exactModel.matches("exact@domain.com"));
-        assertFalse(exactModel.matches("different@domain.com"));
-    }
+    assertTrue(exactModel.matches("exact@domain.com"));
+    assertFalse(exactModel.matches("different@domain.com"));
+  }
 }

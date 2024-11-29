@@ -14,35 +14,35 @@ import lombok.*;
 @Builder
 @Getter
 public class FaqMessageEntity extends BaseRemovalDateTime {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "title")
-    private String title;
+  @Column(name = "title")
+  private String title;
 
-    @Column(name = "description")
-    private String description;
+  @Column(name = "description")
+  private String description;
 
-    @Column(name = "keywords")
-    private String keywords;
+  @Column(name = "keywords")
+  private String keywords;
 
-    @Column(name = "content")
-    private String content;
+  @Column(name = "content")
+  private String content;
 
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "category", columnDefinition = "INT")
-    private FaqCategory category;
+  @Enumerated(EnumType.ORDINAL)
+  @Column(name = "category", columnDefinition = "INT")
+  private FaqCategory category;
 
-    @Column(name = "position")
-    private Integer position;
+  @Column(name = "position")
+  private Integer position;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
-    private UserEntity owner;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "owner_id")
+  private UserEntity owner;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id")
-    private StoreEntity store;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "store_id")
+  private StoreEntity store;
 }

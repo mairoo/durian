@@ -9,11 +9,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)  // JSON 역직렬화를 위한 기본 생성자
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // JSON 역직렬화를 위한 기본 생성자
 public class EmailUpdateRequest {
-    @NotBlank(message = "이메일은 필수 입력값입니다")
-    @Email(message = "올바른 이메일 형식이 아닙니다")
-    @Size(max = 100, message = "이메일은 100자를 초과할 수 없습니다")
-    @JsonProperty("email")
-    private String email;
+  @NotBlank(message = "이메일은 필수 입력값입니다")
+  @Email(message = "올바른 이메일 형식이 아닙니다")
+  @Size(max = 100, message = "이메일은 100자를 초과할 수 없습니다")
+  @JsonProperty("email")
+  private String email;
 }

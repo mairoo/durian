@@ -7,6 +7,6 @@ import lombok.Getter;
 @Getter
 @MappedSuperclass
 public abstract class BaseRemovalDateTime extends BaseDateTime {
-    @Column(name = "is_removed")
-    private boolean isRemoved;
+  @Column(name = "is_removed")
+  private boolean isRemoved;
 }

@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class SmsRepositoryImpl implements SmsRepository {
-    private final SmsJpaRepository smsJpaRepository;
+  private final SmsJpaRepository smsJpaRepository;
 
-    private final SmsQueryRepository smsQueryRepository;
+  private final SmsQueryRepository smsQueryRepository;
 
-    private final SmsMapper smsMapper;
+  private final SmsMapper smsMapper;
 }

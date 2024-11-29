@@ -12,25 +12,25 @@ import lombok.*;
 @Builder
 @Getter
 public class OrderProductVoucherEntity extends BaseRemovalDateTime {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "code")
-    private String code;
+  @Column(name = "code")
+  private String code;
 
-    @Column(name = "revoked")
-    private Boolean revoked;
+  @Column(name = "revoked")
+  private Boolean revoked;
 
-    @Column(name = "remarks")
-    private String remarks;
+  @Column(name = "remarks")
+  private String remarks;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_product_id")
-    private OrderProductEntity orderProduct;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "order_product_id")
+  private OrderProductEntity orderProduct;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "voucher_id")
-    private VoucherEntity voucher;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "voucher_id")
+  private VoucherEntity voucher;
 }

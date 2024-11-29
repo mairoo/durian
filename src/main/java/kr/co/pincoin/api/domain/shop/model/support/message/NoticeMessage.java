@@ -1,5 +1,9 @@
 package kr.co.pincoin.api.domain.shop.model.support.message;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
 import kr.co.pincoin.api.domain.shop.model.support.message.enums.NoticeCategory;
@@ -7,181 +11,157 @@ import kr.co.pincoin.api.infra.shop.entity.support.message.NoticeMessageEntity;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 @Getter
 public class NoticeMessage {
-    private final Long id;
+  private final Long id;
 
-    private final NoticeCategory category;
+  private final NoticeCategory category;
 
-    private final User owner;
+  private final User owner;
 
-    private final Store store;
+  private final Store store;
 
-    private final LocalDateTime created;
+  private final LocalDateTime created;
 
-    private final LocalDateTime modified;
+  private final LocalDateTime modified;
 
-    private String title;
+  private String title;
 
-    private String description;
+  private String description;
 
-    private Set<String> keywords;
+  private Set<String> keywords;
 
-    private String content;
+  private String content;
 
-    private Boolean isRemoved;
+  private Boolean isRemoved;
 
-    @Builder
-    private NoticeMessage(Long id,
-                          String title,
-                          String description,
-                          String keywords,
-                          String content,
-                          NoticeCategory category,
-                          User owner,
-                          Store store,
-                          LocalDateTime created,
-                          LocalDateTime modified,
-                          Boolean isRemoved) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.keywords = parseKeywords(keywords);
-        this.content = content;
-        this.category = category;
-        this.owner = owner;
-        this.store = store;
-        this.created = created;
-        this.modified = modified;
-        this.isRemoved = isRemoved;
+  @Builder
+  private NoticeMessage(
+      Long id,
+      String title,
+      String description,
+      String keywords,
+      String content,
+      NoticeCategory category,
+      User owner,
+      Store store,
+      LocalDateTime created,
+      LocalDateTime modified,
+      Boolean isRemoved) {
+    this.id = id;
+    this.title = title;
+    this.description = description;
+    this.keywords = parseKeywords(keywords);
+    this.content = content;
+    this.category = category;
+    this.owner = owner;
+    this.store = store;
+    this.created = created;
+    this.modified = modified;
+    this.isRemoved = isRemoved;
 
-        validateNotice();
+    validateNotice();
+  }
+
+  public NoticeMessageEntity toEntity() {
+    return NoticeMessageEntity.builder()
+        .id(this.getId())
+        .title(this.getTitle())
+        .description(this.getDescription())
+        .keywords(String.join(",", this.getKeywords())) // Set<String>을 comma-separated string으로 변환
+        .content(this.getContent())
+        .category(this.getCategory())
+        .owner(this.getOwner().toEntity())
+        .store(this.getStore().toEntity())
+        .build();
+  }
+
+  public static NoticeMessage of(
+      String title, String content, NoticeCategory category, User owner, Store store) {
+    return NoticeMessage.builder()
+        .title(title)
+        .content(content)
+        .category(category)
+        .owner(owner)
+        .store(store)
+        .build();
+  }
+
+  public void updateTitle(String title) {
+    validateTitle(title);
+    this.title = title;
+  }
+
+  public void updateContent(String content) {
+    validateContent(content);
+    this.content = content;
+  }
+
+  public void updateDescription(String description) {
+    this.description = description;
+  }
+
+  public void updateKeywords(String keywords) {
+    this.keywords = parseKeywords(keywords);
+  }
+
+  public void softDelete() {
+    this.isRemoved = true;
+  }
+
+  public void restore() {
+    this.isRemoved = false;
+  }
+
+  public boolean belongsToStore(Long storeId) {
+    return this.store != null && this.store.getId().equals(storeId);
+  }
+
+  public boolean hasKeyword(String keyword) {
+    return this.keywords != null && this.keywords.contains(keyword.toLowerCase());
+  }
+
+  public boolean isRecent() {
+    return this.created.isAfter(LocalDateTime.now().minusDays(7));
+  }
+
+  private Set<String> parseKeywords(String keywords) {
+    if (keywords == null || keywords.trim().isEmpty()) {
+      return new HashSet<>();
     }
+    return new HashSet<>(Arrays.asList(keywords.toLowerCase().split(",\\s*")));
+  }
 
-    public NoticeMessageEntity toEntity() {
-        return NoticeMessageEntity.builder()
-                .id(this.getId())
-                .title(this.getTitle())
-                .description(this.getDescription())
-                .keywords(String.join(",", this.getKeywords())) // Set<String>을 comma-separated string으로 변환
-                .content(this.getContent())
-                .category(this.getCategory())
-                .owner(this.getOwner().toEntity())
-                .store(this.getStore().toEntity())
-                .build();
+  private void validateNotice() {
+    validateTitle(this.title);
+    validateContent(this.content);
+
+    if (category == null) {
+      throw new IllegalArgumentException("Category cannot be null");
     }
-
-    public static NoticeMessage of(String title,
-                                   String content,
-                                   NoticeCategory category,
-                                   User owner,
-                                   Store store) {
-        return NoticeMessage.builder()
-                .title(title)
-                .content(content)
-                .category(category)
-                .owner(owner)
-                .store(store)
-                .build();
+    if (owner == null) {
+      throw new IllegalArgumentException("Owner cannot be null");
     }
-
-    public void
-    updateTitle(String title) {
-        validateTitle(title);
-        this.title = title;
+    if (store == null) {
+      throw new IllegalArgumentException("Store cannot be null");
     }
+  }
 
-    public void
-    updateContent(String content) {
-        validateContent(content);
-        this.content = content;
+  private void validateTitle(String title) {
+    if (title == null || title.trim().isEmpty()) {
+      throw new IllegalArgumentException("Title cannot be empty");
     }
-
-    public void
-    updateDescription(String description) {
-        this.description = description;
+    if (title.length() > 200) {
+      throw new IllegalArgumentException("Title cannot exceed 200 characters");
     }
+  }
 
-    public void
-    updateKeywords(String keywords) {
-        this.keywords = parseKeywords(keywords);
+  private void validateContent(String content) {
+    if (content == null || content.trim().isEmpty()) {
+      throw new IllegalArgumentException("Content cannot be empty");
     }
-
-    public void
-    softDelete() {
-        this.isRemoved = true;
+    if (content.length() > 2000) {
+      throw new IllegalArgumentException("Content cannot exceed 2000 characters");
     }
-
-    public void
-    restore() {
-        this.isRemoved = false;
-    }
-
-    public boolean
-    belongsToStore(Long storeId) {
-        return this.store != null &&
-                this.store.getId().equals(storeId);
-    }
-
-    public boolean
-    hasKeyword(String keyword) {
-        return this.keywords != null &&
-                this.keywords.contains(keyword.toLowerCase());
-    }
-
-    public boolean
-    isRecent() {
-        return this.created.isAfter(
-                LocalDateTime.now().minusDays(7));
-    }
-
-    private Set<String>
-    parseKeywords(String keywords) {
-        if (keywords == null || keywords.trim().isEmpty()) {
-            return new HashSet<>();
-        }
-        return new HashSet<>(Arrays.asList(
-                keywords.toLowerCase().split(",\\s*")));
-    }
-
-    private void
-    validateNotice() {
-        validateTitle(this.title);
-        validateContent(this.content);
-
-        if (category == null) {
-            throw new IllegalArgumentException("Category cannot be null");
-        }
-        if (owner == null) {
-            throw new IllegalArgumentException("Owner cannot be null");
-        }
-        if (store == null) {
-            throw new IllegalArgumentException("Store cannot be null");
-        }
-    }
-
-    private void
-    validateTitle(String title) {
-        if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Title cannot be empty");
-        }
-        if (title.length() > 200) {
-            throw new IllegalArgumentException("Title cannot exceed 200 characters");
-        }
-    }
-
-    private void
-    validateContent(String content) {
-        if (content == null || content.trim().isEmpty()) {
-            throw new IllegalArgumentException("Content cannot be empty");
-        }
-        if (content.length() > 2000) {
-            throw new IllegalArgumentException("Content cannot exceed 2000 characters");
-        }
-    }
+  }
 }

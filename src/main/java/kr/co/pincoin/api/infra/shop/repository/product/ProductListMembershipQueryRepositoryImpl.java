@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class ProductListMembershipQueryRepositoryImpl implements ProductListMembershipQueryRepository {
-    private final JPAQueryFactory queryFactory;
+public class ProductListMembershipQueryRepositoryImpl
+    implements ProductListMembershipQueryRepository {
+  private final JPAQueryFactory queryFactory;
 }

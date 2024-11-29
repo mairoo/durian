@@ -1,4 +1,3 @@
 package kr.co.pincoin.api.infra.shop.repository.support.inquiry;
 
-public interface CustomerQuestionQueryRepository {
-}
+public interface CustomerQuestionQueryRepository {}

@@ -4,20 +4,20 @@ import lombok.Getter;
 
 @Getter
 public enum PaymentAccount {
-    KB(0),
-    NH(1),
-    SHINHAN(2),
-    WOORI(3),
-    IBK(4),
-    PAYPAL(5);
+  KB(0),
+  NH(1),
+  SHINHAN(2),
+  WOORI(3),
+  IBK(4),
+  PAYPAL(5);
 
-    private final Integer value;
+  private final Integer value;
 
-    PaymentAccount(Integer value) {
-        this.value = value;
-    }
+  PaymentAccount(Integer value) {
+    this.value = value;
+  }
 
-    public Integer getValue() {
-        return value;
-    }
+  public Integer getValue() {
+    return value;
+  }
 }

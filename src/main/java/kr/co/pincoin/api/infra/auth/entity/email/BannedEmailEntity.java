@@ -11,11 +11,11 @@ import lombok.*;
 @Builder
 @Getter
 public class BannedEmailEntity extends BaseRemovalDateTime {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "email")
-    private String email;
+  @Column(name = "email")
+  private String email;
 }

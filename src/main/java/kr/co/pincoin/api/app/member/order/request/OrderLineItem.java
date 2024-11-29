@@ -12,10 +12,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderLineItem {
-    @NotNull(message = "상품 코드는 필수입니다.")
-    private String code;
+  @NotNull(message = "상품 코드는 필수입니다.")
+  private String code;
 
-    @NotNull(message = "주문 수량은 필수입니다.")
-    @Min(value = 1, message = "주문 수량은 1개 이상이어야 합니다.")
-    private Integer quantity;
+  @NotNull(message = "주문 수량은 필수입니다.")
+  @Min(value = 1, message = "주문 수량은 1개 이상이어야 합니다.")
+  private Integer quantity;
 }

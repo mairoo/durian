@@ -9,5 +9,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/admin/testimonials")
 @RequiredArgsConstructor
 @Slf4j
-public class AdminTestimonialController {
-}
+public class AdminTestimonialController {}

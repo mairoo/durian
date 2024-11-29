@@ -1,4 +1,3 @@
 package kr.co.pincoin.api.external.notification.aligo;
 
-public class AligoApiClient {
-}
+public class AligoApiClient {}

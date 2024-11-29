@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class LoginLogRepositoryImpl implements LoginLogRepository {
-    private final LoginLogJpaRepository loginLogJpaRepository;
+  private final LoginLogJpaRepository loginLogJpaRepository;
 
-    private final LoginLogQueryRepository loginLogQueryRepository;
+  private final LoginLogQueryRepository loginLogQueryRepository;
 
-    private final LoginLogMapper loginLogMapper;
+  private final LoginLogMapper loginLogMapper;
 }

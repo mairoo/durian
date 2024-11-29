@@ -9,5 +9,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/faq-messages")
 @RequiredArgsConstructor
 @Slf4j
-public class FaqMessageController {
-}
+public class FaqMessageController {}

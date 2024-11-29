@@ -7,5 +7,4 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @Configuration
 @EnableJpaAuditing // created, modified 필드 = Django 호환
 @Slf4j
-public class JpaConfig {
-}
+public class JpaConfig {}

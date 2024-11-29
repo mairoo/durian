@@ -9,5 +9,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/notices")
 @RequiredArgsConstructor
 @Slf4j
-public class NoticeMessageController {
-}
+public class NoticeMessageController {}

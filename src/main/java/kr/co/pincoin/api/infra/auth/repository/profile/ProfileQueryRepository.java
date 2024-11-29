@@ -1,4 +1,3 @@
 package kr.co.pincoin.api.infra.auth.repository.profile;
 
-public interface ProfileQueryRepository {
-}
+public interface ProfileQueryRepository {}

@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.3.5'
 	id 'io.spring.dependency-management' version '1.1.6'
+	id "com.diffplug.spotless" version "6.25.0"
 }
 
 group = 'kr.co.pincoin'
@@ -56,4 +57,12 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+spotless {
+	java {
+		removeUnusedImports()
+		googleJavaFormat() // Google Java Format 적용
+		targetExclude 'src/generated/**/*.java' // 특정 패턴의 파일 제외 (선택사항)
+	}
 }

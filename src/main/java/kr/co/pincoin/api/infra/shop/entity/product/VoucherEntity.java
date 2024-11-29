@@ -12,22 +12,22 @@ import lombok.*;
 @Builder
 @Getter
 public class VoucherEntity extends BaseRemovalDateTime {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "code")
-    private String code;
+  @Column(name = "code")
+  private String code;
 
-    @Column(name = "remarks")
-    private String remarks;
+  @Column(name = "remarks")
+  private String remarks;
 
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "status", columnDefinition = "INT")
-    private VoucherStatus status;
+  @Enumerated(EnumType.ORDINAL)
+  @Column(name = "status", columnDefinition = "INT")
+  private VoucherStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id")
-    private ProductEntity product;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "product_id")
+  private ProductEntity product;
 }

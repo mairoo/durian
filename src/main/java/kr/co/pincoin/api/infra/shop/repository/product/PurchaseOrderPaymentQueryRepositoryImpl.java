@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class PurchaseOrderPaymentQueryRepositoryImpl implements PurchaseOrderPaymentQueryRepository {
-    private final JPAQueryFactory queryFactory;
+public class PurchaseOrderPaymentQueryRepositoryImpl
+    implements PurchaseOrderPaymentQueryRepository {
+  private final JPAQueryFactory queryFactory;
 }

@@ -8,9 +8,9 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class FaqMessageRepositoryImpl implements FaqMessageRepository {
-    private final FaqMessageJpaRepository faqMessageJpaRepository;
+  private final FaqMessageJpaRepository faqMessageJpaRepository;
 
-    private final FaqMessageQueryRepository faqMessageQueryRepository;
+  private final FaqMessageQueryRepository faqMessageQueryRepository;
 
-    private final FaqMessageMapper faqMessageMapper;
+  private final FaqMessageMapper faqMessageMapper;
 }

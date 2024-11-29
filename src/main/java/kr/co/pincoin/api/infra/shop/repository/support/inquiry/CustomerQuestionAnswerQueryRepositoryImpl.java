@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class CustomerQuestionAnswerQueryRepositoryImpl implements CustomerQuestionAnswerQueryRepository {
-    private final JPAQueryFactory queryFactory;
+public class CustomerQuestionAnswerQueryRepositoryImpl
+    implements CustomerQuestionAnswerQueryRepository {
+  private final JPAQueryFactory queryFactory;
 }

@@ -9,11 +9,11 @@ import org.springframework.data.annotation.LastModifiedBy;
 @Getter
 @MappedSuperclass
 public abstract class BaseAuditor extends BaseDateTime {
-    @CreatedBy
-    @Column(name = "created_by", updatable = false)
-    private Long createdBy;
+  @CreatedBy
+  @Column(name = "created_by", updatable = false)
+  private Long createdBy;
 
-    @LastModifiedBy
-    @Column(name = "last_modified_by")
-    private Long lastModifiedBy;
+  @LastModifiedBy
+  @Column(name = "last_modified_by")
+  private Long lastModifiedBy;
 }

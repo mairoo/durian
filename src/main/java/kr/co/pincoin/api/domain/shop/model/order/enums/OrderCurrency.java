@@ -4,6 +4,6 @@ import lombok.Getter;
 
 @Getter
 public enum OrderCurrency {
-    KRW,
-    USD
+  KRW,
+  USD
 }
