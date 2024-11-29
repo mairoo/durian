@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.shop.repository.order;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
@@ -12,6 +13,8 @@ public interface OrderRepository {
   Order save(Order order);
 
   Order saveAndFlush(Order order);
+
+  List<Order> saveAll(Collection<Order> orders);
 
   Optional<Order> findById(Long id);
 

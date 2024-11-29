@@ -9,6 +9,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long> {
+  List<ProductEntity> saveAll(Collection<ProductEntity> products);
+
   Optional<ProductEntity> findByCode(String code);
 
   List<ProductEntity> findAllByIdIn(Collection<Long> ids);

@@ -3,7 +3,10 @@ package kr.co.pincoin.api.infra.shop.service;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import kr.co.pincoin.api.app.member.order.request.OrderLineItem;
 import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
@@ -57,7 +60,7 @@ public class OrderPersistenceService {
         .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
   }
 
-  public List<OrderProduct> findOrderProducts(Order order) {
+  public List<OrderProduct> findOrderProductsFetchOrder(Order order) {
     return orderProductRepository.findAllByOrderFetchOrder(order);
   }
 
@@ -117,6 +120,11 @@ public class OrderPersistenceService {
   public List<Product> findProducts(List<OrderLineItem> items) {
     return productRepository.findAllByCodeIn(
         items.stream().map(OrderLineItem::getCode).distinct().toList());
+  }
+
+  public Map<String, Product> findProductsByCode(List<String> codes) {
+    return productRepository.findAllByCodeIn(codes).stream()
+        .collect(Collectors.toMap(Product::getCode, Function.identity()));
   }
 
   public List<Voucher> findAvailableVouchers(String productCode, int quantity) {
@@ -203,5 +211,58 @@ public class OrderPersistenceService {
   public void hideUserOrder(Order order) {
     order.updateVisibility(OrderVisibility.HIDDEN);
     save(order);
+  }
+
+  @Transactional
+  public void saveOrderProductVouchersBatch(List<OrderProductVoucher> vouchers) {
+    int batchSize = 100;
+    for (int i = 0; i < vouchers.size(); i += batchSize) {
+      List<OrderProductVoucher> batch = vouchers.subList(
+          i,
+          Math.min(i + batchSize, vouchers.size())
+      );
+      orderProductVoucherRepository.saveAll(batch);
+    }
+  }
+
+  @Transactional
+  public void updateVouchersBatch(List<Voucher> vouchers) {
+    int batchSize = 100;
+    for (int i = 0; i < vouchers.size(); i += batchSize) {
+      List<Voucher> batch = vouchers.subList(
+          i,
+          Math.min(i + batchSize, vouchers.size())
+      );
+      voucherRepository.saveAll(batch);
+    }
+  }
+
+  @Transactional
+  public void updateProductsBatch(List<Product> products) {
+    int batchSize = 100;
+    for (int i = 0; i < products.size(); i += batchSize) {
+      List<Product> batch = products.subList(
+          i,
+          Math.min(i + batchSize, products.size())
+      );
+      productRepository.saveAll(batch);
+    }
+  }
+
+  @Transactional
+  public void saveOrders(Order originalOrder, Order refundOrder) {
+    orderRepository.saveAll(List.of(originalOrder, refundOrder));
+  }
+
+  @Transactional
+  public void saveOrderProductsBatch(List<OrderProduct> orderProducts) {
+    int batchSize = 100;
+    for (int i = 0; i < orderProducts.size(); i += batchSize) {
+      List<OrderProduct> batch = orderProducts.subList(
+          i,
+          Math.min(i + batchSize, orderProducts.size())
+      );
+      orderProductRepository.saveAll(batch);
+    }
   }
 }

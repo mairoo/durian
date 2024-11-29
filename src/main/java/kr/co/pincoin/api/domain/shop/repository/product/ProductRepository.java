@@ -8,6 +8,8 @@ import kr.co.pincoin.api.domain.shop.model.product.Product;
 public interface ProductRepository {
   Product save(Product product);
 
+  List<Product> saveAll(Collection<Product> products);
+
   Optional<Product> findById(Long id);
 
   Optional<Product> findByCode(String code);

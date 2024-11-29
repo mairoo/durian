@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.infra.shop.repository.order;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,6 +28,12 @@ public class OrderRepositoryImpl implements OrderRepository {
   @Override
   public Order save(Order order) {
     return orderMapper.toModel(orderJpaRepository.save(orderMapper.toEntity(order)));
+  }
+
+  @Override
+  public List<Order> saveAll(Collection<Order> orders) {
+    return orderMapper.toModelList(
+        orderJpaRepository.saveAll(orderMapper.toEntityList(orders.stream().toList())));
   }
 
   @Override

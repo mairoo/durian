@@ -187,34 +187,41 @@ public class OrderDomainService {
 
   @Transactional
   public Order issueVouchers(Order order) {
-    List<OrderProduct> orderProducts = persistenceService.findOrderProducts(order);
+    List<OrderProduct> orderProducts = persistenceService.findOrderProductsFetchOrder(order);
+
+    List<OrderProductVoucher> allVouchers = new ArrayList<>();
+    List<Voucher> vouchersToUpdate = new ArrayList<>();
+    List<Product> productsToUpdate = new ArrayList<>();
 
     for (OrderProduct orderProduct : orderProducts) {
       Product product = validateProductForVoucherIssue(orderProduct);
 
-      List<Voucher> vouchers =
-          persistenceService.findAvailableVouchers(
-              orderProduct.getCode(), orderProduct.getQuantity());
+      List<Voucher> availableVouchers = persistenceService.findAvailableVouchers(
+          orderProduct.getCode(),
+          orderProduct.getQuantity()
+      );
 
-      validateVouchersAvailability(orderProduct, vouchers, product);
+      validateVouchersAvailability(orderProduct, availableVouchers, product);
 
-      List<OrderProductVoucher> orderProductVouchers = new ArrayList<>();
-      for (Voucher voucher : vouchers) {
+      for (Voucher voucher : availableVouchers) {
         voucher.markAsSold();
-        orderProductVouchers.add(
-            OrderProductVoucher.builder()
-                .orderProduct(orderProduct)
-                .code(voucher.getCode())
-                .remarks(voucher.getRemarks())
-                .revoked(false)
-                .build());
+        vouchersToUpdate.add(voucher);
+
+        allVouchers.add(OrderProductVoucher.builder()
+            .orderProduct(orderProduct)
+            .code(voucher.getCode())
+            .remarks(voucher.getRemarks())
+            .revoked(false)
+            .build());
       }
 
-      persistenceService.saveOrderProductVouchers(orderProductVouchers);
-
       product.updateStockQuantity(product.getStockQuantity() - orderProduct.getQuantity());
-      persistenceService.updateProduct(product);
+      productsToUpdate.add(product);
     }
+
+    persistenceService.saveOrderProductVouchersBatch(allVouchers);
+    persistenceService.updateVouchersBatch(vouchersToUpdate);
+    persistenceService.updateProductsBatch(productsToUpdate);
 
     return order;
   }
@@ -282,10 +289,11 @@ public class OrderDomainService {
   public Order requestRefund(User user, Order order, String message) {
     validateRefundRequest(order);
 
+    // 원본 주문 상태 및 메시지 업데이트
     order.updateStatus(OrderStatus.REFUND_REQUESTED);
     order.updateMessage(message);
-    persistenceService.save(order);
 
+    // 환불 주문 생성 (금액만 기록)
     Order refundOrder =
         Order.builder()
             .orderNo(generateOrderNumber())
@@ -307,16 +315,13 @@ public class OrderDomainService {
             .removed(false)
             .build();
 
-    Order savedRefundOrder = persistenceService.save(refundOrder);
+    // 원본 주문과 환불 주문을 한 번에 저장
+    persistenceService.saveOrders(order, refundOrder);
 
-    List<OrderProduct> originalOrderProducts = persistenceService.findOrderProducts(order);
-    List<OrderProduct> refundOrderProducts =
-        copyOrderProducts(originalOrderProducts, savedRefundOrder);
-    persistenceService.saveOrderProducts(refundOrderProducts);
-
+    // Voucher 처리
     revokeVouchers(order.getId());
 
-    return savedRefundOrder;
+    return refundOrder;
   }
 
   @Transactional

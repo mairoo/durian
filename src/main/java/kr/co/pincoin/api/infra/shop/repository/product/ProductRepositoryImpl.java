@@ -25,6 +25,12 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
+  public List<Product> saveAll(Collection<Product> products) {
+    return productMapper.toModelList(
+        productJpaRepository.saveAll(productMapper.toEntityList(products.stream().toList())));
+  }
+
+  @Override
   public Optional<Product> findById(Long id) {
     return productJpaRepository.findById(id).map(productMapper::toModel);
   }
