@@ -62,7 +62,9 @@ tasks.named('test') {
 spotless {
 	java {
 		removeUnusedImports()
-		googleJavaFormat() // Google Java Format 적용
-		targetExclude 'src/generated/**/*.java' // 특정 패턴의 파일 제외 (선택사항)
+		trimTrailingWhitespace()
+		endWithNewline()
+		googleJavaFormat()
+		target 'src/*/java/**/*.java'
 	}
 }
