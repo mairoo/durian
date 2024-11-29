@@ -7,23 +7,21 @@ import kr.co.pincoin.api.domain.auth.model.email.condition.BannedEmailSearchCond
 
 public interface BannedEmailRepository {
 
-  // 기본 CRUD
   BannedEmail save(BannedEmail bannedEmail);
 
   Optional<BannedEmail> findById(Long id);
 
-  Optional<BannedEmail> findByEmail(String email);
+  void delete(BannedEmail bannedEmail);
 
-  List<BannedEmail> findActiveEmails();
+  Optional<BannedEmail> findByEmail(String email);
 
   boolean existsByEmail(String email);
 
-  void delete(BannedEmail bannedEmail);
+  List<BannedEmail> findAllByActiveTrue();
 
-  // 도메인 특화 검색 기능
-  List<BannedEmail> findEmailsContainingDomain(String domain);
+  List<BannedEmail> findByDomainContaining(String domain);
 
-  List<BannedEmail> findByEmailPattern(String pattern);
+  List<BannedEmail> findByEmailLike(String pattern);
 
   List<BannedEmail> searchBannedEmails(BannedEmailSearchCondition condition);
 }

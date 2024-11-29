@@ -4,15 +4,16 @@ import java.util.Optional;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 
 public interface UserRepository {
-  Optional<User> findByEmail(String email);
+
+  User save(User user);
+
+  void delete(User user);
 
   Optional<User> findById(Integer id);
 
-  User save(User user);
+  Optional<User> findByEmail(String email);
 
   boolean existsByEmail(String email);
 
   boolean existsByUsername(String username);
-
-  void delete(User user);
 }

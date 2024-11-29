@@ -15,14 +15,12 @@ public interface OrderProductJpaRepository extends JpaRepository<OrderProductEnt
           + "JOIN FETCH op.order o "
           + "WHERE o.orderNo = :orderNo "
           + "AND o.user.id = :userId")
-  List<OrderProductEntity> findAllByOrderNoAndUserIdFetchOrder(
-      @Param("orderNo") String orderNo,
-      @Param("userId") Integer userId
-  );
+  List<OrderProductEntity> findAllByOrderNoAndUserIdWithOrder(
+      @Param("orderNo") String orderNo, @Param("userId") Integer userId);
 
   @Query(
       "SELECT op FROM OrderProductEntity op "
           + "JOIN FETCH op.order o "
           + "WHERE op.order = :order")
-  List<OrderProductEntity> findAllByOrderFetchOrder(Order order);
+  List<OrderProductEntity> findAllByOrderWithOrder(Order order);
 }

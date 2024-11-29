@@ -28,12 +28,12 @@ public class UserProfilePersistenceService {
 
   public Profile findProfile(Integer userId) {
     return profileRepository
-        .findByUserIdWithFetch(userId)
+        .findByUserIdWithUser(userId)
         .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
   }
 
   public Page<Profile> findProfiles(Pageable pageable) {
-    return profileRepository.findAllWithUserFetch(pageable);
+    return profileRepository.findAllWithUser(pageable);
   }
 
   public boolean existsByEmail(String email) {

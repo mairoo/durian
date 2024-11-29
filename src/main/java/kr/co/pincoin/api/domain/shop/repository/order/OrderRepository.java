@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface OrderRepository {
+
   Order save(Order order);
 
   Order saveAndFlush(Order order);
@@ -18,15 +19,15 @@ public interface OrderRepository {
 
   Optional<Order> findById(Long id);
 
+  List<Order> findByUserId(Integer userId);
+
+  List<Order> findByStatus(OrderStatus status);
+
   Optional<Order> findByIdWithUser(Long id);
 
   Optional<Order> findByIdAndUserId(Long orderId, Integer userId);
 
   Optional<Order> findByOrderNoAndUserId(String orderNo, Integer userId);
-
-  List<Order> findByUserId(Integer userId);
-
-  List<Order> findByStatus(OrderStatus status);
 
   List<Order> findSuspiciousOrders();
 

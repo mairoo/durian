@@ -13,13 +13,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProfileJpaRepository extends JpaRepository<ProfileEntity, Long> {
   @Query("SELECT p FROM ProfileEntity p " + "LEFT JOIN FETCH p.user u " + "ORDER BY p.created DESC")
-  Page<ProfileEntity> findAllWithUserFetch(Pageable pageable);
+  Page<ProfileEntity> findAllWithUser(Pageable pageable);
 
   Optional<ProfileEntity> findByUserId(Integer userId);
 
   @Query("SELECT p FROM ProfileEntity p JOIN FETCH p.user u WHERE u.id = :userId")
-  Optional<ProfileEntity> findByUserIdWithFetch(@Param("userId") Integer userId);
+  Optional<ProfileEntity> findByUserIdWithUser(@Param("userId") Integer userId);
 
   @Query("SELECT p FROM ProfileEntity p JOIN FETCH p.user WHERE p.user = :user")
-  Optional<ProfileEntity> findByUserWithFetch(@Param("user") User user);
+  Optional<ProfileEntity> findByUserWithUser(@Param("user") User user);
 }

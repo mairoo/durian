@@ -18,8 +18,9 @@ public interface OrderPaymentJpaRepository extends JpaRepository<OrderPaymentEnt
   List<OrderPaymentEntity> findByOrderAndRemovedFalse(
       @Param("orderEntity") OrderEntity orderEntity);
 
-  @Query("SELECT COALESCE(SUM(p.amount), 0) "
-      + "FROM OrderPaymentEntity p "
-      + "WHERE p.order = :order AND p.isRemoved = false")
-  BigDecimal getTotalAmountByOrder(OrderEntity orderEntity);
+  @Query(
+      "SELECT COALESCE(SUM(p.amount), 0) "
+          + "FROM OrderPaymentEntity p "
+          + "WHERE p.order = :orderEntity AND p.isRemoved = false")
+  BigDecimal getTotalAmountByOrder(@Param("orderEntity") OrderEntity orderEntity);
 }

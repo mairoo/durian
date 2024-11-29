@@ -1,6 +1,9 @@
 package kr.co.pincoin.api.infra.auth.repository.email;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -103,7 +106,7 @@ class BannedEmailRepositoryTest {
 
   @Test
   @DisplayName("활성화된 차단 이메일 목록 조회 테스트")
-  void findActiveEmails() {
+  void findAllByActiveTrue() {
     // given
     BannedEmailEntity active1 = BannedEmailEntity.builder().email("active1@example.com").build();
     BannedEmailEntity active2 = BannedEmailEntity.builder().email("active2@example.com").build();
@@ -116,7 +119,7 @@ class BannedEmailRepositoryTest {
     entityManager.clear();
 
     // when
-    List<BannedEmail> activeEmails = bannedEmailRepository.findActiveEmails();
+    List<BannedEmail> activeEmails = bannedEmailRepository.findAllByActiveTrue();
 
     // then
     assertEquals(4, activeEmails.size());
@@ -156,7 +159,7 @@ class BannedEmailRepositoryTest {
 
   @Test
   @DisplayName("도메인으로 차단된 이메일 검색 테스트")
-  void findEmailsContainingDomain() {
+  void findEmailsContaining() {
     // given
     BannedEmailEntity email1 = BannedEmailEntity.builder().email("test1@domain.com").build();
     BannedEmailEntity email2 = BannedEmailEntity.builder().email("test2@domain.com").build();
@@ -169,9 +172,7 @@ class BannedEmailRepositoryTest {
     entityManager.clear();
 
     // when
-    List<BannedEmail> foundEmails =
-        ((BannedEmailRepositoryImpl) bannedEmailRepository)
-            .findEmailsContainingDomain("domain.com");
+    List<BannedEmail> foundEmails = bannedEmailRepository.findByDomainContaining("domain.com");
 
     // then
     assertEquals(0, foundEmails.size());
@@ -202,8 +203,7 @@ class BannedEmailRepositoryTest {
             .build();
 
     // when
-    List<BannedEmail> searchResults =
-        ((BannedEmailRepositoryImpl) bannedEmailRepository).searchBannedEmails(condition);
+    List<BannedEmail> searchResults = bannedEmailRepository.searchBannedEmails(condition);
 
     // then
     assertTrue(searchResults.isEmpty());

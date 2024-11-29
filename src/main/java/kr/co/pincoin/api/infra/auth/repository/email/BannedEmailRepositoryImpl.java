@@ -41,7 +41,7 @@ public class BannedEmailRepositoryImpl implements BannedEmailRepository {
   }
 
   @Override
-  public List<BannedEmail> findActiveEmails() {
+  public List<BannedEmail> findAllByActiveTrue() {
     return bannedEmailJpaRepository.findActiveEmails().stream()
         .map(bannedEmailMapper::toModel)
         .collect(Collectors.toList());
@@ -58,15 +58,15 @@ public class BannedEmailRepositoryImpl implements BannedEmailRepository {
   }
 
   @Override
-  public List<BannedEmail> findEmailsContainingDomain(String domain) {
-    return bannedEmailQueryRepository.findEmailsContainingDomain(domain).stream()
+  public List<BannedEmail> findByDomainContaining(String domain) {
+    return bannedEmailQueryRepository.findByDomainContaining(domain).stream()
         .map(bannedEmailMapper::toModel)
         .collect(Collectors.toList());
   }
 
   @Override
-  public List<BannedEmail> findByEmailPattern(String pattern) {
-    return bannedEmailQueryRepository.findByEmailPattern(pattern).stream()
+  public List<BannedEmail> findByEmailLike(String pattern) {
+    return bannedEmailQueryRepository.findByEmailLike(pattern).stream()
         .map(bannedEmailMapper::toModel)
         .collect(Collectors.toList());
   }

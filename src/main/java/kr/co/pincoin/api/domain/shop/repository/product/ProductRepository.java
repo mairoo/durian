@@ -6,9 +6,14 @@ import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 
 public interface ProductRepository {
+
   Product save(Product product);
 
   List<Product> saveAll(Collection<Product> products);
+
+  void delete(Product product);
+
+  void deleteById(Long id);
 
   Optional<Product> findById(Long id);
 
@@ -21,10 +26,6 @@ public interface ProductRepository {
   List<Product> findAllByCodeIn(Collection<String> codes);
 
   boolean existsBySlug(String code);
-
-  void delete(Product product);
-
-  void deleteById(Long id);
 
   void softDelete(Product product);
 

@@ -31,9 +31,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
           + "WHERE o.id = :id")
   Optional<OrderEntity> findById(@NonNull Long id);
 
-  @Query("SELECT o FROM OrderEntity o "
-      + "JOIN FETCH o.user "
-      + "WHERE o.id = :orderId")
+  @Query("SELECT o FROM OrderEntity o " + "JOIN FETCH o.user " + "WHERE o.id = :orderId")
   Optional<OrderEntity> findByIdWithUser(Long orderId);
 
   @Query(

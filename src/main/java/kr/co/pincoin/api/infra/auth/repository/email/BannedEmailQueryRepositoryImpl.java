@@ -18,7 +18,7 @@ public class BannedEmailQueryRepositoryImpl implements BannedEmailQueryRepositor
   // QueryDSL 구현체 (복잡한 조회 쿼리 구현)
 
   @Override
-  public List<BannedEmailEntity> findEmailsContainingDomain(String domain) {
+  public List<BannedEmailEntity> findByDomainContaining(String domain) {
     QBannedEmailEntity bannedEmail = QBannedEmailEntity.bannedEmailEntity;
 
     return queryFactory
@@ -29,7 +29,7 @@ public class BannedEmailQueryRepositoryImpl implements BannedEmailQueryRepositor
   }
 
   @Override
-  public List<BannedEmailEntity> findByEmailPattern(String pattern) {
+  public List<BannedEmailEntity> findByEmailLike(String pattern) {
     QBannedEmailEntity bannedEmail = QBannedEmailEntity.bannedEmailEntity;
 
     return queryFactory

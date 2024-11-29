@@ -61,11 +61,11 @@ public class OrderPersistenceService {
   }
 
   public List<OrderProduct> findOrderProductsFetchOrder(Order order) {
-    return orderProductRepository.findAllByOrderFetchOrder(order);
+    return orderProductRepository.findAllByOrderWithOrder(order);
   }
 
   public List<OrderProduct> findOriginalOrderProducts(String orderNo, Integer userId) {
-    return orderProductRepository.findAllByOrderNoAndUserIdFetchOrder(orderNo, userId);
+    return orderProductRepository.findAllByOrderNoAndUserIdWithOrder(orderNo, userId);
   }
 
   public List<OrderPayment> findPaymentsByOrder(Order order) {
@@ -77,7 +77,8 @@ public class OrderPersistenceService {
   }
 
   public Order findOrderWithUser(Long orderId) {
-    return orderRepository.findByIdWithUser(orderId)
+    return orderRepository
+        .findByIdWithUser(orderId)
         .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
   }
 
@@ -86,7 +87,8 @@ public class OrderPersistenceService {
   }
 
   public Profile findProfileByOrderUserId(Integer userId) {
-    return profileRepository.findByUserId(userId)
+    return profileRepository
+        .findByUserId(userId)
         .orElseThrow(() -> new EntityNotFoundException("사용자 프로필을 찾을 수 없습니다."));
   }
 
@@ -112,7 +114,7 @@ public class OrderPersistenceService {
 
   public Profile findUserProfile(User user) {
     return profileRepository
-        .findByUserWithFetch(user)
+        .findByUserWithUser(user)
         .orElseThrow(() -> new EntityNotFoundException("사용자 프로필을 찾을 수 없습니다."));
   }
 
@@ -162,8 +164,8 @@ public class OrderPersistenceService {
     // 배치 사이즈 설정으로 벌크 insert 최적화
     int batchSize = 100;
     for (int i = 0; i < orderProducts.size(); i += batchSize) {
-      List<OrderProduct> batch = orderProducts.subList(i,
-          Math.min(i + batchSize, orderProducts.size()));
+      List<OrderProduct> batch =
+          orderProducts.subList(i, Math.min(i + batchSize, orderProducts.size()));
       orderProductRepository.saveAll(batch);
     }
   }
@@ -217,10 +219,8 @@ public class OrderPersistenceService {
   public void saveOrderProductVouchersBatch(List<OrderProductVoucher> vouchers) {
     int batchSize = 100;
     for (int i = 0; i < vouchers.size(); i += batchSize) {
-      List<OrderProductVoucher> batch = vouchers.subList(
-          i,
-          Math.min(i + batchSize, vouchers.size())
-      );
+      List<OrderProductVoucher> batch =
+          vouchers.subList(i, Math.min(i + batchSize, vouchers.size()));
       orderProductVoucherRepository.saveAll(batch);
     }
   }
@@ -229,10 +229,7 @@ public class OrderPersistenceService {
   public void updateVouchersBatch(List<Voucher> vouchers) {
     int batchSize = 100;
     for (int i = 0; i < vouchers.size(); i += batchSize) {
-      List<Voucher> batch = vouchers.subList(
-          i,
-          Math.min(i + batchSize, vouchers.size())
-      );
+      List<Voucher> batch = vouchers.subList(i, Math.min(i + batchSize, vouchers.size()));
       voucherRepository.saveAll(batch);
     }
   }
@@ -241,10 +238,7 @@ public class OrderPersistenceService {
   public void updateProductsBatch(List<Product> products) {
     int batchSize = 100;
     for (int i = 0; i < products.size(); i += batchSize) {
-      List<Product> batch = products.subList(
-          i,
-          Math.min(i + batchSize, products.size())
-      );
+      List<Product> batch = products.subList(i, Math.min(i + batchSize, products.size()));
       productRepository.saveAll(batch);
     }
   }
@@ -258,10 +252,8 @@ public class OrderPersistenceService {
   public void saveOrderProductsBatch(List<OrderProduct> orderProducts) {
     int batchSize = 100;
     for (int i = 0; i < orderProducts.size(); i += batchSize) {
-      List<OrderProduct> batch = orderProducts.subList(
-          i,
-          Math.min(i + batchSize, orderProducts.size())
-      );
+      List<OrderProduct> batch =
+          orderProducts.subList(i, Math.min(i + batchSize, orderProducts.size()));
       orderProductRepository.saveAll(batch);
     }
   }

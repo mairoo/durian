@@ -150,15 +150,15 @@ public class OrderDomainService {
 
     // 메모리에서 OrderProduct 객체들 생성
     for (OrderProduct original : originalOrderProducts) {
-      newOrderProducts.add(OrderProduct.of(
-          original.getName(),
-          original.getSubtitle(),
-          original.getCode(),
-          original.getListPrice(),
-          original.getSellingPrice(),
-          original.getQuantity(),
-          savedReorder
-      ));
+      newOrderProducts.add(
+          OrderProduct.of(
+              original.getName(),
+              original.getSubtitle(),
+              original.getCode(),
+              original.getListPrice(),
+              original.getSellingPrice(),
+              original.getQuantity(),
+              savedReorder));
     }
 
     // 벌크 insert 수행
@@ -196,10 +196,9 @@ public class OrderDomainService {
     for (OrderProduct orderProduct : orderProducts) {
       Product product = validateProductForVoucherIssue(orderProduct);
 
-      List<Voucher> availableVouchers = persistenceService.findAvailableVouchers(
-          orderProduct.getCode(),
-          orderProduct.getQuantity()
-      );
+      List<Voucher> availableVouchers =
+          persistenceService.findAvailableVouchers(
+              orderProduct.getCode(), orderProduct.getQuantity());
 
       validateVouchersAvailability(orderProduct, availableVouchers, product);
 
@@ -207,12 +206,13 @@ public class OrderDomainService {
         voucher.markAsSold();
         vouchersToUpdate.add(voucher);
 
-        allVouchers.add(OrderProductVoucher.builder()
-            .orderProduct(orderProduct)
-            .code(voucher.getCode())
-            .remarks(voucher.getRemarks())
-            .revoked(false)
-            .build());
+        allVouchers.add(
+            OrderProductVoucher.builder()
+                .orderProduct(orderProduct)
+                .code(voucher.getCode())
+                .remarks(voucher.getRemarks())
+                .revoked(false)
+                .build());
       }
 
       product.updateStockQuantity(product.getStockQuantity() - orderProduct.getQuantity());
@@ -409,22 +409,6 @@ public class OrderDomainService {
         .collect(Collectors.toList());
   }
 
-  private List<OrderProduct> copyOrderProducts(
-      List<OrderProduct> originalProducts, Order newOrder) {
-    return originalProducts.stream()
-        .map(
-            op ->
-                OrderProduct.of(
-                    op.getName(),
-                    op.getSubtitle(),
-                    op.getCode(),
-                    op.getListPrice(),
-                    op.getSellingPrice(),
-                    op.getQuantity(),
-                    newOrder))
-        .collect(Collectors.toList());
-  }
-
   /** 가격 계산 관련 헬퍼 메소드 */
   private BigDecimal calculateTotalPrice(
       List<Product> products,
@@ -439,12 +423,6 @@ public class OrderDomainService {
               Product product = productMap.get(item.getCode());
               return priceExtractor.apply(product).multiply(BigDecimal.valueOf(item.getQuantity()));
             })
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
-  }
-
-  private BigDecimal calculateTotalPayments(Order order) {
-    return persistenceService.findPaymentsByOrder(order).stream()
-        .map(OrderPayment::getAmount)
         .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 

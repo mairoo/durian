@@ -25,8 +25,8 @@ public class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @Override
-  public Page<Profile> findAllWithUserFetch(Pageable pageable) {
-    return profileJpaRepository.findAllWithUserFetch(pageable).map(profileMapper::toModel);
+  public Page<Profile> findAllWithUser(Pageable pageable) {
+    return profileJpaRepository.findAllWithUser(pageable).map(profileMapper::toModel);
   }
 
   @Override
@@ -35,13 +35,13 @@ public class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @Override
-  public Optional<Profile> findByUserIdWithFetch(Integer userId) {
-    return profileJpaRepository.findByUserIdWithFetch(userId).map(profileMapper::toModel);
+  public Optional<Profile> findByUserIdWithUser(Integer userId) {
+    return profileJpaRepository.findByUserIdWithUser(userId).map(profileMapper::toModel);
   }
 
   @Override
-  public Optional<Profile> findByUserWithFetch(User user) {
-    return profileJpaRepository.findByUserWithFetch(user).map(profileMapper::toModel);
+  public Optional<Profile> findByUserWithUser(User user) {
+    return profileJpaRepository.findByUserWithUser(user).map(profileMapper::toModel);
   }
 
   @Override
