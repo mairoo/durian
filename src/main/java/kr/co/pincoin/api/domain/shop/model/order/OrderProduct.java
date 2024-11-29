@@ -100,7 +100,7 @@ public class OrderProduct {
     }
 
     public void
-    remove() {
+    softDelete() {
         this.isRemoved = true;
     }
 

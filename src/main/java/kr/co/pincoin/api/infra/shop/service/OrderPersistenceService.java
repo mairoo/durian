@@ -442,7 +442,7 @@ public class OrderPersistenceService {
 
         Order order = payment.getOrder();
 
-        payment.remove(); // soft delete
+        payment.softDelete();
         orderPaymentRepository.save(payment);
 
         BigDecimal totalPayments = orderPaymentRepository.findByOrderAndIsRemovedFalse(order)

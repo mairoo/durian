@@ -46,7 +46,7 @@ public class BannedEmail {
     }
 
     public void
-    remove() {
+    softDelete() {
         this.isRemoved = true;
     }
 

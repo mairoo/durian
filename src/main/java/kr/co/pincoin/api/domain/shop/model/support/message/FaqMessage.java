@@ -151,7 +151,7 @@ public class FaqMessage {
     }
 
     public void
-    remove() {
+    softDelete() {
         this.isRemoved = true;
     }
 

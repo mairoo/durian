@@ -31,7 +31,7 @@ class BannedPhoneTest {
 
     @Test
     @DisplayName("전화번호 차단 해제 및 복원 테스트")
-    void removeAndRestore() {
+    void softDeleteAndRestore() {
         // Given
         BannedPhone bannedPhone = BannedPhone.builder()
                 .phone("01012345678")
@@ -39,7 +39,7 @@ class BannedPhoneTest {
                 .build();
 
         // When
-        bannedPhone.remove();
+        bannedPhone.softDelete();
 
         // Then
         assertThat(bannedPhone.isRemoved()).isTrue();

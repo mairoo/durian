@@ -113,7 +113,7 @@ public class NoticeMessage {
     }
 
     public void
-    remove() {
+    softDelete() {
         this.isRemoved = true;
     }
 

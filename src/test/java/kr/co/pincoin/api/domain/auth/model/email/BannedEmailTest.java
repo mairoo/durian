@@ -25,7 +25,7 @@ class BannedEmailTest {
 
     @Test
     @DisplayName("이메일 차단 해제 및 복원 테스트")
-    void removeAndRestore() {
+    void softDeleteAndRestore() {
         // Given
         BannedEmail bannedEmail = BannedEmail.builder()
                 .email("test@example.com")
@@ -33,7 +33,7 @@ class BannedEmailTest {
                 .build();
 
         // When
-        bannedEmail.remove();
+        bannedEmail.softDelete();
 
         // Then
         assertThat(bannedEmail.isRemoved()).isTrue();

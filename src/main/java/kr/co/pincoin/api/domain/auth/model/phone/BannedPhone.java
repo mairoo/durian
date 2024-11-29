@@ -45,7 +45,7 @@ public class BannedPhone {
     }
 
     public void
-    remove() {
+    softDelete() {
         this.isRemoved = true;
     }
 

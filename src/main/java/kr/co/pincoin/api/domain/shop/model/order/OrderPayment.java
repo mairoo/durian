@@ -87,7 +87,7 @@ public class OrderPayment {
     }
 
     public void
-    remove() {
+    softDelete() {
         this.isRemoved = true;
     }
 

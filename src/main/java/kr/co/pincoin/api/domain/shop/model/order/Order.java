@@ -179,7 +179,7 @@ public class Order {
         this.message = message;
     }
 
-    public void remove() {
+    public void softDelete() {
         this.removed = true;
     }
 

@@ -67,7 +67,8 @@ public class AdminOrderService {
             throw new IllegalStateException("이미 삭제된 주문입니다.");
         }
 
-        orderRepository.softDelete(order.getId());
+        order.softDelete();
+        orderRepository.save(order);
     }
 
     /**

@@ -76,7 +76,7 @@ public class OrderProductVoucher {
     }
 
     public void
-    remove() {
+    softDelete() {
         if (!this.revoked) {
             throw new IllegalStateException("Cannot remove active voucher. Revoke it first.");
         }

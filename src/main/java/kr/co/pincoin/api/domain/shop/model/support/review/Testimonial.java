@@ -121,7 +121,7 @@ public class Testimonial {
     }
 
     public void
-    remove() {
+    softDelete() {
         this.isRemoved = true;
     }
 

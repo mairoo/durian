@@ -124,7 +124,7 @@ public class CustomerQuestion {
     }
 
     public void
-    remove() {
+    softDelete() {
         this.isRemoved = true;
     }
 

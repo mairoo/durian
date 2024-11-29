@@ -62,7 +62,7 @@ public class PurchaseOrderPayment {
     }
 
     public void
-    remove() {
+    softDelete() {
         if (this.order.isPaid()) {
             throw new IllegalStateException("Cannot remove payment for paid purchase order");
         }

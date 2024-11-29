@@ -10,7 +10,7 @@ public abstract class BaseRemovalDateTime extends BaseDateTime {
     @Column(name = "is_removed")
     private boolean isRemoved;
 
-    public void remove() {
+    public void softDelete() {
         this.isRemoved = true;
     }
 
