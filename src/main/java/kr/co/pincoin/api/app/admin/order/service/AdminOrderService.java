@@ -25,7 +25,8 @@ public class AdminOrderService {
      * @param pageable 페이징 정보
      * @return 조건에 맞는 주문 목록
      */
-    public Page<Order> getOrders(OrderSearchCondition condition, Pageable pageable) {
+    public Page<Order>
+    getOrders(OrderSearchCondition condition, Pageable pageable) {
         return orderDomainService.getOrders(condition, pageable);
     }
 
@@ -35,7 +36,8 @@ public class AdminOrderService {
      * @param orderId 조회할 주문 ID
      * @return 조회된 주문 정보
      */
-    public Order getOrder(Long orderId) {
+    public Order
+    getOrder(Long orderId) {
         return orderDomainService.getOrder(orderId);
     }
 
@@ -47,7 +49,8 @@ public class AdminOrderService {
      * @param clientInfo 클라이언트 정보
      * @return 생성된 주문 정보
      */
-    public Order createOrder(Integer userId, OrderCreateRequest request, ClientUtils.ClientInfo clientInfo) {
+    public Order
+    createOrder(Integer userId, OrderCreateRequest request, ClientUtils.ClientInfo clientInfo) {
         User user = orderDomainService.getUser(userId);
         return orderDomainService.createOrder(user, request, clientInfo);
     }
@@ -60,7 +63,8 @@ public class AdminOrderService {
      * @param clientInfo 클라이언트 정보
      * @return 생성된 재주문 정보
      */
-    public Order reorder(Integer userId, String orderNo, ClientUtils.ClientInfo clientInfo) {
+    public Order
+    reorder(Integer userId, String orderNo, ClientUtils.ClientInfo clientInfo) {
         return orderDomainService.createReorder(userId, orderNo, clientInfo);
     }
 
@@ -70,7 +74,8 @@ public class AdminOrderService {
      * @param orderId 상태를 변경할 주문 ID
      * @throws IllegalStateException 주문 상태 변경이 불가능한 경우
      */
-    public void verifyOrder(Long orderId) {
+    public void
+    verifyOrder(Long orderId) {
         Order order = orderDomainService.getOrder(orderId);
         orderDomainService.verifyOrder(order);
     }
@@ -80,7 +85,8 @@ public class AdminOrderService {
      *
      * @param orderId 상태를 변경할 주문 ID
      */
-    public void unverifyOrder(Long orderId) {
+    public void
+    unverifyOrder(Long orderId) {
         Order order = orderDomainService.getOrder(orderId);
         orderDomainService.unverifyOrder(order);
     }
@@ -91,7 +97,8 @@ public class AdminOrderService {
      * @param orderId 발권 처리할 주문 ID
      * @return 발권 처리된 주문 정보
      */
-    public Order issueVouchers(Long orderId) {
+    public Order
+    issueVouchers(Long orderId) {
         Order order = orderDomainService.getOrder(orderId);
         return orderDomainService.issueVouchers(order);
     }
@@ -102,7 +109,8 @@ public class AdminOrderService {
      * @param orderId 환불 처리할 주문 ID
      * @return 환불 처리된 주문 정보
      */
-    public Order completeRefund(Long orderId) {
+    public Order
+    completeRefund(Long orderId) {
         Order order = orderDomainService.getOrder(orderId);
         return orderDomainService.completeRefund(order);
     }
@@ -112,7 +120,8 @@ public class AdminOrderService {
      *
      * @param orderId 삭제할 주문 ID
      */
-    public void deleteOrder(Long orderId) {
+    public void
+    deleteOrder(Long orderId) {
         orderDomainService.softDeleteOrder(orderId);
     }
 
@@ -121,7 +130,8 @@ public class AdminOrderService {
      *
      * @param orderId 숨길 주문 ID
      */
-    public void hideOrder(Long orderId) {
+    public void
+    hideOrder(Long orderId) {
         orderDomainService.hideOrder(orderId);
     }
 }
