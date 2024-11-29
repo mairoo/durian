@@ -9,12 +9,4 @@ import lombok.Getter;
 public abstract class BaseRemovalDateTime extends BaseDateTime {
     @Column(name = "is_removed")
     private boolean isRemoved;
-
-    public void softDelete() {
-        this.isRemoved = true;
-    }
-
-    public void restore() {
-        this.isRemoved = false;
-    }
 }
