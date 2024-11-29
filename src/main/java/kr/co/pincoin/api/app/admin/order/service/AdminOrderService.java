@@ -1,24 +1,18 @@
 package kr.co.pincoin.api.app.admin.order.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
-import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
-import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
-import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
-import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
 import kr.co.pincoin.api.global.utils.ClientUtils;
+import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,23 +21,13 @@ import java.util.Optional;
 public class AdminOrderService {
     private final OrderPersistenceService orderPersistenceService;
 
-    private final OrderRepository orderRepository;
-
-    private final UserRepository userRepository;
-
     /**
      * 주문 목록 조회
      */
     public Page<Order>
     getOrders(OrderSearchCondition condition,
               Pageable pageable) {
-        OrderSearchCondition searchCondition = Optional.ofNullable(condition)
-                .orElseGet(OrderSearchCondition::empty);
-
-        Pageable pageRequest = Optional.ofNullable(pageable)
-                .orElse(Pageable.unpaged());
-
-        return orderRepository.searchOrders(searchCondition, pageRequest);
+        return orderPersistenceService.searchOrders(condition, pageable);
     }
 
     /**
@@ -51,7 +35,7 @@ public class AdminOrderService {
      */
     public Order
     getOrder(Long orderId) {
-        return findOrder(orderId);
+        return orderPersistenceService.findOrder(orderId);
     }
 
     /**
@@ -60,15 +44,7 @@ public class AdminOrderService {
     @Transactional
     public void
     deleteOrder(Long orderId) {
-        Order order = findOrder(orderId);
-
-        // 이미 삭제된 주문인지 확인
-        if (Boolean.TRUE.equals(order.getRemoved())) {
-            throw new IllegalStateException("이미 삭제된 주문입니다.");
-        }
-
-        order.softDelete();
-        orderRepository.save(order);
+        orderPersistenceService.softDeleteOrder(orderId);
     }
 
     /**
@@ -77,15 +53,7 @@ public class AdminOrderService {
     @Transactional
     public void
     hideOrder(Long orderId) {
-        Order order = findOrder(orderId);
-
-        // 이미 숨김 처리된 주문인지 확인
-        if (OrderVisibility.HIDDEN.equals(order.getVisibility())) {
-            throw new IllegalStateException("이미 숨김 처리된 주문입니다.");
-        }
-
-        order.updateVisibility(OrderVisibility.HIDDEN);
-        orderRepository.save(order);
+        orderPersistenceService.hideOrder(orderId);
     }
 
     /**
@@ -96,8 +64,7 @@ public class AdminOrderService {
     createOrder(Integer userId,
                 OrderCreateRequest request,
                 ClientUtils.ClientInfo clientInfo) {
-        User user = findUser(userId);
-
+        User user = orderPersistenceService.findUser(userId);
         return orderPersistenceService.createOrder(user, request, clientInfo);
     }
 
@@ -109,9 +76,7 @@ public class AdminOrderService {
     reorder(Integer userId,
             String orderNo,
             ClientUtils.ClientInfo clientInfo) {
-        User user = findUser(userId);
-
-        return orderPersistenceService.createReorder(user.getId(), orderNo, clientInfo);
+        return orderPersistenceService.createReorder(userId, orderNo, clientInfo);
     }
 
     /**
@@ -120,8 +85,7 @@ public class AdminOrderService {
     @Transactional
     public Order
     issueVouchers(Long orderId) {
-        Order order = findOrder(orderId);
-
+        Order order = orderPersistenceService.findOrder(orderId);
         return orderPersistenceService.issueVouchers(order);
     }
 
@@ -131,7 +95,7 @@ public class AdminOrderService {
     @Transactional
     public Order
     completeRefund(Long orderId) {
-        return orderPersistenceService.completeRefund(findOrder(orderId));
+        return orderPersistenceService.completeRefund(orderPersistenceService.findOrder(orderId));
     }
 
     /**
@@ -142,12 +106,12 @@ public class AdminOrderService {
      */
     @Transactional
     public void verifyOrder(Long orderId) {
-        Order order = findOrder(orderId);
+        Order order = orderPersistenceService.findOrder(orderId);
 
         if (order.getStatus() == OrderStatus.PAYMENT_COMPLETED ||
                 order.getStatus() == OrderStatus.UNDER_REVIEW) {
             order.updateStatus(OrderStatus.PAYMENT_VERIFIED);
-            orderRepository.save(order);
+            orderPersistenceService.save(order);  // save 메서드도 추가 필요
         } else {
             throw new IllegalStateException("결제 완료 또는 검토중 상태의 주문만 검증할 수 있습니다.");
         }
@@ -158,26 +122,13 @@ public class AdminOrderService {
      */
     @Transactional
     public void unverifyOrder(Long orderId) {
-        Order order = findOrder(orderId);
+        Order order = orderPersistenceService.findOrder(orderId);
 
         if (order.getStatus() == OrderStatus.PAYMENT_VERIFIED) {
             order.updateStatus(OrderStatus.UNDER_REVIEW);
-            orderRepository.save(order);
+            orderPersistenceService.save(order);  // save 메서드도 추가 필요
         } else {
             throw new IllegalStateException("검증 완료 상태의 주문만 변경할 수 있습니다.");
         }
-    }
-
-    private Order
-    findOrder(Long orderId) {
-        return orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
-    }
-
-    private User
-    findUser(Integer userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format("사용자를 찾을 수 없습니다: %d", userId)));
     }
 }

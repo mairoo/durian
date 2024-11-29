@@ -6,10 +6,12 @@ import kr.co.pincoin.api.app.member.order.request.OrderLineItem;
 import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.auth.repository.profile.ProfileRepository;
+import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
+import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderCurrency;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
@@ -26,6 +28,8 @@ import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
 import kr.co.pincoin.api.global.utils.ClientUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +55,59 @@ public class OrderPersistenceService {
     private final VoucherRepository voucherRepository;
 
     private final ProfileRepository profileRepository;
+
+    private final UserRepository userRepository;
+
+    @Transactional
+    public Order
+    save(Order order) {
+        return orderRepository.save(order);
+    }
+
+    public Page<Order> searchOrders(OrderSearchCondition condition, Pageable pageable) {
+        OrderSearchCondition searchCondition = Optional.ofNullable(condition)
+                .orElseGet(OrderSearchCondition::empty);
+
+        Pageable pageRequest = Optional.ofNullable(pageable)
+                .orElse(Pageable.unpaged());
+
+        return orderRepository.searchOrders(searchCondition, pageRequest);
+    }
+
+    public Order findOrder(Long orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
+    }
+
+    public User findUser(Integer userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        String.format("사용자를 찾을 수 없습니다: %d", userId)));
+    }
+
+    @Transactional
+    public void softDeleteOrder(Long orderId) {
+        Order order = findOrder(orderId);
+
+        if (Boolean.TRUE.equals(order.getRemoved())) {
+            throw new IllegalStateException("이미 삭제된 주문입니다.");
+        }
+
+        order.softDelete();
+        orderRepository.save(order);
+    }
+
+    @Transactional
+    public void hideOrder(Long orderId) {
+        Order order = findOrder(orderId);
+
+        if (OrderVisibility.HIDDEN.equals(order.getVisibility())) {
+            throw new IllegalStateException("이미 숨김 처리된 주문입니다.");
+        }
+
+        order.updateVisibility(OrderVisibility.HIDDEN);
+        orderRepository.save(order);
+    }
 
     /**
      * 신규 주문을 생성하는 메소드
@@ -525,5 +582,44 @@ public class OrderPersistenceService {
     private String
     generateOrderNumber() {
         return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    public Page<Order> searchUserOrders(Integer userId, OrderSearchCondition condition, Pageable pageable) {
+        OrderSearchCondition searchCondition = Optional.ofNullable(condition)
+                .orElseGet(OrderSearchCondition::empty);
+
+        Pageable pageRequest = Optional.ofNullable(pageable)
+                .orElse(Pageable.unpaged());
+
+        return orderRepository.searchOrders(searchCondition.withUserId(userId), pageRequest);
+    }
+
+    public Order findUserOrder(Integer userId, String orderNo) {
+        return orderRepository.findByOrderNoAndUserId(orderNo, userId)
+                .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
+    }
+
+    @Transactional
+    public void softDeleteUserOrder(Integer userId, String orderNo) {
+        Order order = findUserOrder(userId, orderNo);
+
+        if (Boolean.TRUE.equals(order.getRemoved())) {
+            throw new IllegalStateException("이미 삭제된 주문입니다.");
+        }
+
+        order.softDelete();
+        orderRepository.save(order);
+    }
+
+    @Transactional
+    public void hideUserOrder(Integer userId, String orderNo) {
+        Order order = findUserOrder(userId, orderNo);
+
+        if (OrderVisibility.HIDDEN.equals(order.getVisibility())) {
+            throw new IllegalStateException("이미 숨김 처리된 주문입니다.");
+        }
+
+        order.updateVisibility(OrderVisibility.HIDDEN);
+        orderRepository.save(order);
     }
 }
