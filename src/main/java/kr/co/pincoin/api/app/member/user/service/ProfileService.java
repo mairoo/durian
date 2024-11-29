@@ -17,10 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ProfileService {
     private final UserProfilePersistenceService persistenceService;
+
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public Profile createUser(UserCreateRequest request) {
+    public Profile
+    createUser(UserCreateRequest request) {
         // 중복 검증
         persistenceService.existsByEmail(request.getEmail());
         persistenceService.existsByUsername(request.getUsername());
@@ -42,7 +44,8 @@ public class ProfileService {
     }
 
     @Transactional
-    public Profile updateUsername(Integer userId, UsernameUpdateRequest request) {
+    public Profile
+    updateUsername(Integer userId, UsernameUpdateRequest request) {
         Profile profile = persistenceService.findProfile(userId);
         User user = profile.getUser();
 
@@ -55,7 +58,8 @@ public class ProfileService {
     }
 
     @Transactional
-    public Profile updateEmail(Integer userId, EmailUpdateRequest request) {
+    public Profile
+    updateEmail(Integer userId, EmailUpdateRequest request) {
         Profile profile = persistenceService.findProfile(userId);
         User user = profile.getUser();
 
@@ -68,7 +72,8 @@ public class ProfileService {
     }
 
     @Transactional
-    public Profile updatePassword(Integer userId, PasswordUpdateRequest request) {
+    public Profile
+    updatePassword(Integer userId, PasswordUpdateRequest request) {
         Profile profile = persistenceService.findProfile(userId);
         User user = profile.getUser();
 
@@ -80,14 +85,16 @@ public class ProfileService {
     }
 
     @Transactional
-    public Profile updatePhone(Integer userId, String newPhone) {
+    public Profile
+    updatePhone(Integer userId, String newPhone) {
         Profile profile = persistenceService.findProfile(userId);
         profile.verifyPhone(newPhone);
         return persistenceService.updateProfile(profile);
     }
 
     @Transactional
-    public void withdrawUser(Integer userId, String password) {
+    public void
+    withdrawUser(Integer userId, String password) {
         Profile profile = persistenceService.findProfile(userId);
         User user = profile.getUser();
 
@@ -99,7 +106,8 @@ public class ProfileService {
     }
 
     @Transactional
-    public void deleteUser(Integer userId, String password) {
+    public void
+    deleteUser(Integer userId, String password) {
         Profile profile = persistenceService.findProfile(userId);
         User user = profile.getUser();
 
@@ -110,7 +118,8 @@ public class ProfileService {
     }
 
     @Transactional
-    public Profile updateProfile(Integer userId,
+    public Profile
+    updateProfile(Integer userId,
                                  String firstName,
                                  String lastName) {
         Profile profile = persistenceService.findProfile(userId);
@@ -121,14 +130,16 @@ public class ProfileService {
     }
 
     @Transactional
-    public Profile updateAddress(Integer userId, String address) {
+    public Profile
+    updateAddress(Integer userId, String address) {
         Profile profile = persistenceService.findProfile(userId);
         profile.updateAddress(address);
         return persistenceService.updateProfile(profile);
     }
 
     @Transactional
-    public Profile updateCard(Integer userId, String card) {
+    public Profile
+    updateCard(Integer userId, String card) {
         Profile profile = persistenceService.findProfile(userId);
         profile.updateCard(card);
         return persistenceService.updateProfile(profile);

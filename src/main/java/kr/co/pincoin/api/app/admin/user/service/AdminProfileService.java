@@ -23,7 +23,8 @@ public class AdminProfileService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public Profile createUser(String email,
+    public Profile
+    createUser(String email,
                               String password,
                               String username,
                               String firstName,
@@ -45,7 +46,8 @@ public class AdminProfileService {
     }
 
     @Transactional
-    public Profile createAdmin(String email,
+    public Profile
+    createAdmin(String email,
                                String password,
                                String username,
                                String firstName,
@@ -67,7 +69,8 @@ public class AdminProfileService {
     }
 
     @Transactional
-    public Profile resetPassword(Integer userId, String newPassword) {
+    public Profile
+    resetPassword(Integer userId, String newPassword) {
         Profile profile = persistenceService.findProfile(userId);
         User user = profile.getUser();
 
@@ -76,14 +79,16 @@ public class AdminProfileService {
     }
 
     @Transactional
-    public Profile updatePhoneVerification(Integer userId, PhoneVerifiedStatus status) {
+    public Profile
+    updatePhoneVerification(Integer userId, PhoneVerifiedStatus status) {
         Profile profile = persistenceService.findProfile(userId);
         profile.verifyPhoneWithStatus(status);
         return persistenceService.updateProfile(profile);
     }
 
     @Transactional
-    public Profile updateDocumentVerification(Integer userId, boolean verified) {
+    public Profile
+    updateDocumentVerification(Integer userId, boolean verified) {
         Profile profile = persistenceService.findProfile(userId);
 
         if (verified) {
@@ -96,7 +101,8 @@ public class AdminProfileService {
     }
 
     @Transactional
-    public Profile toggleOrderPermission(Integer userId, boolean allowOrder) {
+    public Profile
+    toggleOrderPermission(Integer userId, boolean allowOrder) {
         Profile profile = persistenceService.findProfile(userId);
 
         if (allowOrder) {
@@ -109,7 +115,8 @@ public class AdminProfileService {
     }
 
     @Transactional
-    public void forceWithdrawUser(Integer userId) {
+    public void
+    forceWithdrawUser(Integer userId) {
         Profile profile = persistenceService.findProfile(userId);
         User user = profile.getUser();
 
@@ -118,7 +125,8 @@ public class AdminProfileService {
     }
 
     @Transactional
-    public void toggleUserActivation(Integer userId, boolean active) {
+    public void
+    toggleUserActivation(Integer userId, boolean active) {
         Profile profile = persistenceService.findProfile(userId);
         User user = profile.getUser();
 
@@ -132,7 +140,8 @@ public class AdminProfileService {
     }
 
     @Transactional
-    public Profile updateMileage(Integer userId, boolean isAdd, int amount) {
+    public Profile
+    updateMileage(Integer userId, boolean isAdd, int amount) {
         Profile profile = persistenceService.findProfile(userId);
 
         if (isAdd) {
@@ -145,7 +154,8 @@ public class AdminProfileService {
     }
 
     @Transactional
-    public Profile updateMemo(Integer userId, String memo) {
+    public Profile
+    updateMemo(Integer userId, String memo) {
         Profile profile = persistenceService.findProfile(userId);
         profile.updateMemo(memo);
         return persistenceService.updateProfile(profile);
@@ -161,7 +171,8 @@ public class AdminProfileService {
 
     // 관리자 관련 추가 기능
     @Transactional
-    public Profile grantAdminPrivileges(Integer userId) {
+    public Profile
+    grantAdminPrivileges(Integer userId) {
         Profile profile = persistenceService.findProfile(userId);
         User user = profile.getUser();
 
@@ -172,7 +183,8 @@ public class AdminProfileService {
     }
 
     @Transactional
-    public Profile revokeAdminPrivileges(Integer userId) {
+    public Profile
+    revokeAdminPrivileges(Integer userId) {
         Profile profile = persistenceService.findProfile(userId);
         User user = profile.getUser();
 

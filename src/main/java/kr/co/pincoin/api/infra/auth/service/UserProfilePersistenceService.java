@@ -17,50 +17,60 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserProfilePersistenceService {
     private final UserRepository userRepository;
+
     private final ProfileRepository profileRepository;
 
-    public User findUser(Integer userId) {
+    public User
+    findUser(Integer userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
-    public Profile findProfile(Integer userId) {
+    public Profile
+    findProfile(Integer userId) {
         return profileRepository.findByUserIdWithFetch(userId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
-    public Page<Profile> findProfiles(Pageable pageable) {
+    public Page<Profile>
+    findProfiles(Pageable pageable) {
         return profileRepository.findAllWithUserFetch(pageable);
     }
 
-    public boolean existsByEmail(String email) {
+    public boolean
+    existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
 
-    public boolean existsByUsername(String username) {
+    public boolean
+    existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
 
     @Transactional
-    public Profile createUserAndProfile(User user) {
+    public Profile
+    createUserAndProfile(User user) {
         User savedUser = userRepository.save(user);
         Profile profile = Profile.of(savedUser);
         return profileRepository.save(profile);
     }
 
     @Transactional
-    public Profile updateUser(User user) {
+    public Profile
+    updateUser(User user) {
         userRepository.save(user);
         return findProfile(user.getId());
     }
 
     @Transactional
-    public Profile updateProfile(Profile profile) {
+    public Profile
+    updateProfile(Profile profile) {
         return profileRepository.save(profile);
     }
 
     @Transactional
-    public void deleteUserAndProfile(Integer userId) {
+    public void
+    deleteUserAndProfile(Integer userId) {
         Profile profile = findProfile(userId);
         User user = profile.getUser();
 
@@ -69,7 +79,8 @@ public class UserProfilePersistenceService {
     }
 
     @Transactional
-    public Profile updateUserAndProfile(User user, Profile profile) {
+    public Profile
+    updateUserAndProfile(User user, Profile profile) {
         userRepository.save(user);
         return profileRepository.save(profile);
     }
