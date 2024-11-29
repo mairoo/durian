@@ -30,6 +30,11 @@ public class ProfileRepositoryImpl implements ProfileRepository {
   }
 
   @Override
+  public Optional<Profile> findByUserId(Integer userId) {
+    return profileJpaRepository.findByUserId(userId).map(profileMapper::toModel);
+  }
+
+  @Override
   public Optional<Profile> findByUserIdWithFetch(Integer userId) {
     return profileJpaRepository.findByUserIdWithFetch(userId).map(profileMapper::toModel);
   }

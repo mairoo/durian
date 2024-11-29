@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.infra.shop.repository.order;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
@@ -36,5 +37,10 @@ public class OrderPaymentRepositoryImpl implements OrderPaymentRepository {
         orderPaymentJpaRepository.findByOrderAndRemovedFalse(order.toEntity());
 
     return orderPaymentMapper.toModelList(entries);
+  }
+
+  @Override
+  public BigDecimal getTotalAmountByOrder(Order order) {
+    return orderPaymentJpaRepository.getTotalAmountByOrder(order.toEntity());
   }
 }

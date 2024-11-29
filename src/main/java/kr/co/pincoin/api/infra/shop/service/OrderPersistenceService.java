@@ -1,6 +1,7 @@
 package kr.co.pincoin.api.infra.shop.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.app.member.order.request.OrderLineItem;
@@ -70,6 +71,20 @@ public class OrderPersistenceService {
 
   public List<OrderProductVoucher> findOrderProductVouchers(Long orderId) {
     return orderProductVoucherRepository.findAllByOrderProductOrderId(orderId);
+  }
+
+  public Order findOrderWithUser(Long orderId) {
+    return orderRepository.findByIdWithUser(orderId)
+        .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
+  }
+
+  public BigDecimal getTotalAmountByOrder(Order order) {
+    return orderPaymentRepository.getTotalAmountByOrder(order);
+  }
+
+  public Profile findProfileByOrderUserId(Integer userId) {
+    return profileRepository.findByUserId(userId)
+        .orElseThrow(() -> new EntityNotFoundException("사용자 프로필을 찾을 수 없습니다."));
   }
 
   /** 사용자 관련 주문 조회 */

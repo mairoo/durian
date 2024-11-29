@@ -170,13 +170,14 @@ public class OrderDomainService {
   /** 주문 처리 */
   @Transactional
   public OrderPayment addPayment(Long orderId, OrderPayment payment) {
-    Order order = persistenceService.findOrder(orderId);
+    Order order = persistenceService.findOrderWithUser(orderId);
+
     OrderPayment savedPayment = persistenceService.savePayment(payment);
 
-    BigDecimal totalPayments = calculateTotalPayments(order);
+    BigDecimal totalPayments = persistenceService.getTotalAmountByOrder(order);
 
     if (isPaymentCompleted(totalPayments, order.getTotalSellingPrice())) {
-      Profile profile = persistenceService.findUserProfile(order.getUser());
+      Profile profile = persistenceService.findProfileByOrderUserId(order.getUser().getId());
       updateOrderStatusAfterPayment(order, profile);
       persistenceService.save(order);
     }

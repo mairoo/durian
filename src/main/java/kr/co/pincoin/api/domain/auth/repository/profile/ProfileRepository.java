@@ -11,6 +11,8 @@ public interface ProfileRepository {
 
   Page<Profile> findAllWithUserFetch(Pageable pageable);
 
+  Optional<Profile> findByUserId(Integer userId);
+
   Optional<Profile> findByUserIdWithFetch(Integer userId);
 
   Optional<Profile> findByUserWithFetch(User user);
