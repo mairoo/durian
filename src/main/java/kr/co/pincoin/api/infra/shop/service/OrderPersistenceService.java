@@ -61,7 +61,7 @@ public class OrderPersistenceService {
   }
 
   public List<OrderProduct> findOriginalOrderProducts(String orderNo, Integer userId) {
-    return orderProductRepository.findAllByOrderNoAndUserIdFetchOrderAndUser(orderNo, userId);
+    return orderProductRepository.findAllByOrderNoAndUserIdFetchOrder(orderNo, userId);
   }
 
   public List<OrderPayment> findPaymentsByOrder(Order order) {
@@ -130,8 +130,19 @@ public class OrderPersistenceService {
   }
 
   @Transactional
+  public Order saveAndFlush(Order order) {
+    return orderRepository.saveAndFlush(order);
+  }
+
+  @Transactional
   public void saveOrderProducts(List<OrderProduct> orderProducts) {
-    orderProductRepository.saveAll(orderProducts);
+    // 배치 사이즈 설정으로 벌크 insert 최적화
+    int batchSize = 100;
+    for (int i = 0; i < orderProducts.size(); i += batchSize) {
+      List<OrderProduct> batch = orderProducts.subList(i,
+          Math.min(i + batchSize, orderProducts.size()));
+      orderProductRepository.saveAll(batch);
+    }
   }
 
   @Transactional

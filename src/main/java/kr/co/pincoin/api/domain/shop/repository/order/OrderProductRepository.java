@@ -7,7 +7,7 @@ import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 public interface OrderProductRepository {
   List<OrderProduct> saveAll(List<OrderProduct> orderProducts);
 
-  List<OrderProduct> findAllByOrderNoAndUserIdFetchOrderAndUser(String orderNo, Integer userId);
+  List<OrderProduct> findAllByOrderNoAndUserIdFetchOrder(String orderNo, Integer userId);
 
   List<OrderProduct> findAllByOrderFetchOrder(Order order);
 }

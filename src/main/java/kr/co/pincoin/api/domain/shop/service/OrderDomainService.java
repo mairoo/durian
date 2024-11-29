@@ -2,7 +2,12 @@ package kr.co.pincoin.api.domain.shop.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
@@ -90,10 +95,11 @@ public class OrderDomainService {
             .removed(false)
             .build();
 
-    Order savedOrder = persistenceService.save(order);
+    Order savedOrder = persistenceService.saveAndFlush(order);
 
     List<OrderProduct> orderProducts =
         createOrderProducts(products, request.getItems(), savedOrder);
+
     persistenceService.saveOrderProducts(orderProducts);
 
     return savedOrder;
@@ -103,16 +109,21 @@ public class OrderDomainService {
   public Order createReorder(Integer userId, String orderNo, ClientUtils.ClientInfo clientInfo) {
     List<OrderProduct> originalOrderProducts =
         persistenceService.findOriginalOrderProducts(orderNo, userId);
+
     if (originalOrderProducts.isEmpty()) {
       throw new EntityNotFoundException("주문을 찾을 수 없습니다.");
     }
 
     Order originalOrder = originalOrderProducts.getFirst().getOrder();
 
+    // 벌크 연산을 위한 OrderProduct 데이터 준비
+    List<OrderProduct> newOrderProducts = new ArrayList<>();
+
     List<OrderLineItem> orderItems =
         originalOrderProducts.stream()
             .map(op -> new OrderLineItem(op.getCode(), op.getQuantity()))
             .collect(Collectors.toList());
+
     validateProductsForOrder(orderItems);
 
     Order reorder =
@@ -135,9 +146,22 @@ public class OrderDomainService {
             .removed(false)
             .build();
 
-    Order savedReorder = persistenceService.save(reorder);
+    Order savedReorder = persistenceService.saveAndFlush(reorder);
 
-    List<OrderProduct> newOrderProducts = copyOrderProducts(originalOrderProducts, savedReorder);
+    // 메모리에서 OrderProduct 객체들 생성
+    for (OrderProduct original : originalOrderProducts) {
+      newOrderProducts.add(OrderProduct.of(
+          original.getName(),
+          original.getSubtitle(),
+          original.getCode(),
+          original.getListPrice(),
+          original.getSellingPrice(),
+          original.getQuantity(),
+          savedReorder
+      ));
+    }
+
+    // 벌크 insert 수행
     persistenceService.saveOrderProducts(newOrderProducts);
 
     return savedReorder;
