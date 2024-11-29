@@ -178,7 +178,12 @@ public class OrderDomainService {
 
     if (isPaymentCompleted(totalPayments, order.getTotalSellingPrice())) {
       Profile profile = persistenceService.findProfileByOrderUserId(order.getUser().getId());
-      updateOrderStatusAfterPayment(order, profile);
+
+      order.updateStatus(
+          profile.isPhoneVerified() && profile.isDocumentVerified()
+              ? OrderStatus.PAYMENT_VERIFIED
+              : OrderStatus.UNDER_REVIEW);
+
       persistenceService.save(order);
     }
 
@@ -287,7 +292,12 @@ public class OrderDomainService {
   /** 환불 처리 */
   @Transactional
   public Order requestRefund(User user, Order order, String message) {
-    validateRefundRequest(order);
+    if (order.getStatus() == OrderStatus.REFUND_REQUESTED
+        || order.getStatus() == OrderStatus.REFUND_PENDING
+        || order.getStatus() == OrderStatus.REFUNDED1
+        || order.getStatus() == OrderStatus.REFUNDED2) {
+      throw new IllegalStateException("이미 환불 처리된 주문입니다.");
+    }
 
     // 원본 주문 상태 및 메시지 업데이트
     order.updateStatus(OrderStatus.REFUND_REQUESTED);
@@ -478,15 +488,6 @@ public class OrderDomainService {
   }
 
   /** 상태 변경 관련 헬퍼 메소드 */
-  private void validateRefundRequest(Order order) {
-    if (order.getStatus() == OrderStatus.REFUND_REQUESTED
-        || order.getStatus() == OrderStatus.REFUND_PENDING
-        || order.getStatus() == OrderStatus.REFUNDED1
-        || order.getStatus() == OrderStatus.REFUNDED2) {
-      throw new IllegalStateException("이미 환불 처리된 주문입니다.");
-    }
-  }
-
   private void validateRefundCompletion(Order refundOrder) {
     if (refundOrder.getStatus() != OrderStatus.REFUND_PENDING) {
       throw new IllegalStateException("환불 처리 대기 상태의 주문이 아닙니다.");
@@ -500,12 +501,5 @@ public class OrderDomainService {
     if (originalOrder.getStatus() != OrderStatus.REFUND_REQUESTED) {
       throw new IllegalStateException("환불 요청 상태의 주문이 아닙니다.");
     }
-  }
-
-  private void updateOrderStatusAfterPayment(Order order, Profile profile) {
-    order.updateStatus(
-        profile.isPhoneVerified() && profile.isDocumentVerified()
-            ? OrderStatus.PAYMENT_VERIFIED
-            : OrderStatus.UNDER_REVIEW);
   }
 }
