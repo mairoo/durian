@@ -8,21 +8,21 @@ import lombok.Getter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AligoSmsResponse {
 
-    @JsonProperty("result_code")
-    private String resultCode;
+  @JsonProperty("result_code")
+  private String resultCode;
 
-    @JsonProperty("message")
-    private String message;
+  @JsonProperty("message")
+  private String message;
 
-    @JsonProperty("msg_id")
-    private String msgId;
+  @JsonProperty("msg_id")
+  private String msgId;
 
-    @JsonProperty("success_cnt")
-    private String successCount;
+  @JsonProperty("success_cnt")
+  private String successCount;
 
-    @JsonProperty("error_cnt")
-    private String errorCount;
+  @JsonProperty("error_cnt")
+  private String errorCount;
 
-    @JsonProperty("msg_type")
-    private String msgType;
+  @JsonProperty("msg_type")
+  private String msgType;
 }

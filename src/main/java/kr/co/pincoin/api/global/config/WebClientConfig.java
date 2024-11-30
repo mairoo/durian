@@ -8,21 +8,17 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
-    @Bean
-    public WebClient aligoWebClient(@Value("${aligo.base-url}") String baseUrl) {
-        return WebClient.builder()
-            .baseUrl(baseUrl)
-            .build();
-    }
+  @Bean
+  public WebClient aligoWebClient(@Value("${aligo.base-url}") String baseUrl) {
+    return WebClient.builder().baseUrl(baseUrl).build();
+  }
 
-    @Bean
-    public WebClient mailgunWebClient(
-        @Value("${mailgun.api-key}") String apiKey,
-        @Value("${mailgun.base-url}") String baseUrl) {
-
-        return WebClient.builder()
-            .baseUrl(baseUrl)
-            .defaultHeader("Authorization", "Basic " + apiKey)
-            .build();
-    }
+  @Bean
+  public WebClient mailgunWebClient(
+      @Value("${mailgun.base-url}") String baseUrl, @Value("${mailgun.key}") String key) {
+    return WebClient.builder()
+        .baseUrl(baseUrl)
+        .defaultHeaders(headers -> headers.setBasicAuth("api", key))
+        .build();
+  }
 }

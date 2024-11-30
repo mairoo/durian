@@ -46,27 +46,30 @@ public class AligoApiClient {
     formData.add("user_id", userId);
     formData.add("sender", sender);
 
-    return aligoWebClient.post()
+    return aligoWebClient
+        .post()
         .uri("/send/")
         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
         .body(BodyInserters.fromFormData(formData))
         .retrieve()
         .bodyToMono(String.class)
-        .flatMap(response -> {
-          try {
-            AligoSmsResponse aligoResponse = objectMapper.readValue(response,
-                AligoSmsResponse.class);
-            return Mono.just(aligoResponse);
-          } catch (JsonProcessingException e) {
-            return Mono.error(new BusinessException(ErrorCode.ALIGO_API_PARSE_ERROR, e));
-          }
-        })
-        .onErrorMap(e -> {
-          if (e instanceof BusinessException) {
-            return e;
-          }
+        .flatMap(
+            response -> {
+              try {
+                AligoSmsResponse aligoResponse =
+                    objectMapper.readValue(response, AligoSmsResponse.class);
+                return Mono.just(aligoResponse);
+              } catch (JsonProcessingException e) {
+                return Mono.error(new BusinessException(ErrorCode.ALIGO_API_PARSE_ERROR, e));
+              }
+            })
+        .onErrorMap(
+            e -> {
+              if (e instanceof BusinessException) {
+                return e;
+              }
 
-          return new BusinessException(ErrorCode.ALIGO_API_SEND_ERROR, e);
-        });
+              return new BusinessException(ErrorCode.ALIGO_API_SEND_ERROR, e);
+            });
   }
 }
