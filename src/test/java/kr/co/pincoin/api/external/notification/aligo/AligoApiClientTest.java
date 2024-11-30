@@ -24,7 +24,7 @@ class AligoApiClientTest {
         // Given
         AligoSmsRequest request = AligoSmsRequest.builder()
             .receiver("01012341234")  // 실제 수신할 전화번호
-            .msg("알리고 SMS 발송 테스트")
+            .message("알리고 문자발송 테스트")
             .build();
 
         // When

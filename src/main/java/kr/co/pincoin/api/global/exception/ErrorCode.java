@@ -61,7 +61,9 @@ public enum ErrorCode {
 
   // 외부 서비스 연동
   EXTERNAL_SERVICE_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "외부 서비스 연동 중 오류가 발생했습니다"),
-  GATEWAY_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "외부 서비스 응답 시간을 초과했습니다");
+  GATEWAY_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "외부 서비스 응답 시간을 초과했습니다"),
+  ALIGO_API_PARSE_ERROR(HttpStatus.CONFLICT, "알리고 API 응답 파싱 실패"),
+  ALIGO_API_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "알리고 SMS 발송 실패");
 
   private final HttpStatus status;
   private final String message;
