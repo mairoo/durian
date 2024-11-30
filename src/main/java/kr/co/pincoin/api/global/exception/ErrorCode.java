@@ -64,8 +64,10 @@ public enum ErrorCode {
   GATEWAY_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "외부 서비스 응답 시간을 초과했습니다"),
   ALIGO_API_PARSE_ERROR(HttpStatus.CONFLICT, "알리고 API 응답 파싱 실패"),
   ALIGO_API_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "알리고 SMS 발송 실패"),
-  MAILGUN_API_PARSE_ERROR(HttpStatus.CONFLICT, "메일건 API 응답 파싱 오류"),
-  MAILGUN_API_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "메일건 API 발송 오류");
+  MAILGUN_API_PARSE_ERROR(HttpStatus.CONFLICT, "mailgun API 응답 파싱 오류"),
+  MAILGUN_API_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "mailgun API 발송 오류"),
+  EMAIL_TEMPLATE_NOT_FOUND(HttpStatus.NOT_FOUND, "이메일 템플릿을 찾을 수 없습니다."),
+  EMAIL_TEMPLATE_ALREADY_EXISTS(HttpStatus.CONFLICT, "동일한 이름의 이메일 템플릿이 이미 존재합니다.");
 
   private final HttpStatus status;
   private final String message;
