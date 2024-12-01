@@ -1,4 +1,4 @@
-package kr.co.pincoin.api.app.member.order.response;
+package kr.co.pincoin.api.global.response.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;

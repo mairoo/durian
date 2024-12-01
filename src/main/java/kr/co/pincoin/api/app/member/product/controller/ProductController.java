@@ -1,7 +1,7 @@
 package kr.co.pincoin.api.app.member.product.controller;
 
 import java.util.List;
-import kr.co.pincoin.api.app.admin.product.response.ProductResponse;
+import kr.co.pincoin.api.global.response.model.ProductResponse;
 import kr.co.pincoin.api.app.member.product.service.ProductService;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.global.response.success.ApiResponse;

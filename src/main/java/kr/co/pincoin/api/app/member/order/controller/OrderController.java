@@ -3,7 +3,7 @@ package kr.co.pincoin.api.app.member.order.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
-import kr.co.pincoin.api.app.member.order.response.OrderResponse;
+import kr.co.pincoin.api.global.response.model.OrderResponse;
 import kr.co.pincoin.api.app.member.order.service.OrderService;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
