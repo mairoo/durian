@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.app.admin.product.request;
 
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,9 +10,9 @@ import lombok.NoArgsConstructor;
 public class VoucherBulkCreateRequest {
   private Long productId;
 
-  private VoucherCodeData[] voucherData;
+  private List<VoucherCodeData> voucherData;
 
-  private VoucherBulkCreateRequest(Long productId, VoucherCodeData[] voucherData) {
+  private VoucherBulkCreateRequest(Long productId, List<VoucherCodeData> voucherData) {
     this.productId = productId;
     this.voucherData = voucherData;
   }
