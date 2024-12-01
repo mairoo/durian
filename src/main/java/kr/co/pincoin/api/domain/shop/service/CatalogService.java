@@ -169,7 +169,8 @@ public class CatalogService {
   }
 
   public Product getProductByCode(String code) {
-    return catalogPersistence.findProductByCode(code)
+    return catalogPersistence
+        .findProductByCode(code)
         .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
   }
 }
