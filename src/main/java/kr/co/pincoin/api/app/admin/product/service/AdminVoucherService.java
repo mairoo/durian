@@ -21,18 +21,12 @@ public class AdminVoucherService {
   @Transactional
   public Voucher createVoucher(VoucherCreateRequest request) {
     return inventoryService.createVoucher(
-        request.getCode(),
-        request.getProductId(),
-        request.getRemarks()
-    );
+        request.getCode(), request.getProductId(), request.getRemarks());
   }
 
   @Transactional
   public List<Voucher> createVouchersBulk(VoucherBulkCreateRequest request) {
-    return inventoryService.createVouchersBulk(
-        request.getProductId(),
-        request.getVoucherData()
-    );
+    return inventoryService.createVouchersBulk(request.getProductId(), request.getVoucherData());
   }
 
   @Transactional

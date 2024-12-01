@@ -18,37 +18,37 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class InventoryPersistenceService {
 
-    private final VoucherRepository voucherRepository;
+  private final VoucherRepository voucherRepository;
 
-    private final ProductRepository productRepository;
+  private final ProductRepository productRepository;
 
-    public Optional<Product> findProductById(Long id) {
-        return productRepository.findById(id);
-    }
+  public Optional<Product> findProductById(Long id) {
+    return productRepository.findById(id);
+  }
 
-    public Optional<Voucher> findVoucherById(Long id) {
-        return voucherRepository.findById(id);
-    }
+  public Optional<Voucher> findVoucherById(Long id) {
+    return voucherRepository.findById(id);
+  }
 
-    public Optional<Voucher> findVoucherByCode(String code) {
-        return voucherRepository.findByCode(code);
-    }
+  public Optional<Voucher> findVoucherByCode(String code) {
+    return voucherRepository.findByCode(code);
+  }
 
-    public boolean hasAnyExistingVoucherCodes(List<String> codes) {
-        return !voucherRepository.findAllByCodeIn(codes).isEmpty();
-    }
+  public boolean hasAnyExistingVoucherCodes(List<String> codes) {
+    return !voucherRepository.findAllByCodeIn(codes).isEmpty();
+  }
 
-    public List<Voucher> findAllVouchersByIds(Collection<Long> ids) {
-        return voucherRepository.findAllByIdIn(ids);
-    }
+  public List<Voucher> findAllVouchersByIds(Collection<Long> ids) {
+    return voucherRepository.findAllByIdIn(ids);
+  }
 
-    @Transactional
-    public Voucher saveVoucher(Voucher voucher) {
-        return voucherRepository.save(voucher);
-    }
+  @Transactional
+  public Voucher saveVoucher(Voucher voucher) {
+    return voucherRepository.save(voucher);
+  }
 
-    @Transactional
-    public List<Voucher> saveAllVouchers(List<Voucher> vouchers) {
-        return voucherRepository.saveAll(vouchers).stream().toList();
-    }
+  @Transactional
+  public List<Voucher> saveAllVouchers(List<Voucher> vouchers) {
+    return voucherRepository.saveAll(vouchers).stream().toList();
+  }
 }

@@ -162,9 +162,14 @@ public class CatalogService {
     return catalogPersistence.saveProduct(product);
   }
 
-  private Product getProductById(Long productId) {
+  public Product getProductById(Long productId) {
     return catalogPersistence
         .findProductById(productId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+  }
+
+  public Product getProductByCode(String code) {
+    return catalogPersistence.findProductByCode(code)
         .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
   }
 }
