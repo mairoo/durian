@@ -13,65 +13,66 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class ProductRepositoryImpl implements ProductRepository {
-  private final ProductJpaRepository productJpaRepository;
 
-  private final ProductQueryRepository productQueryRepository;
+  private final ProductJpaRepository jpaRepository;
 
-  private final ProductMapper productMapper;
+  private final ProductQueryRepository queryRepository;
+
+  private final ProductMapper mapper;
 
   @Override
   public Product save(Product product) {
-    return productMapper.toModel(productJpaRepository.save(productMapper.toEntity(product)));
+    return mapper.toModel(jpaRepository.save(mapper.toEntity(product)));
   }
 
   @Override
   public List<Product> saveAll(Collection<Product> products) {
-    return productMapper.toModelList(
-        productJpaRepository.saveAll(productMapper.toEntityList(products.stream().toList())));
+    return mapper.toModelList(
+        jpaRepository.saveAll(mapper.toEntityList(products.stream().toList())));
   }
 
   @Override
   public Optional<Product> findById(Long id) {
-    return productJpaRepository.findById(id).map(productMapper::toModel);
+    return jpaRepository.findById(id).map(mapper::toModel);
   }
 
   @Override
   public Optional<Product> findByCode(String code) {
-    return productJpaRepository.findByCode(code).map(productMapper::toModel);
+    return jpaRepository.findByCode(code).map(mapper::toModel);
   }
 
   @Override
   public List<Product> findAll() {
-    return productMapper.toModelList(productJpaRepository.findAll());
+    return mapper.toModelList(jpaRepository.findAll());
   }
 
   @Override
   public List<Product> findAllByIdIn(Collection<Long> ids) {
-    return productJpaRepository.findAllByIdIn(ids).stream()
-        .map(productMapper::toModel)
+    return jpaRepository.findAllByIdIn(ids).stream()
+        .map(mapper::toModel)
         .collect(Collectors.toList());
   }
 
   @Override
   public List<Product> findAllByCodeIn(Collection<String> codes) {
-    return productJpaRepository.findAllByCodeIn(codes).stream()
-        .map(productMapper::toModel)
+    return jpaRepository.findAllByCodeIn(codes).stream()
+        .map(mapper::toModel)
         .collect(Collectors.toList());
   }
 
   @Override
   public boolean existsBySlug(String code) {
-    return productJpaRepository.findByCode(code).isPresent();
+    return jpaRepository.findByCode(code).isPresent();
   }
 
   @Override
   public void delete(Product product) {
-    productJpaRepository.delete(productMapper.toEntity(product));
+    jpaRepository.delete(mapper.toEntity(product));
   }
 
   @Override
   public void deleteById(Long id) {
-    productJpaRepository.deleteById(id);
+    jpaRepository.deleteById(id);
   }
 
   @Override

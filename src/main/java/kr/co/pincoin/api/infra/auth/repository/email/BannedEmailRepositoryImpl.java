@@ -19,62 +19,62 @@ public class BannedEmailRepositoryImpl implements BannedEmailRepository {
   // JPA, QueryDSL 구현체는 엔티티를 전달하고 엔티티로 반환하는 형태
   // 도메인 모델을 마치 DTO 같이 파라미터 전달하고 엔티티 변환하여 저장하고 받을 때 도메인 모델로 받음
 
-  private final BannedEmailJpaRepository bannedEmailJpaRepository;
+  private final BannedEmailJpaRepository jpaRepository;
 
-  private final BannedEmailQueryRepository bannedEmailQueryRepository;
+  private final BannedEmailQueryRepository queryRepository;
 
-  private final BannedEmailMapper bannedEmailMapper;
+  private final BannedEmailMapper emailMapper;
 
   @Override
   public BannedEmail save(BannedEmail bannedEmail) {
-    return bannedEmailMapper.toModel(bannedEmailJpaRepository.save(bannedEmail.toEntity()));
+    return emailMapper.toModel(jpaRepository.save(bannedEmail.toEntity()));
   }
 
   @Override
   public Optional<BannedEmail> findById(Long id) {
-    return bannedEmailJpaRepository.findById(id).map(bannedEmailMapper::toModel);
+    return jpaRepository.findById(id).map(emailMapper::toModel);
   }
 
   @Override
   public Optional<BannedEmail> findByEmail(String email) {
-    return bannedEmailJpaRepository.findByEmail(email).map(bannedEmailMapper::toModel);
+    return jpaRepository.findByEmail(email).map(emailMapper::toModel);
   }
 
   @Override
   public List<BannedEmail> findAllByActiveTrue() {
-    return bannedEmailJpaRepository.findActiveEmails().stream()
-        .map(bannedEmailMapper::toModel)
+    return jpaRepository.findActiveEmails().stream()
+        .map(emailMapper::toModel)
         .collect(Collectors.toList());
   }
 
   @Override
   public boolean existsByEmail(String email) {
-    return bannedEmailJpaRepository.existsByEmail(email);
+    return jpaRepository.existsByEmail(email);
   }
 
   @Override
   public void delete(BannedEmail bannedEmail) {
-    bannedEmailJpaRepository.delete(bannedEmail.toEntity());
+    jpaRepository.delete(bannedEmail.toEntity());
   }
 
   @Override
   public List<BannedEmail> findByDomainContaining(String domain) {
-    return bannedEmailQueryRepository.findByDomainContaining(domain).stream()
-        .map(bannedEmailMapper::toModel)
+    return queryRepository.findByDomainContaining(domain).stream()
+        .map(emailMapper::toModel)
         .collect(Collectors.toList());
   }
 
   @Override
   public List<BannedEmail> findByEmailLike(String pattern) {
-    return bannedEmailQueryRepository.findByEmailLike(pattern).stream()
-        .map(bannedEmailMapper::toModel)
+    return queryRepository.findByEmailLike(pattern).stream()
+        .map(emailMapper::toModel)
         .collect(Collectors.toList());
   }
 
   @Override
   public List<BannedEmail> searchBannedEmails(BannedEmailSearchCondition condition) {
-    return bannedEmailQueryRepository.searchBannedEmails(condition).stream()
-        .map(bannedEmailMapper::toModel)
+    return queryRepository.searchBannedEmails(condition).stream()
+        .map(emailMapper::toModel)
         .collect(Collectors.toList());
   }
 }

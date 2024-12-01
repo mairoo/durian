@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class PhoneVerificationLogRepositoryImpl implements PhoneVerificationLogRepository {
-  private final PhoneVerificationLogJpaRepository phoneVerificationLogJpaRepository;
 
-  private final PhoneVerificationLogQueryRepository phoneVerificationLogQueryRepository;
+  private final PhoneVerificationLogJpaRepository jpaRepository;
 
-  private final PhoneVerificationLogMapper phoneVerificationLogMapper;
+  private final PhoneVerificationLogQueryRepository queryRepository;
+
+  private final PhoneVerificationLogMapper mapper;
 }

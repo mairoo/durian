@@ -11,44 +11,45 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class CategoryRepositoryImpl implements CategoryRepository {
-  private final CategoryJpaRepository categoryJpaRepository;
 
-  private final CategoryQueryRepository categoryQueryRepository;
+  private final CategoryJpaRepository jpaRepository;
 
-  private final CategoryMapper categoryMapper;
+  private final CategoryQueryRepository queryRepository;
+
+  private final CategoryMapper mapper;
 
   @Override
   public Category save(Category category) {
-    return categoryMapper.toModel(categoryJpaRepository.save(categoryMapper.toEntity(category)));
+    return mapper.toModel(jpaRepository.save(mapper.toEntity(category)));
   }
 
   @Override
   public Optional<Category> findById(Long id) {
-    return categoryJpaRepository.findById(id).map(categoryMapper::toModel);
+    return jpaRepository.findById(id).map(mapper::toModel);
   }
 
   @Override
   public Optional<Category> findBySlug(String slug) {
-    return categoryJpaRepository.findBySlug(slug).map(categoryMapper::toModel);
+    return jpaRepository.findBySlug(slug).map(mapper::toModel);
   }
 
   @Override
   public List<Category> findAll() {
-    return categoryMapper.toModelList(categoryJpaRepository.findAll());
+    return mapper.toModelList(jpaRepository.findAll());
   }
 
   @Override
   public boolean existsBySlug(String slug) {
-    return categoryJpaRepository.findBySlug(slug).isPresent();
+    return jpaRepository.findBySlug(slug).isPresent();
   }
 
   @Override
   public void delete(Category category) {
-    categoryJpaRepository.delete(categoryMapper.toEntity(category));
+    jpaRepository.delete(mapper.toEntity(category));
   }
 
   @Override
   public void deleteById(Long id) {
-    categoryJpaRepository.deleteById(id);
+    jpaRepository.deleteById(id);
   }
 }

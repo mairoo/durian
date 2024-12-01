@@ -15,44 +15,45 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class VoucherRepositoryImpl implements VoucherRepository {
-  private final VoucherJpaRepository voucherJpaRepository;
 
-  private final VoucherQueryRepository voucherQueryRepository;
+  private final VoucherJpaRepository jpaRepository;
 
-  private final VoucherMapper voucherMapper;
+  private final VoucherQueryRepository queryRepository;
+
+  private final VoucherMapper mapper;
 
   @Override
   public Voucher save(Voucher voucher) {
-    return voucherMapper.toModel(voucherJpaRepository.save(voucherMapper.toEntity(voucher)));
+    return mapper.toModel(jpaRepository.save(mapper.toEntity(voucher)));
   }
 
   @Override
   public List<Voucher> saveAll(Collection<Voucher> vouchers) {
-    return voucherMapper.toModelList(
-        voucherJpaRepository.saveAll(voucherMapper.toEntityList(vouchers.stream().toList())));
+    return mapper.toModelList(
+        jpaRepository.saveAll(mapper.toEntityList(vouchers.stream().toList())));
   }
 
   @Override
   public Optional<Voucher> findById(Long id) {
-    return voucherJpaRepository.findById(id).map(voucherMapper::toModel);
+    return jpaRepository.findById(id).map(mapper::toModel);
   }
 
   @Override
   public Optional<Voucher> findByCode(String code) {
-    return voucherJpaRepository.findByCode(code).map(voucherMapper::toModel);
+    return jpaRepository.findByCode(code).map(mapper::toModel);
   }
 
   @Override
   public List<Voucher> findAllByIdIn(Collection<Long> ids) {
-    return voucherJpaRepository.findAllByIdIn(ids).stream()
-        .map(voucherMapper::toModel)
+    return jpaRepository.findAllByIdIn(ids).stream()
+        .map(mapper::toModel)
         .collect(Collectors.toList());
   }
 
   @Override
   public List<Voucher> findAllByCodeIn(Collection<String> codes) {
-    return voucherJpaRepository.findAllByCodeIn(codes).stream()
-        .map(voucherMapper::toModel)
+    return jpaRepository.findAllByCodeIn(codes).stream()
+        .map(mapper::toModel)
         .collect(Collectors.toList());
   }
 
@@ -60,24 +61,24 @@ public class VoucherRepositoryImpl implements VoucherRepository {
   public List<Voucher> findTopNByProductCodeAndStatusOrderByIdAsc(
       String productCode, VoucherStatus status, int limit) {
     List<VoucherEntity> savedEntities =
-        voucherJpaRepository.findTopNByProductCodeAndStatusOrderByIdAsc(productCode, status, limit);
+        jpaRepository.findTopNByProductCodeAndStatusOrderByIdAsc(productCode, status, limit);
 
-    return voucherMapper.toModelList(savedEntities);
+    return mapper.toModelList(savedEntities);
   }
 
   @Override
   public boolean existsByCode(String code) {
-    return voucherJpaRepository.findByCode(code).isPresent();
+    return jpaRepository.findByCode(code).isPresent();
   }
 
   @Override
   public void delete(Voucher voucher) {
-    voucherJpaRepository.delete(voucherMapper.toEntity(voucher));
+    jpaRepository.delete(mapper.toEntity(voucher));
   }
 
   @Override
   public void deleteById(Long id) {
-    voucherJpaRepository.deleteById(id);
+    jpaRepository.deleteById(id);
   }
 
   @Override

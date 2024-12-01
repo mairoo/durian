@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class ProductListMembershipRepositoryImpl implements ProductListMembershipRepository {
-  private final ProductListMembershipJpaRepository productListMembershipJpaRepository;
 
-  private final ProductListMembershipQueryRepository productListMembershipQueryRepository;
+  private final ProductListMembershipJpaRepository jpaRepository;
 
-  private final ProductListMembershipMapper productListMembershipMapper;
+  private final ProductListMembershipQueryRepository queryRepository;
+
+  private final ProductListMembershipMapper mapper;
 }

@@ -11,34 +11,34 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class EmailTemplateRepositoryImpl implements EmailTemplateRepository {
 
-    private final EmailTemplateMapper emailTemplateMapper;
+    private final EmailTemplateJpaRepository jpaRepository;
 
-    private final EmailTemplateJpaRepository emailTemplateJpaRepository;
+    private final EmailTemplateMapper mapper;
 
     @Override
     public EmailTemplate save(EmailTemplate emailTemplate) {
-        return emailTemplateMapper.toModel(
-            emailTemplateJpaRepository.save(emailTemplate.toEntity()));
+        return mapper.toModel(
+            jpaRepository.save(emailTemplate.toEntity()));
     }
 
     @Override
     public void delete(EmailTemplate emailTemplate) {
-        emailTemplateJpaRepository.delete(emailTemplate.toEntity());
+        jpaRepository.delete(emailTemplate.toEntity());
     }
 
     @Override
     public Optional<EmailTemplate> findById(Long id) {
-        return emailTemplateJpaRepository.findById(id).map(emailTemplateMapper::toModel);
+        return jpaRepository.findById(id).map(mapper::toModel);
     }
 
     @Override
     public Optional<EmailTemplate> findByTemplateName(String templateName) {
-        return emailTemplateJpaRepository.findByTemplateName(templateName)
-            .map(emailTemplateMapper::toModel);
+        return jpaRepository.findByTemplateName(templateName)
+            .map(mapper::toModel);
     }
 
     @Override
     public boolean existsByTemplateName(String templateName) {
-        return emailTemplateJpaRepository.existsByTemplateName(templateName);
+        return jpaRepository.existsByTemplateName(templateName);
     }
 }

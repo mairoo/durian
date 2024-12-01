@@ -13,39 +13,40 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class ProfileRepositoryImpl implements ProfileRepository {
-  private final ProfileJpaRepository profileJpaRepository;
 
-  private final ProfileQueryRepository profileQueryRepository;
+  private final ProfileJpaRepository jpaRepository;
 
-  private final ProfileMapper profileMapper;
+  private final ProfileQueryRepository queryRepository;
+
+  private final ProfileMapper mapper;
 
   @Override
   public Profile save(Profile profile) {
-    return profileMapper.toModel(profileJpaRepository.save(profileMapper.toEntity(profile)));
+    return mapper.toModel(jpaRepository.save(mapper.toEntity(profile)));
   }
 
   @Override
   public Page<Profile> findAllWithUser(Pageable pageable) {
-    return profileJpaRepository.findAllWithUser(pageable).map(profileMapper::toModel);
+    return jpaRepository.findAllWithUser(pageable).map(mapper::toModel);
   }
 
   @Override
   public Optional<Profile> findByUserId(Integer userId) {
-    return profileJpaRepository.findByUserId(userId).map(profileMapper::toModel);
+    return jpaRepository.findByUserId(userId).map(mapper::toModel);
   }
 
   @Override
   public Optional<Profile> findByUserIdWithUser(Integer userId) {
-    return profileJpaRepository.findByUserIdWithUser(userId).map(profileMapper::toModel);
+    return jpaRepository.findByUserIdWithUser(userId).map(mapper::toModel);
   }
 
   @Override
   public Optional<Profile> findByUserWithUser(User user) {
-    return profileJpaRepository.findByUserWithUser(user).map(profileMapper::toModel);
+    return jpaRepository.findByUserWithUser(user).map(mapper::toModel);
   }
 
   @Override
   public void delete(Profile profile) {
-    profileJpaRepository.delete(profileMapper.toEntity(profile));
+    jpaRepository.delete(mapper.toEntity(profile));
   }
 }

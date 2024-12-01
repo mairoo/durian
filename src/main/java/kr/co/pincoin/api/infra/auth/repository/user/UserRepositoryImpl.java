@@ -10,39 +10,40 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
-  private final UserJpaRepository userJpaRepository;
 
-  private final UserQueryRepository userQueryRepository;
+  private final UserJpaRepository jpaRepository;
 
-  private final UserMapper userMapper;
+  private final UserQueryRepository queryRepository;
+
+  private final UserMapper mapper;
 
   @Override
   public Optional<User> findByEmail(String email) {
-    return userJpaRepository.findByEmail(email).map(userMapper::toModel);
+    return jpaRepository.findByEmail(email).map(mapper::toModel);
   }
 
   @Override
   public Optional<User> findById(Integer id) {
-    return userJpaRepository.findById(id).map(userMapper::toModel);
+    return jpaRepository.findById(id).map(mapper::toModel);
   }
 
   @Override
   public User save(User user) {
-    return userMapper.toModel(userJpaRepository.save(user.toEntity()));
+    return mapper.toModel(jpaRepository.save(user.toEntity()));
   }
 
   @Override
   public boolean existsByEmail(String email) {
-    return userJpaRepository.existsByEmail(email);
+    return jpaRepository.existsByEmail(email);
   }
 
   @Override
   public boolean existsByUsername(String username) {
-    return userJpaRepository.existsByUsername(username);
+    return jpaRepository.existsByUsername(username);
   }
 
   @Override
   public void delete(User user) {
-    userJpaRepository.delete(user.toEntity());
+    jpaRepository.delete(user.toEntity());
   }
 }

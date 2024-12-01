@@ -10,19 +10,20 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class StoreRepositoryImpl implements StoreRepository {
-  private final StoreJpaRepository storeJpaRepository;
 
-  private final StoreQueryRepository storeQueryRepository;
+  private final StoreJpaRepository jpaRepository;
 
-  private final StoreMapper storeMapper;
+  private final StoreQueryRepository queryRepository;
+
+  private final StoreMapper mapper;
 
   @Override
   public Optional<Store> findById(Long id) {
-    return storeJpaRepository.findById(id).map(storeMapper::toModel);
+    return jpaRepository.findById(id).map(mapper::toModel);
   }
 
   @Override
   public Optional<Store> findByCode(String code) {
-    return storeJpaRepository.findByCode(code).map(storeMapper::toModel);
+    return jpaRepository.findByCode(code).map(mapper::toModel);
   }
 }

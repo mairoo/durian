@@ -14,33 +14,34 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class OrderPaymentRepositoryImpl implements OrderPaymentRepository {
-  private final OrderPaymentJpaRepository orderPaymentJpaRepository;
 
-  private final OrderPaymentQueryRepository orderPaymentQueryRepository;
+  private final OrderPaymentJpaRepository jpaRepository;
 
-  private final OrderPaymentMapper orderPaymentMapper;
+  private final OrderPaymentQueryRepository queryRepository;
+
+  private final OrderPaymentMapper mapper;
 
   @Override
   public OrderPayment save(OrderPayment orderPayment) {
-    return orderPaymentMapper.toModel(
-        orderPaymentJpaRepository.save(orderPaymentMapper.toEntity(orderPayment)));
+    return mapper.toModel(
+        jpaRepository.save(mapper.toEntity(orderPayment)));
   }
 
   @Override
   public Optional<OrderPayment> findById(Long id) {
-    return orderPaymentJpaRepository.findById(id).map(orderPaymentMapper::toModel);
+    return jpaRepository.findById(id).map(mapper::toModel);
   }
 
   @Override
   public List<OrderPayment> findByOrderAndIsRemovedFalse(Order order) {
     List<OrderPaymentEntity> entries =
-        orderPaymentJpaRepository.findByOrderAndRemovedFalse(order.toEntity());
+        jpaRepository.findByOrderAndRemovedFalse(order.toEntity());
 
-    return orderPaymentMapper.toModelList(entries);
+    return mapper.toModelList(entries);
   }
 
   @Override
   public BigDecimal getTotalAmountByOrder(Order order) {
-    return orderPaymentJpaRepository.getTotalAmountByOrder(order.toEntity());
+    return jpaRepository.getTotalAmountByOrder(order.toEntity());
   }
 }

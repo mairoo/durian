@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class BannedPhoneRepositoryImpl implements BannedPhoneRepository {
-  private final BannedPhoneJpaRepository bannedPhoneJpaRepository;
 
-  private final BannedPhoneQueryRepository bannedPhoneQueryRepository;
+  private final BannedPhoneJpaRepository jpaRepository;
 
-  private final BannedPhoneMapper bannedPhoneMapper;
+  private final BannedPhoneQueryRepository queryRepository;
+
+  private final BannedPhoneMapper mapper;
 }

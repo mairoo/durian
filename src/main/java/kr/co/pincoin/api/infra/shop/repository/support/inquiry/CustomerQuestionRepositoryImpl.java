@@ -8,9 +8,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class CustomerQuestionRepositoryImpl implements CustomerQuestionRepository {
-  private final CustomerQuestionJpaRepository customerQuestionJpaRepository;
 
-  private final CustomerQuestionQueryRepository customerQuestionQueryRepository;
+  private final CustomerQuestionJpaRepository jpaRepository;
 
-  private final CustomerQuestionMapper customerQuestionMapper;
+  private final CustomerQuestionQueryRepository queryRepository;
+
+  private final CustomerQuestionMapper mapper;
 }
