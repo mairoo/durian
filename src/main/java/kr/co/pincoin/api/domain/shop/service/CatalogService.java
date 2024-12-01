@@ -30,6 +30,7 @@ public class CatalogService {
             .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
     Category parentCategory = null;
+
     if (request.getParentId() != null) {
       parentCategory =
           catalogPersistence
@@ -38,7 +39,7 @@ public class CatalogService {
     }
 
     // Slug 중복 검사
-    if (catalogPersistence.existsCategoryBySlug(request.getSlug())) {
+    if (catalogPersistence.findCategoryBySlug(request.getSlug()).isPresent()) {
       throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_SLUG);
     }
 
@@ -92,7 +93,7 @@ public class CatalogService {
             .findCategoryById(request.getCategoryId())
             .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
-    if (catalogPersistence.existsProductBySlug(request.getCode())) {
+    if (catalogPersistence.findProductByCode(request.getCode()).isPresent()) {
       throw new BusinessException(ErrorCode.DUPLICATE_PRODUCT_CODE);
     }
 

@@ -12,6 +12,4 @@ public interface EmailTemplateRepository {
   Optional<EmailTemplate> findById(Long id);
 
   Optional<EmailTemplate> findByTemplateName(String templateName);
-
-  boolean existsByTemplateName(String templateName);
 }

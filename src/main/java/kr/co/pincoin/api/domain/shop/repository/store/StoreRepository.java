@@ -7,6 +7,4 @@ public interface StoreRepository {
   Optional<Store> findById(Long id);
 
   Optional<Store> findByCode(String code);
-
-  boolean existsById(Long id);
 }

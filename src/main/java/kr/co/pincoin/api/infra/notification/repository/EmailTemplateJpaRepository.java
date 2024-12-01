@@ -9,6 +9,4 @@ import org.springframework.stereotype.Repository;
 public interface EmailTemplateJpaRepository extends JpaRepository<EmailTemplateEntity, Long> {
 
   Optional<EmailTemplateEntity> findByTemplateName(String templateName);
-
-  boolean existsByTemplateName(String templateName);
 }

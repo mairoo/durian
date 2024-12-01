@@ -71,11 +71,6 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
-  public boolean existsBySlug(String code) {
-    return jpaRepository.findByCode(code).isPresent();
-  }
-
-  @Override
   public void delete(Product product) {
     jpaRepository.delete(mapper.toEntity(product));
   }

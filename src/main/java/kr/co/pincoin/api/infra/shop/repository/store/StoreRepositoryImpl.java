@@ -26,9 +26,4 @@ public class StoreRepositoryImpl implements StoreRepository {
   public Optional<Store> findByCode(String code) {
     return jpaRepository.findByCode(code).map(mapper::toModel);
   }
-
-  @Override
-  public boolean existsById(Long id) {
-    return jpaRepository.existsById(id);
-  }
 }

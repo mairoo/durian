@@ -53,7 +53,7 @@ public class EmailTemplateService {
   @Transactional
   public EmailTemplate createTemplate(EmailTemplate template) {
     // 템플릿 이름 중복 체크
-    if (emailTemplateRepository.existsByTemplateName(template.getTemplateName())) {
+    if (emailTemplateRepository.findByTemplateName(template.getTemplateName()).isPresent()) {
       throw new BusinessException(ErrorCode.EMAIL_TEMPLATE_ALREADY_EXISTS);
     }
 

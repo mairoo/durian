@@ -15,8 +15,6 @@ public interface BannedEmailRepository {
 
   Optional<BannedEmail> findByEmail(String email);
 
-  boolean existsByEmail(String email);
-
   List<BannedEmail> findAllByActiveTrue();
 
   List<BannedEmail> findByDomainContaining(String domain);

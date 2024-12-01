@@ -48,11 +48,6 @@ public class BannedEmailRepositoryImpl implements BannedEmailRepository {
   }
 
   @Override
-  public boolean existsByEmail(String email) {
-    return jpaRepository.existsByEmail(email);
-  }
-
-  @Override
   public void delete(BannedEmail bannedEmail) {
     jpaRepository.delete(bannedEmail.toEntity());
   }

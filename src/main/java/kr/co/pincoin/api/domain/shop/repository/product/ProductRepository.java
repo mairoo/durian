@@ -29,8 +29,6 @@ public interface ProductRepository {
 
   List<Product> findAllByCategoryIdWithCategory(Long categoryId);
 
-  boolean existsBySlug(String code);
-
   void softDelete(Product product);
 
   void softDeleteById(Long id);

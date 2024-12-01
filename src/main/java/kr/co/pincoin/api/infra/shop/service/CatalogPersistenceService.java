@@ -41,10 +41,6 @@ public class CatalogPersistenceService {
     return categoryRepository.findBySlug(slug);
   }
 
-  public boolean existsCategoryBySlug(String slug) {
-    return categoryRepository.existsBySlug(slug);
-  }
-
   public List<Category> findCategoriesByStoreId(Long storeId) {
     return categoryRepository.findAllByStoreIdWithStore(storeId);
   }
@@ -67,17 +63,15 @@ public class CatalogPersistenceService {
     return productRepository.findById(id);
   }
 
+  public Optional<Product> findProductByCode(String code) {
+    return productRepository.findByCode(code);
+  }
+
   public Optional<Product> findProductWithCategory(Long id) {
-    // Join fetch로 Category까지 한번에 조회
     return productRepository.findByIdWithCategory(id);
   }
 
-  public boolean existsProductBySlug(String slug) {
-    return productRepository.existsBySlug(slug);
-  }
-
   public List<Product> findProductsByCategoryId(Long categoryId) {
-    // JPQL로 변경하여 한 번의 쿼리로 처리
     return productRepository.findAllByCategoryIdWithCategory(categoryId);
   }
 }

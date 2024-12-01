@@ -34,9 +34,4 @@ public class EmailTemplateRepositoryImpl implements EmailTemplateRepository {
   public Optional<EmailTemplate> findByTemplateName(String templateName) {
     return jpaRepository.findByTemplateName(templateName).map(mapper::toModel);
   }
-
-  @Override
-  public boolean existsByTemplateName(String templateName) {
-    return jpaRepository.existsByTemplateName(templateName);
-  }
 }

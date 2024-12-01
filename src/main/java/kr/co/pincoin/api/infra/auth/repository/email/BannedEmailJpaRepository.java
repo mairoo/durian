@@ -13,6 +13,4 @@ public interface BannedEmailJpaRepository extends JpaRepository<BannedEmailEntit
 
   @Query("SELECT b FROM BannedEmailEntity b WHERE b.isRemoved = false")
   List<BannedEmailEntity> findActiveEmails();
-
-  boolean existsByEmail(String email);
 }

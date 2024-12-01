@@ -24,8 +24,6 @@ public interface VoucherRepository {
 
   List<Voucher> findAllByCodeIn(Collection<String> codes);
 
-  boolean existsByCode(String code);
-
   List<Voucher> findTopNByProductCodeAndStatusOrderByIdAsc(
       String productCode, VoucherStatus status, int limit);
 

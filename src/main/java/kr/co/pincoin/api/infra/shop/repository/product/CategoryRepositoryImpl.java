@@ -54,16 +54,6 @@ public class CategoryRepositoryImpl implements CategoryRepository {
   }
 
   @Override
-  public boolean existsById(Long id) {
-    return jpaRepository.existsById(id);
-  }
-
-  @Override
-  public boolean existsBySlug(String slug) {
-    return jpaRepository.findBySlug(slug).isPresent();
-  }
-
-  @Override
   public void delete(Category category) {
     jpaRepository.delete(mapper.toEntity(category));
   }

@@ -34,7 +34,7 @@ public class AdminVoucherService {
             .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
 
     // 상품권 코드 중복 검사
-    if (voucherRepository.existsByCode(request.getCode())) {
+    if (voucherRepository.findByCode(request.getCode()).isPresent()) {
       throw new BusinessException(ErrorCode.DUPLICATE_VOUCHER_CODE);
     }
 

@@ -67,11 +67,6 @@ public class VoucherRepositoryImpl implements VoucherRepository {
   }
 
   @Override
-  public boolean existsByCode(String code) {
-    return jpaRepository.findByCode(code).isPresent();
-  }
-
-  @Override
   public void delete(Voucher voucher) {
     jpaRepository.delete(mapper.toEntity(voucher));
   }
