@@ -33,8 +33,7 @@ public class OrderRepositoryImpl implements OrderRepository {
 
   @Override
   public List<Order> saveAll(Collection<Order> orders) {
-    return mapper.toModelList(
-        jpaRepository.saveAll(mapper.toEntityList(orders.stream().toList())));
+    return mapper.toModelList(jpaRepository.saveAll(mapper.toEntityList(orders.stream().toList())));
   }
 
   @Override

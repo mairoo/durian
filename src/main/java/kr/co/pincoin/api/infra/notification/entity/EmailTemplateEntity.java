@@ -21,20 +21,20 @@ import lombok.NoArgsConstructor;
 @Getter
 public class EmailTemplateEntity extends BaseDateTime {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @Column(name = "template_name")
-    private String templateName;
+  @Column(name = "template_name")
+  private String templateName;
 
-    @Column(name = "html_content", columnDefinition = "TEXT")
-    private String htmlContent;
+  @Column(name = "html_content", columnDefinition = "TEXT")
+  private String htmlContent;
 
-    @Column(name = "text_content", columnDefinition = "TEXT")
-    private String textContent;
+  @Column(name = "text_content", columnDefinition = "TEXT")
+  private String textContent;
 
-    @Column(name = "subject")
-    private String subject;
+  @Column(name = "subject")
+  private String subject;
 }

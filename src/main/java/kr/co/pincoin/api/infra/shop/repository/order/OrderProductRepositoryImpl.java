@@ -25,8 +25,7 @@ public class OrderProductRepositoryImpl implements OrderProductRepository {
     List<OrderProductEntity> orderProductEntities = mapper.toEntityList(orderProducts);
 
     // 2. JPA Repository 일괄 저장
-    List<OrderProductEntity> savedEntities =
-        jpaRepository.saveAll(orderProductEntities);
+    List<OrderProductEntity> savedEntities = jpaRepository.saveAll(orderProductEntities);
 
     // 3. 저장된 Entity -> Domain Model 변환 후 반환
     return mapper.toModelList(savedEntities);

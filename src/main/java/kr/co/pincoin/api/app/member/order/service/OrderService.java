@@ -4,7 +4,8 @@ import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
-import kr.co.pincoin.api.domain.shop.service.OrderDomainService;
+import kr.co.pincoin.api.domain.shop.service.OrderProcessingService;
+import kr.co.pincoin.api.domain.shop.service.OrderRefundService;
 import kr.co.pincoin.api.global.utils.ClientUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +17,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class OrderService {
-  private final OrderDomainService orderDomainService;
+
+  private final OrderProcessingService orderProcessingService;
+
+  private final OrderRefundService orderRefundService;
 
   /**
    * 현재 로그인한 사용자의 주문 목록을 페이징하여 조회한다.
@@ -27,7 +31,7 @@ public class OrderService {
    * @return 사용자의 주문 목록
    */
   public Page<Order> getMyOrders(User user, OrderSearchCondition condition, Pageable pageable) {
-    return orderDomainService.getUserOrders(user.getId(), condition, pageable);
+    return orderProcessingService.getUserOrders(user.getId(), condition, pageable);
   }
 
   /**
@@ -38,7 +42,7 @@ public class OrderService {
    * @return 사용자의 주문 정보
    */
   public Order getMyOrder(User user, String orderNo) {
-    return orderDomainService.getUserOrder(user.getId(), orderNo);
+    return orderProcessingService.getUserOrder(user.getId(), orderNo);
   }
 
   /**
@@ -51,7 +55,7 @@ public class OrderService {
    */
   public Order createOrder(
       OrderCreateRequest request, User user, ClientUtils.ClientInfo clientInfo) {
-    return orderDomainService.createOrder(user, request, clientInfo);
+    return orderProcessingService.createOrder(user, request, clientInfo);
   }
 
   /**
@@ -63,7 +67,7 @@ public class OrderService {
    * @return 생성된 재주문 정보
    */
   public Order reorder(User user, String orderNo, ClientUtils.ClientInfo clientInfo) {
-    return orderDomainService.createReorder(user.getId(), orderNo, clientInfo);
+    return orderProcessingService.createReorder(user.getId(), orderNo, clientInfo);
   }
 
   /**
@@ -75,8 +79,8 @@ public class OrderService {
    * @return 환불 요청된 주문 정보
    */
   public Order requestRefund(User user, String message, String orderNo) {
-    Order order = orderDomainService.getUserOrder(user.getId(), orderNo);
-    return orderDomainService.requestRefund(user, order, message);
+    Order order = orderProcessingService.getUserOrder(user.getId(), orderNo);
+    return orderRefundService.requestRefund(user, order, message);
   }
 
   /**
@@ -86,7 +90,7 @@ public class OrderService {
    * @param orderNo 삭제할 주문 번호
    */
   public void deleteMyOrder(User user, String orderNo) {
-    orderDomainService.softDeleteUserOrder(user.getId(), orderNo);
+    orderProcessingService.softDeleteUserOrder(user.getId(), orderNo);
   }
 
   /**
@@ -96,6 +100,6 @@ public class OrderService {
    * @param orderNo 숨길 주문 번호
    */
   public void hideMyOrder(User user, String orderNo) {
-    orderDomainService.hideUserOrder(user.getId(), orderNo);
+    orderProcessingService.hideUserOrder(user.getId(), orderNo);
   }
 }

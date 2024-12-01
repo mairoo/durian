@@ -23,8 +23,7 @@ public class OrderPaymentRepositoryImpl implements OrderPaymentRepository {
 
   @Override
   public OrderPayment save(OrderPayment orderPayment) {
-    return mapper.toModel(
-        jpaRepository.save(mapper.toEntity(orderPayment)));
+    return mapper.toModel(jpaRepository.save(mapper.toEntity(orderPayment)));
   }
 
   @Override
@@ -34,8 +33,7 @@ public class OrderPaymentRepositoryImpl implements OrderPaymentRepository {
 
   @Override
   public List<OrderPayment> findByOrderAndIsRemovedFalse(Order order) {
-    List<OrderPaymentEntity> entries =
-        jpaRepository.findByOrderAndRemovedFalse(order.toEntity());
+    List<OrderPaymentEntity> entries = jpaRepository.findByOrderAndRemovedFalse(order.toEntity());
 
     return mapper.toModelList(entries);
   }

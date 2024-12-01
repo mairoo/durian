@@ -18,91 +18,92 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class EmailTemplateService {
 
-    private final EmailTemplateRepository emailTemplateRepository;
+  private final EmailTemplateRepository emailTemplateRepository;
 
-    private final MailgunApiClient mailgunApiClient;
+  private final MailgunApiClient mailgunApiClient;
 
-    public EmailTemplateService(
-        EmailTemplateRepository emailTemplateRepository, MailgunApiClient mailgunApiClient) {
-        this.emailTemplateRepository = emailTemplateRepository;
-        this.mailgunApiClient = mailgunApiClient;
-    }
+  public EmailTemplateService(
+      EmailTemplateRepository emailTemplateRepository, MailgunApiClient mailgunApiClient) {
+    this.emailTemplateRepository = emailTemplateRepository;
+    this.mailgunApiClient = mailgunApiClient;
+  }
 
-    public Mono<MailgunResponse> sendTemplateEmail(
-        String templateName, String to, Map<String, String> variables) {
-        EmailTemplate template =
-            emailTemplateRepository
-                .findByTemplateName(templateName)
-                .orElseThrow(() -> new BusinessException(ErrorCode.EMAIL_TEMPLATE_NOT_FOUND));
-
-        String htmlContent = replaceVariables(template.getHtmlContent(), variables);
-        String textContent = replaceVariables(template.getTextContent(), variables);
-        String subject = replaceVariables(template.getSubject(), variables);
-
-        MailgunRequest request =
-            MailgunRequest.builder()
-                .to(to)
-                .subject(subject)
-                .text(textContent)
-                .html(htmlContent)
-                .build();
-
-        return mailgunApiClient.sendEmail(request);
-    }
-
-    @Transactional
-    public EmailTemplate createTemplate(EmailTemplate template) {
-        // 템플릿 이름 중복 체크
-        if (emailTemplateRepository.existsByTemplateName(template.getTemplateName())) {
-            throw new BusinessException(ErrorCode.EMAIL_TEMPLATE_ALREADY_EXISTS);
-        }
-
-        return emailTemplateRepository.save(template);
-    }
-
-    public EmailTemplate getTemplate(String templateName) {
-        return emailTemplateRepository.findByTemplateName(templateName)
+  public Mono<MailgunResponse> sendTemplateEmail(
+      String templateName, String to, Map<String, String> variables) {
+    EmailTemplate template =
+        emailTemplateRepository
+            .findByTemplateName(templateName)
             .orElseThrow(() -> new BusinessException(ErrorCode.EMAIL_TEMPLATE_NOT_FOUND));
-    }
 
-    public EmailTemplate getTemplateWithVariables(String templateName,
-        Map<String, String> variables) {
-        EmailTemplate template = getTemplate(templateName);
+    String htmlContent = replaceVariables(template.getHtmlContent(), variables);
+    String textContent = replaceVariables(template.getTextContent(), variables);
+    String subject = replaceVariables(template.getSubject(), variables);
 
-        String htmlContent = replaceVariables(template.getHtmlContent(), variables);
-        String textContent = replaceVariables(template.getTextContent(), variables);
-        String subject = replaceVariables(template.getSubject(), variables);
-
-        return EmailTemplate.builder()
-            .id(template.getId())
-            .templateName(template.getTemplateName())
-            .htmlContent(htmlContent)
-            .textContent(textContent)
+    MailgunRequest request =
+        MailgunRequest.builder()
+            .to(to)
             .subject(subject)
-            .created(template.getCreated())
-            .modified(template.getModified())
+            .text(textContent)
+            .html(htmlContent)
             .build();
+
+    return mailgunApiClient.sendEmail(request);
+  }
+
+  @Transactional
+  public EmailTemplate createTemplate(EmailTemplate template) {
+    // 템플릿 이름 중복 체크
+    if (emailTemplateRepository.existsByTemplateName(template.getTemplateName())) {
+      throw new BusinessException(ErrorCode.EMAIL_TEMPLATE_ALREADY_EXISTS);
     }
 
-    @Transactional
-    public void deleteTemplate(String templateName) {
-        EmailTemplate template = getTemplate(templateName);
-        emailTemplateRepository.delete(template);
-    }
+    return emailTemplateRepository.save(template);
+  }
 
-    private String replaceVariables(String content, Map<String, String> variables) {
-        String result = content;
-        for (Map.Entry<String, String> entry : variables.entrySet()) {
-            result = result.replace("${" + entry.getKey() + "}", entry.getValue());
-        }
-        return result;
-    }
+  public EmailTemplate getTemplate(String templateName) {
+    return emailTemplateRepository
+        .findByTemplateName(templateName)
+        .orElseThrow(() -> new BusinessException(ErrorCode.EMAIL_TEMPLATE_NOT_FOUND));
+  }
 
-    // 템플릿 예시를 위한 초기 데이터 삽입 메소드
-    @Transactional
-    public void createWelcomeTemplate() {
-        String htmlTemplate =
-            """
+  public EmailTemplate getTemplateWithVariables(
+      String templateName, Map<String, String> variables) {
+    EmailTemplate template = getTemplate(templateName);
+
+    String htmlContent = replaceVariables(template.getHtmlContent(), variables);
+    String textContent = replaceVariables(template.getTextContent(), variables);
+    String subject = replaceVariables(template.getSubject(), variables);
+
+    return EmailTemplate.builder()
+        .id(template.getId())
+        .templateName(template.getTemplateName())
+        .htmlContent(htmlContent)
+        .textContent(textContent)
+        .subject(subject)
+        .created(template.getCreated())
+        .modified(template.getModified())
+        .build();
+  }
+
+  @Transactional
+  public void deleteTemplate(String templateName) {
+    EmailTemplate template = getTemplate(templateName);
+    emailTemplateRepository.delete(template);
+  }
+
+  private String replaceVariables(String content, Map<String, String> variables) {
+    String result = content;
+    for (Map.Entry<String, String> entry : variables.entrySet()) {
+      result = result.replace("${" + entry.getKey() + "}", entry.getValue());
+    }
+    return result;
+  }
+
+  // 템플릿 예시를 위한 초기 데이터 삽입 메소드
+  @Transactional
+  public void createWelcomeTemplate() {
+    String htmlTemplate =
+        """
                 <html>
                     <head>
                         <style>
@@ -139,26 +140,26 @@ public class EmailTemplateService {
                 </html>
                 """;
 
-        String textTemplate =
-            """
+    String textTemplate =
+        """
                 ${company} 가입을 환영합니다!
-                
+
                 안녕하세요 ${userName}님,
-                
+
                 ${company}의 회원이 되신 것을 진심으로 환영합니다.
                 계정 활성화를 위해 아래 링크를 방문해주세요:
-                
+
                 ${activationLink}
                 """;
 
-        EmailTemplate welcomeTemplate =
-            EmailTemplate.builder()
-                .templateName("welcome")
-                .subject("${company} 가입을 환영합니다")
-                .htmlContent(htmlTemplate)
-                .textContent(textTemplate)
-                .build();
+    EmailTemplate welcomeTemplate =
+        EmailTemplate.builder()
+            .templateName("welcome")
+            .subject("${company} 가입을 환영합니다")
+            .htmlContent(htmlTemplate)
+            .textContent(textTemplate)
+            .build();
 
-        emailTemplateRepository.save(welcomeTemplate);
-    }
+    emailTemplateRepository.save(welcomeTemplate);
+  }
 }

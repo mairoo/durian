@@ -27,9 +27,6 @@ import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherReposit
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
-import kr.co.pincoin.api.infra.shop.mapper.order.OrderMapper;
-import kr.co.pincoin.api.infra.shop.mapper.order.OrderPaymentMapper;
-import kr.co.pincoin.api.infra.shop.mapper.product.VoucherMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,10 +45,6 @@ public class OrderPersistenceService {
   private final VoucherRepository voucherRepository;
   private final ProfileRepository profileRepository;
   private final UserRepository userRepository;
-
-  private final VoucherMapper voucherMapper;
-  private final OrderPaymentMapper orderPaymentMapper;
-  private final OrderMapper orderMapper;
 
   /** 주문과 주문 관련 엔티티 조회 */
   public Order findOrder(Long orderId) {

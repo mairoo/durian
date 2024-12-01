@@ -25,8 +25,7 @@ public class OrderProductVoucherRepositoryImpl implements OrderProductVoucherRep
         mapper.toEntityList(orderProductsVouchers);
 
     // 2. JPA Repository 일괄 저장
-    List<OrderProductVoucherEntity> savedEntities =
-        jpaRepository.saveAll(orderProductEntities);
+    List<OrderProductVoucherEntity> savedEntities = jpaRepository.saveAll(orderProductEntities);
 
     // 3. 저장된 Entity -> Domain Model 변환 후 반환
     return mapper.toModelList(savedEntities);
@@ -34,8 +33,7 @@ public class OrderProductVoucherRepositoryImpl implements OrderProductVoucherRep
 
   @Override
   public List<OrderProductVoucher> findAllByOrderProductOrderId(Long orderId) {
-    List<OrderProductVoucherEntity> entries =
-        jpaRepository.findAllByOrderProductOrderId(orderId);
+    List<OrderProductVoucherEntity> entries = jpaRepository.findAllByOrderProductOrderId(orderId);
 
     return mapper.toModelList(entries);
   }

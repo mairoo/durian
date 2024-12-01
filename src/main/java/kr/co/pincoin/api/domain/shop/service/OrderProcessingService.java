@@ -12,18 +12,14 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
 import kr.co.pincoin.api.app.member.order.request.OrderLineItem;
-import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
-import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
-import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderCurrency;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
-import kr.co.pincoin.api.domain.shop.model.product.Voucher;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.global.utils.ClientUtils;
@@ -37,10 +33,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class OrderDomainService {
+public class OrderProcessingService {
+
   private final OrderPersistenceService persistenceService;
 
-  /** 주문 조회 */
+  // 주문 조회
   public Page<Order> getOrders(OrderSearchCondition condition, Pageable pageable) {
     return persistenceService.searchOrders(condition, pageable);
   }
@@ -62,7 +59,7 @@ public class OrderDomainService {
     return persistenceService.findUser(userId);
   }
 
-  /** 주문 생성 */
+  // 주문 처리
   @Transactional
   public Order createOrder(
       User user, OrderCreateRequest request, ClientUtils.ClientInfo clientInfo) {
@@ -70,7 +67,6 @@ public class OrderDomainService {
 
     BigDecimal totalListPrice =
         calculateTotalPrice(products, request.getItems(), Product::getListPrice);
-
     BigDecimal totalSellingPrice =
         calculateTotalPrice(products, request.getItems(), Product::getSellingPrice);
 
@@ -99,7 +95,6 @@ public class OrderDomainService {
 
     List<OrderProduct> orderProducts =
         createOrderProducts(products, request.getItems(), savedOrder);
-
     persistenceService.saveOrderProducts(orderProducts);
 
     return savedOrder;
@@ -109,23 +104,11 @@ public class OrderDomainService {
   public Order createReorder(Integer userId, String orderNo, ClientUtils.ClientInfo clientInfo) {
     List<OrderProduct> originalOrderProducts =
         persistenceService.findOriginalOrderProducts(orderNo, userId);
-
     if (originalOrderProducts.isEmpty()) {
       throw new EntityNotFoundException("주문을 찾을 수 없습니다.");
     }
 
     Order originalOrder = originalOrderProducts.getFirst().getOrder();
-
-    // 벌크 연산을 위한 OrderProduct 데이터 준비
-    List<OrderProduct> newOrderProducts = new ArrayList<>();
-
-    List<OrderLineItem> orderItems =
-        originalOrderProducts.stream()
-            .map(op -> new OrderLineItem(op.getCode(), op.getQuantity()))
-            .collect(Collectors.toList());
-
-    validateProductsForOrder(orderItems);
-
     Order reorder =
         Order.builder()
             .orderNo(generateOrderNumber())
@@ -148,96 +131,32 @@ public class OrderDomainService {
 
     Order savedReorder = persistenceService.saveAndFlush(reorder);
 
-    // 메모리에서 OrderProduct 객체들 생성
-    for (OrderProduct original : originalOrderProducts) {
-      newOrderProducts.add(
-          OrderProduct.of(
-              original.getName(),
-              original.getSubtitle(),
-              original.getCode(),
-              original.getListPrice(),
-              original.getSellingPrice(),
-              original.getQuantity(),
-              savedReorder));
-    }
+    List<OrderProduct> newOrderProducts =
+        originalOrderProducts.stream()
+            .map(
+                original ->
+                    OrderProduct.of(
+                        original.getName(),
+                        original.getSubtitle(),
+                        original.getCode(),
+                        original.getListPrice(),
+                        original.getSellingPrice(),
+                        original.getQuantity(),
+                        savedReorder))
+            .collect(Collectors.toList());
 
-    // 벌크 insert 수행
     persistenceService.saveOrderProducts(newOrderProducts);
 
     return savedReorder;
   }
 
-  /** 주문 처리 */
-  @Transactional
-  public OrderPayment addPayment(Long orderId, OrderPayment payment) {
-    Order order = persistenceService.findOrderWithUser(orderId);
-
-    OrderPayment savedPayment = persistenceService.savePayment(payment);
-
-    BigDecimal totalPayments = persistenceService.getTotalAmountByOrder(order);
-
-    if (isPaymentCompleted(totalPayments, order.getTotalSellingPrice())) {
-      Profile profile = persistenceService.findProfileByOrderUserId(order.getUser().getId());
-
-      order.updateStatus(
-          profile.isPhoneVerified() && profile.isDocumentVerified()
-              ? OrderStatus.PAYMENT_VERIFIED
-              : OrderStatus.UNDER_REVIEW);
-
-      persistenceService.save(order);
-    }
-
-    return savedPayment;
-  }
-
-  @Transactional
-  public Order issueVouchers(Order order) {
-    List<OrderProduct> orderProducts = persistenceService.findOrderProductsFetchOrder(order);
-
-    List<OrderProductVoucher> allVouchers = new ArrayList<>();
-    List<Voucher> vouchersToUpdate = new ArrayList<>();
-    List<Product> productsToUpdate = new ArrayList<>();
-
-    for (OrderProduct orderProduct : orderProducts) {
-      Product product = validateProductForVoucherIssue(orderProduct);
-
-      List<Voucher> availableVouchers =
-          persistenceService.findAvailableVouchers(
-              orderProduct.getCode(), orderProduct.getQuantity());
-
-      validateVouchersAvailability(orderProduct, availableVouchers, product);
-
-      for (Voucher voucher : availableVouchers) {
-        voucher.markAsSold();
-        vouchersToUpdate.add(voucher);
-
-        allVouchers.add(
-            OrderProductVoucher.builder()
-                .orderProduct(orderProduct)
-                .code(voucher.getCode())
-                .remarks(voucher.getRemarks())
-                .revoked(false)
-                .build());
-      }
-
-      product.updateStockQuantity(product.getStockQuantity() - orderProduct.getQuantity());
-      productsToUpdate.add(product);
-    }
-
-    persistenceService.saveOrderProductVouchersBatch(allVouchers);
-    persistenceService.updateVouchersBatch(vouchersToUpdate);
-    persistenceService.updateProductsBatch(productsToUpdate);
-
-    return order;
-  }
-
-  /** 주문 상태 관리 */
+  // 주문 상태 관리
   @Transactional
   public void verifyOrder(Order order) {
-    if (order.getStatus() != OrderStatus.PAYMENT_COMPLETED
-        && order.getStatus() != OrderStatus.UNDER_REVIEW) {
-      throw new IllegalStateException("결제 완료 또는 검토중 상태의 주문만 검증할 수 있습니다.");
-    }
+    validateOrderStatus(
+        order,
+        Set.of(OrderStatus.PAYMENT_COMPLETED, OrderStatus.UNDER_REVIEW),
+        "결제 완료 또는 검토중 상태의 주문만 검증할 수 있습니다.");
 
     order.updateStatus(OrderStatus.PAYMENT_VERIFIED);
     persistenceService.save(order);
@@ -245,114 +164,47 @@ public class OrderDomainService {
 
   @Transactional
   public void unverifyOrder(Order order) {
-    if (order.getStatus() != OrderStatus.PAYMENT_VERIFIED) {
-      throw new IllegalStateException("검증 완료 상태의 주문만 변경할 수 있습니다.");
-    }
+    validateOrderStatus(order, Set.of(OrderStatus.PAYMENT_VERIFIED), "검증 완료 상태의 주문만 변경할 수 있습니다.");
 
     order.updateStatus(OrderStatus.UNDER_REVIEW);
     persistenceService.save(order);
   }
 
   @Transactional
+  public void updateOrderStatus(Order order, OrderStatus newStatus) {
+    order.updateStatus(newStatus);
+    persistenceService.save(order);
+  }
+
+  @Transactional
   public void softDeleteOrder(Long orderId) {
     Order order = persistenceService.findOrder(orderId);
-    if (Boolean.TRUE.equals(order.getRemoved())) {
-      throw new IllegalStateException("이미 삭제된 주문입니다.");
-    }
+    validateSoftDelete(order);
     persistenceService.softDeleteOrder(order);
   }
 
   @Transactional
   public void softDeleteUserOrder(Integer userId, String orderNo) {
     Order order = persistenceService.findUserOrder(userId, orderNo);
-    if (Boolean.TRUE.equals(order.getRemoved())) {
-      throw new IllegalStateException("이미 삭제된 주문입니다.");
-    }
+    validateSoftDelete(order);
     persistenceService.softDeleteUserOrder(order);
   }
 
   @Transactional
   public void hideOrder(Long orderId) {
     Order order = persistenceService.findOrder(orderId);
-    if (OrderVisibility.HIDDEN.equals(order.getVisibility())) {
-      throw new IllegalStateException("이미 숨김 처리된 주문입니다.");
-    }
+    validateHideOrder(order);
     persistenceService.hideOrder(order);
   }
 
   @Transactional
   public void hideUserOrder(Integer userId, String orderNo) {
     Order order = persistenceService.findUserOrder(userId, orderNo);
-    if (OrderVisibility.HIDDEN.equals(order.getVisibility())) {
-      throw new IllegalStateException("이미 숨김 처리된 주문입니다.");
-    }
+    validateHideOrder(order);
     persistenceService.hideUserOrder(order);
   }
 
-  /** 환불 처리 */
-  @Transactional
-  public Order requestRefund(User user, Order order, String message) {
-    if (order.getStatus() == OrderStatus.REFUND_REQUESTED
-        || order.getStatus() == OrderStatus.REFUND_PENDING
-        || order.getStatus() == OrderStatus.REFUNDED1
-        || order.getStatus() == OrderStatus.REFUNDED2) {
-      throw new IllegalStateException("이미 환불 처리된 주문입니다.");
-    }
-
-    // 원본 주문 상태 및 메시지 업데이트
-    order.updateStatus(OrderStatus.REFUND_REQUESTED);
-    order.updateMessage(message);
-
-    // 환불 주문 생성 (금액만 기록)
-    Order refundOrder =
-        Order.builder()
-            .orderNo(generateOrderNumber())
-            .fullname(order.getFullname())
-            .userAgent(order.getUserAgent())
-            .acceptLanguage(order.getAcceptLanguage())
-            .ipAddress(order.getIpAddress())
-            .totalListPrice(order.getTotalListPrice())
-            .totalSellingPrice(order.getTotalSellingPrice())
-            .currency(order.getCurrency())
-            .parent(order)
-            .user(user)
-            .paymentMethod(order.getPaymentMethod())
-            .status(OrderStatus.REFUND_PENDING)
-            .visibility(OrderVisibility.VISIBLE)
-            .transactionId("")
-            .message(message)
-            .suspicious(false)
-            .removed(false)
-            .build();
-
-    // 원본 주문과 환불 주문을 한 번에 저장
-    persistenceService.saveOrders(order, refundOrder);
-
-    // Voucher 처리
-    revokeVouchers(order.getId());
-
-    return refundOrder;
-  }
-
-  @Transactional
-  public Order completeRefund(Order refundOrder) {
-    validateRefundCompletion(refundOrder);
-
-    Order originalOrder = refundOrder.getParent();
-    if (originalOrder == null) {
-      throw new IllegalStateException("환불 처리할 원본 주문을 찾을 수 없습니다.");
-    }
-
-    originalOrder.updateStatus(OrderStatus.REFUNDED1);
-    refundOrder.updateStatus(OrderStatus.REFUNDED2);
-
-    persistenceService.save(originalOrder);
-    persistenceService.save(refundOrder);
-
-    return refundOrder;
-  }
-
-  /** 주문 생성 관련 헬퍼 메소드 */
+  // Private 헬퍼 메서드들
   private String generateOrderNumber() {
     return UUID.randomUUID().toString().replace("-", "");
   }
@@ -362,6 +214,7 @@ public class OrderDomainService {
 
     Set<String> requestedCodes =
         items.stream().map(OrderLineItem::getCode).collect(Collectors.toSet());
+
     Set<String> foundCodes = products.stream().map(Product::getCode).collect(Collectors.toSet());
 
     if (!foundCodes.containsAll(requestedCodes)) {
@@ -397,7 +250,6 @@ public class OrderDomainService {
     return products;
   }
 
-  /** 주문 상품 관련 헬퍼 메소드 */
   private List<OrderProduct> createOrderProducts(
       List<Product> products, List<OrderLineItem> items, Order order) {
     Map<String, Product> productMap =
@@ -419,7 +271,6 @@ public class OrderDomainService {
         .collect(Collectors.toList());
   }
 
-  /** 가격 계산 관련 헬퍼 메소드 */
   private BigDecimal calculateTotalPrice(
       List<Product> products,
       List<OrderLineItem> items,
@@ -436,70 +287,21 @@ public class OrderDomainService {
         .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
-  private boolean isPaymentCompleted(BigDecimal totalPayments, BigDecimal orderAmount) {
-    return totalPayments.compareTo(orderAmount) >= 0;
-  }
-
-  /** 바우처 관련 헬퍼 메소드 */
-  private Product validateProductForVoucherIssue(OrderProduct orderProduct) {
-    return persistenceService
-        .findProducts(
-            List.of(new OrderLineItem(orderProduct.getCode(), orderProduct.getQuantity())))
-        .stream()
-        .findFirst()
-        .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다: " + orderProduct.getCode()));
-  }
-
-  private void validateVouchersAvailability(
-      OrderProduct orderProduct, List<Voucher> vouchers, Product product) {
-    if (vouchers.size() < orderProduct.getQuantity()) {
-      throw new IllegalStateException(
-          String.format(
-              "상품 '%s'의 사용 가능한 상품권이 부족합니다. 필요: %d, 가용: %d",
-              orderProduct.getName(), orderProduct.getQuantity(), vouchers.size()));
-    }
-
-    if (product.getStockQuantity() < vouchers.size()) {
-      throw new IllegalStateException(
-          String.format(
-              "상품 '%s'의 재고와 상품권 수량이 불일치합니다. 재고: %d, 상품권: %d",
-              product.getName(), product.getStockQuantity(), vouchers.size()));
+  private void validateOrderStatus(Order order, Set<OrderStatus> validStatuses, String message) {
+    if (!validStatuses.contains(order.getStatus())) {
+      throw new IllegalStateException(message);
     }
   }
 
-  private void revokeVouchers(Long orderId) {
-    List<OrderProductVoucher> vouchers = persistenceService.findOrderProductVouchers(orderId);
-
-    vouchers.forEach(
-        voucher -> {
-          voucher.revoke();
-
-          Voucher originalVoucher =
-              persistenceService
-                  .findVoucherByCode(voucher.getCode())
-                  .orElseThrow(
-                      () -> new EntityNotFoundException("상품권을 찾을 수 없습니다: " + voucher.getCode()));
-
-          originalVoucher.markAsPurchased();
-          persistenceService.updateVoucher(originalVoucher);
-        });
-
-    persistenceService.saveOrderProductVouchers(vouchers);
+  private void validateSoftDelete(Order order) {
+    if (Boolean.TRUE.equals(order.getRemoved())) {
+      throw new IllegalStateException("이미 삭제된 주문입니다.");
+    }
   }
 
-  /** 상태 변경 관련 헬퍼 메소드 */
-  private void validateRefundCompletion(Order refundOrder) {
-    if (refundOrder.getStatus() != OrderStatus.REFUND_PENDING) {
-      throw new IllegalStateException("환불 처리 대기 상태의 주문이 아닙니다.");
-    }
-
-    Order originalOrder = refundOrder.getParent();
-    if (originalOrder == null) {
-      throw new IllegalStateException("환불 처리할 원본 주문을 찾을 수 없습니다.");
-    }
-
-    if (originalOrder.getStatus() != OrderStatus.REFUND_REQUESTED) {
-      throw new IllegalStateException("환불 요청 상태의 주문이 아닙니다.");
+  private void validateHideOrder(Order order) {
+    if (OrderVisibility.HIDDEN.equals(order.getVisibility())) {
+      throw new IllegalStateException("이미 숨김 처리된 주문입니다.");
     }
   }
 }

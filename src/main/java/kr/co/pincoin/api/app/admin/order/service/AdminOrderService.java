@@ -4,7 +4,9 @@ import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
-import kr.co.pincoin.api.domain.shop.service.OrderDomainService;
+import kr.co.pincoin.api.domain.shop.service.OrderProcessingService;
+import kr.co.pincoin.api.domain.shop.service.OrderRefundService;
+import kr.co.pincoin.api.domain.shop.service.OrderVoucherService;
 import kr.co.pincoin.api.global.utils.ClientUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +18,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class AdminOrderService {
-  private final OrderDomainService orderDomainService;
+
+  private final OrderProcessingService orderProcessingService;
+
+  private final OrderRefundService orderRefundService;
+
+  private final OrderVoucherService orderVoucherService;
 
   /**
    * 주문 목록을 페이징하여 조회한다.
@@ -26,7 +33,7 @@ public class AdminOrderService {
    * @return 조건에 맞는 주문 목록
    */
   public Page<Order> getOrders(OrderSearchCondition condition, Pageable pageable) {
-    return orderDomainService.getOrders(condition, pageable);
+    return orderProcessingService.getOrders(condition, pageable);
   }
 
   /**
@@ -36,7 +43,7 @@ public class AdminOrderService {
    * @return 조회된 주문 정보
    */
   public Order getOrder(Long orderId) {
-    return orderDomainService.getOrder(orderId);
+    return orderProcessingService.getOrder(orderId);
   }
 
   /**
@@ -49,8 +56,8 @@ public class AdminOrderService {
    */
   public Order createOrder(
       Integer userId, OrderCreateRequest request, ClientUtils.ClientInfo clientInfo) {
-    User user = orderDomainService.getUser(userId);
-    return orderDomainService.createOrder(user, request, clientInfo);
+    User user = orderProcessingService.getUser(userId);
+    return orderProcessingService.createOrder(user, request, clientInfo);
   }
 
   /**
@@ -62,7 +69,7 @@ public class AdminOrderService {
    * @return 생성된 재주문 정보
    */
   public Order reorder(Integer userId, String orderNo, ClientUtils.ClientInfo clientInfo) {
-    return orderDomainService.createReorder(userId, orderNo, clientInfo);
+    return orderProcessingService.createReorder(userId, orderNo, clientInfo);
   }
 
   /**
@@ -72,8 +79,8 @@ public class AdminOrderService {
    * @throws IllegalStateException 주문 상태 변경이 불가능한 경우
    */
   public void verifyOrder(Long orderId) {
-    Order order = orderDomainService.getOrder(orderId);
-    orderDomainService.verifyOrder(order);
+    Order order = orderProcessingService.getOrder(orderId);
+    orderProcessingService.verifyOrder(order);
   }
 
   /**
@@ -82,8 +89,8 @@ public class AdminOrderService {
    * @param orderId 상태를 변경할 주문 ID
    */
   public void unverifyOrder(Long orderId) {
-    Order order = orderDomainService.getOrder(orderId);
-    orderDomainService.unverifyOrder(order);
+    Order order = orderProcessingService.getOrder(orderId);
+    orderProcessingService.unverifyOrder(order);
   }
 
   /**
@@ -93,8 +100,8 @@ public class AdminOrderService {
    * @return 발권 처리된 주문 정보
    */
   public Order issueVouchers(Long orderId) {
-    Order order = orderDomainService.getOrder(orderId);
-    return orderDomainService.issueVouchers(order);
+    Order order = orderProcessingService.getOrder(orderId);
+    return orderVoucherService.issueVouchers(order);
   }
 
   /**
@@ -104,8 +111,8 @@ public class AdminOrderService {
    * @return 환불 처리된 주문 정보
    */
   public Order completeRefund(Long orderId) {
-    Order order = orderDomainService.getOrder(orderId);
-    return orderDomainService.completeRefund(order);
+    Order order = orderProcessingService.getOrder(orderId);
+    return orderRefundService.completeRefund(order);
   }
 
   /**
@@ -114,7 +121,7 @@ public class AdminOrderService {
    * @param orderId 삭제할 주문 ID
    */
   public void deleteOrder(Long orderId) {
-    orderDomainService.softDeleteOrder(orderId);
+    orderProcessingService.softDeleteOrder(orderId);
   }
 
   /**
@@ -123,6 +130,6 @@ public class AdminOrderService {
    * @param orderId 숨길 주문 ID
    */
   public void hideOrder(Long orderId) {
-    orderDomainService.hideOrder(orderId);
+    orderProcessingService.hideOrder(orderId);
   }
 }

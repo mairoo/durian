@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface EmailTemplateJpaRepository extends JpaRepository<EmailTemplateEntity, Long> {
 
-    Optional<EmailTemplateEntity> findByTemplateName(String templateName);
+  Optional<EmailTemplateEntity> findByTemplateName(String templateName);
 
-    boolean existsByTemplateName(String templateName);
+  boolean existsByTemplateName(String templateName);
 }
