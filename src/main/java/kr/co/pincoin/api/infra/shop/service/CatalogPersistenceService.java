@@ -16,78 +16,68 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CatalogPersistenceService {
+  private final CategoryRepository categoryRepository;
 
-    private final CategoryRepository categoryRepository;
+  private final ProductRepository productRepository;
 
-    private final ProductRepository productRepository;
+  private final StoreRepository storeRepository;
 
-    private final StoreRepository storeRepository;
+  // Store 관련 메서드
+  public Optional<Store> findStoreById(Long id) {
+    return storeRepository.findById(id);
+  }
 
-    // Store 관련 메서드
-    public boolean existsStoreById(Long id) {
-        return storeRepository.existsById(id);
-    }
+  // Category 관련 메서드
+  @Transactional
+  public Category saveCategory(Category category) {
+    return categoryRepository.save(category);
+  }
 
-    public Optional<Store> findStoreById(Long id) {
-        return storeRepository.findById(id);
-    }
+  public Optional<Category> findCategoryById(Long id) {
+    return categoryRepository.findById(id);
+  }
 
-    // Category 관련 메서드
-    public Category saveCategory(Category category) {
-        return categoryRepository.save(category);
-    }
+  public Optional<Category> findCategoryBySlug(String slug) {
+    return categoryRepository.findBySlug(slug);
+  }
 
-    public Optional<Category> findCategoryById(Long id) {
-        return categoryRepository.findById(id);
-    }
+  public boolean existsCategoryBySlug(String slug) {
+    return categoryRepository.existsBySlug(slug);
+  }
 
-    public Optional<Category> findCategoryBySlug(String slug) {
-        return categoryRepository.findBySlug(slug);
-    }
+  public List<Category> findCategoriesByStoreId(Long storeId) {
+    return categoryRepository.findAllByStoreIdWithStore(storeId);
+  }
 
-    public boolean existsCategoryById(Long id) {
-        return categoryRepository.existsById(id);
-    }
+  public List<Category> findChildCategories(Category parentCategory) {
+    return categoryRepository.findAllByParentCategory(parentCategory);
+  }
 
-    public boolean existsCategoryBySlug(String slug) {
-        return categoryRepository.existsBySlug(slug);
-    }
+  public List<Category> findRootCategoriesByStoreId(Long storeId) {
+    return categoryRepository.findAllByStoreIdAndParentCategoryIsNull(storeId);
+  }
 
-    public List<Category> findCategoriesByStoreId(Long storeId) {
-        return categoryRepository.findAll().stream()
-            .filter(category -> category.getStore().getId().equals(storeId))
-            .toList();
-    }
+  // Product 관련 메서드
+  @Transactional
+  public Product saveProduct(Product product) {
+    return productRepository.save(product);
+  }
 
-    public List<Category> findChildCategories(Category parentCategory) {
-        return categoryRepository.findAll().stream()
-            .filter(category -> category.isDescendantOf(parentCategory))
-            .toList();
-    }
+  public Optional<Product> findProductById(Long id) {
+    return productRepository.findById(id);
+  }
 
-    public List<Category> findRootCategoriesByStoreId(Long storeId) {
-        return categoryRepository.findAll().stream()
-            .filter(category -> category.getStore().getId().equals(storeId))
-            .filter(Category::isRoot)
-            .toList();
-    }
+  public Optional<Product> findProductWithCategory(Long id) {
+    // Join fetch로 Category까지 한번에 조회
+    return productRepository.findByIdWithCategory(id);
+  }
 
-    // Product 관련 메서드
-    public Product saveProduct(Product product) {
-        return productRepository.save(product);
-    }
+  public boolean existsProductBySlug(String slug) {
+    return productRepository.existsBySlug(slug);
+  }
 
-    public Optional<Product> findProductById(Long id) {
-        return productRepository.findById(id);
-    }
-
-    public boolean existsProductBySlug(String slug) {
-        return productRepository.existsBySlug(slug);
-    }
-
-    public List<Product> findProductsByCategoryId(Long categoryId) {
-        return productRepository.findAll().stream()
-            .filter(product -> product.getCategory().getId().equals(categoryId))
-            .toList();
-    }
+  public List<Product> findProductsByCategoryId(Long categoryId) {
+    // JPQL로 변경하여 한 번의 쿼리로 처리
+    return productRepository.findAllByCategoryIdWithCategory(categoryId);
+  }
 }

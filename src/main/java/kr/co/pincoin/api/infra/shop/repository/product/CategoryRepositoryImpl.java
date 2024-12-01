@@ -39,6 +39,21 @@ public class CategoryRepositoryImpl implements CategoryRepository {
   }
 
   @Override
+  public List<Category> findAllByStoreIdWithStore(Long storeId) {
+    return mapper.toModelList(jpaRepository.findAllByStoreIdWithStore(storeId));
+  }
+
+  @Override
+  public List<Category> findAllByParentCategory(Category parent) {
+    return mapper.toModelList(jpaRepository.findAllByParentCategory(parent));
+  }
+
+  @Override
+  public List<Category> findAllByStoreIdAndParentCategoryIsNull(Long storeId) {
+    return mapper.toModelList(jpaRepository.findAllByStoreIdAndParentCategoryIsNull(storeId));
+  }
+
+  @Override
   public boolean existsById(Long id) {
     return jpaRepository.existsById(id);
   }

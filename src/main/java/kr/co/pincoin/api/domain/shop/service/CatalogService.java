@@ -20,86 +20,84 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CatalogService {
 
-    private final CatalogPersistenceService catalogPersistence;
+  private final CatalogPersistenceService catalogPersistence;
 
-    @Transactional
-    public Category createCategory(CategoryCreateRequest request) {
-        // 1. Store 존재 여부 확인
-        if (!catalogPersistence.existsStoreById(request.getStoreId())) {
-            throw new BusinessException(ErrorCode.STORE_NOT_FOUND);
-        }
-
-        // 2. Slug 중복 검사
-        if (catalogPersistence.existsCategoryBySlug(request.getSlug())) {
-            throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_SLUG);
-        }
-
-        // 3. Parent Category 조회 (있는 경우)
-        Category parentCategory = null;
-        if (request.getParentId() != null) {
-            parentCategory = catalogPersistence.findCategoryById(request.getParentId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
-        }
-
-        // 4. Store 조회
-        Store store = catalogPersistence.findStoreById(request.getStoreId())
+  @Transactional
+  public Category createCategory(CategoryCreateRequest request) {
+    Store store =
+        catalogPersistence
+            .findStoreById(request.getStoreId())
             .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-        // 5. Category 생성
-        Category category = Category.of(
+    Category parentCategory = null;
+    if (request.getParentId() != null) {
+      parentCategory =
+          catalogPersistence
+              .findCategoryById(request.getParentId())
+              .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+    }
+
+    // Slug 중복 검사
+    if (catalogPersistence.existsCategoryBySlug(request.getSlug())) {
+      throw new BusinessException(ErrorCode.DUPLICATE_CATEGORY_SLUG);
+    }
+
+    Category category =
+        Category.of(
             request.getTitle(),
             request.getSlug(),
             request.getDiscountRate(),
             request.getPg(),
             request.getPgDiscountRate(),
             parentCategory,
-            store
-        );
+            store);
 
-        return catalogPersistence.saveCategory(category);
-    }
+    return catalogPersistence.saveCategory(category);
+  }
 
-    public Category getCategoryById(Long id) {
-        return catalogPersistence.findCategoryById(id)
-            .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
-    }
+  public Category getCategoryById(Long id) {
+    return catalogPersistence
+        .findCategoryById(id)
+        .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+  }
 
-    public Category getCategoryBySlug(String slug) {
-        return catalogPersistence.findCategoryBySlug(slug)
-            .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
-    }
+  public Category getCategoryBySlug(String slug) {
+    return catalogPersistence
+        .findCategoryBySlug(slug)
+        .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+  }
 
-    public List<Category> getCategoryListByStore(Long storeId) {
-        return catalogPersistence.findCategoriesByStoreId(storeId);
-    }
+  public List<Category> getCategoryListByStore(Long storeId) {
+    return catalogPersistence.findCategoriesByStoreId(storeId);
+  }
 
-    public List<Category> getChildCategories(Long parentId) {
-        Category parentCategory = getCategoryById(parentId);
-        return catalogPersistence.findChildCategories(parentCategory);
-    }
+  public List<Category> getChildCategories(Long parentId) {
+    Category parentCategory = getCategoryById(parentId);
+    return catalogPersistence.findChildCategories(parentCategory);
+  }
 
-    public List<Category> getRootCategories(Long storeId) {
-        return catalogPersistence.findRootCategoriesByStoreId(storeId);
-    }
+  public List<Category> getRootCategories(Long storeId) {
+    return catalogPersistence.findRootCategoriesByStoreId(storeId);
+  }
 
-
-    @Transactional
-    public Product createProduct(ProductCreateRequest request) {
-        // 1. Store 조회
-        Store store = catalogPersistence.findStoreById(request.getStoreId())
+  @Transactional
+  public Product createProduct(ProductCreateRequest request) {
+    Store store =
+        catalogPersistence
+            .findStoreById(request.getStoreId())
             .orElseThrow(() -> new BusinessException(ErrorCode.STORE_NOT_FOUND));
 
-        // 2. Category 조회
-        Category category = catalogPersistence.findCategoryById(request.getCategoryId())
+    Category category =
+        catalogPersistence
+            .findCategoryById(request.getCategoryId())
             .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
-        // 3. 상품 코드 중복 검사
-        if (catalogPersistence.existsProductBySlug(request.getCode())) {
-            throw new BusinessException(ErrorCode.DUPLICATE_PRODUCT_CODE);
-        }
+    if (catalogPersistence.existsProductBySlug(request.getCode())) {
+      throw new BusinessException(ErrorCode.DUPLICATE_PRODUCT_CODE);
+    }
 
-        // 4. Product 생성
-        Product product = Product.of(
+    Product product =
+        Product.of(
             request.getName(),
             request.getSubtitle(),
             request.getCode(),
@@ -110,56 +108,62 @@ public class CatalogService {
             request.getSellingPrice(),
             request.getPgSellingPrice(),
             request.getMinimumStockLevel(),
-            request.getMaximumStockLevel()
-        );
+            request.getMaximumStockLevel());
 
-        return catalogPersistence.saveProduct(product);
-    }
+    return catalogPersistence.saveProduct(product);
+  }
 
-    @Transactional
-    public Product markProductAsSoldOut(Long productId) {
-        Product product = getProductById(productId);
-        product.updateStockQuantity(0);
-        return catalogPersistence.saveProduct(product);
-    }
+  @Transactional
+  public Product markProductAsSoldOut(Long productId) {
+    Product product = getProductById(productId);
+    product.updateStockQuantity(0);
+    return catalogPersistence.saveProduct(product);
+  }
 
-    @Transactional
-    public Product suspendProductSale(Long productId) {
-        Product product = getProductById(productId);
-        product.updateStatus(ProductStatus.DISABLED);
-        return catalogPersistence.saveProduct(product);
-    }
+  @Transactional
+  public Product suspendProductSale(Long productId) {
+    Product product = getProductById(productId);
+    product.updateStatus(ProductStatus.DISABLED);
+    return catalogPersistence.saveProduct(product);
+  }
 
-    public List<Product> getProductsByCategory(Long categoryId) {
-        return catalogPersistence.findProductsByCategoryId(categoryId);
-    }
+  public List<Product> getProductsByCategory(Long categoryId) {
+    return catalogPersistence.findProductsByCategoryId(categoryId);
+  }
 
-    @Transactional
-    public Product updateProductPrice(Long productId, BigDecimal listPrice,
-        BigDecimal sellingPrice) {
-        Product product = getProductById(productId);
-        product.updatePrices(listPrice, sellingPrice);
-        return catalogPersistence.saveProduct(product);
-    }
+  @Transactional
+  public Product updateProductPrice(Long productId, BigDecimal listPrice, BigDecimal sellingPrice) {
+    Product product = getProductById(productId);
+    product.updatePrices(listPrice, sellingPrice);
+    return catalogPersistence.saveProduct(product);
+  }
 
-    @Transactional
-    public Product updateProductStockQuantity(Long productId, Integer stockQuantity) {
-        Product product = getProductById(productId);
-        product.updateStockQuantity(stockQuantity);
-        return catalogPersistence.saveProduct(product);
-    }
+  @Transactional
+  public Product updateProductStockQuantity(Long productId, Integer stockQuantity) {
+    Product product = getProductById(productId);
+    product.updateStockQuantity(stockQuantity);
+    return catalogPersistence.saveProduct(product);
+  }
 
-    @Transactional
-    public Product updateProductCategory(Long productId, Long newCategoryId) {
-        Product product = getProductById(productId);
-        Category newCategory = getCategoryById(newCategoryId);
-
-        product.updateCategory(newCategory);
-        return catalogPersistence.saveProduct(product);
-    }
-
-    private Product getProductById(Long productId) {
-        return catalogPersistence.findProductById(productId)
+  @Transactional
+  public Product updateProductCategory(Long productId, Long newCategoryId) {
+    Product product =
+        catalogPersistence
+            .findProductWithCategory(productId)
             .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
-    }
+
+    Category newCategory =
+        catalogPersistence
+            .findCategoryById(newCategoryId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+
+    product.updateCategory(newCategory);
+    return catalogPersistence.saveProduct(product);
+  }
+
+  private Product getProductById(Long productId) {
+    return catalogPersistence
+        .findProductById(productId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+  }
 }

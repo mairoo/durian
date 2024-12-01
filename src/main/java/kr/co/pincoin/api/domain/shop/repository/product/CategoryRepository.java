@@ -18,6 +18,12 @@ public interface CategoryRepository {
 
   List<Category> findAll();
 
+  List<Category> findAllByStoreIdWithStore(Long storeId);
+
+  List<Category> findAllByParentCategory(Category parent);
+
+  List<Category> findAllByStoreIdAndParentCategoryIsNull(Long storeId);
+
   boolean existsById(Long id);
 
   boolean existsBySlug(String slug);

@@ -61,6 +61,16 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
+  public Optional<Product> findByIdWithCategory(Long id) {
+    return jpaRepository.findByIdWithCategory(id).map(mapper::toModel);
+  }
+
+  @Override
+  public List<Product> findAllByCategoryIdWithCategory(Long categoryId) {
+    return mapper.toModelList(jpaRepository.findAllByCategoryIdWithCategory(categoryId));
+  }
+
+  @Override
   public boolean existsBySlug(String code) {
     return jpaRepository.findByCode(code).isPresent();
   }
