@@ -2,9 +2,9 @@ package kr.co.pincoin.api.app.admin.product.controller;
 
 import java.util.List;
 import kr.co.pincoin.api.app.admin.product.request.CategoryCreateRequest;
-import kr.co.pincoin.api.global.response.model.CategoryResponse;
 import kr.co.pincoin.api.app.admin.product.service.AdminCategoryService;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
+import kr.co.pincoin.api.global.response.model.CategoryResponse;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

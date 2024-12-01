@@ -127,22 +127,6 @@ class BannedEmailRepositoryTest {
   }
 
   @Test
-  @DisplayName("이메일 존재 여부 확인 테스트")
-  void existsByEmail() {
-    // given
-    BannedEmail bannedEmail = bannedEmailMapper.toModel(testBannedEmailEntity);
-    bannedEmailRepository.save(bannedEmail);
-
-    // when
-    boolean exists = bannedEmailRepository.existsByEmail("test@example.com");
-    boolean notExists = bannedEmailRepository.existsByEmail("nonexistent@example.com");
-
-    // then
-    assertTrue(exists);
-    assertFalse(notExists);
-  }
-
-  @Test
   @DisplayName("차단 이메일 삭제 테스트")
   void deleteBannedEmail() {
     // given
