@@ -1,0 +1,186 @@
+<!-- src/main/resources/static/payment-test.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>빌게이트 PG 결제 테스트</title>
+  <script src="https://pay.billgate.net/paygate/plugin/gx_web_client.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .container {
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: inline-block;
+      width: 150px;
+    }
+
+    select, input[type="text"], input[type="number"] {
+      width: 250px;
+      padding: 5px;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body onload="init()">
+<h1>빌게이트 PG 결제 테스트</h1>
+
+<div class="container">
+  <form name="payment" method="post" accept-charset="euc-kr">
+    <div class="form-group">
+      <label>결제수단:</label>
+      <select name="SERVICE_CODE">
+        <option value="">선택하세요</option>
+        <option value="0900">신용카드</option>
+        <option value="1100">휴대폰</option>
+      </select>
+    </div>
+
+    <!-- Hidden Fields -->
+    <input type="hidden" name="SERVICE_ID" value="">
+    <input type="hidden" name="SERVICE_TYPE" value="0000">
+    <input type="hidden" name="ORDER_DATE" value="">
+    <input type="hidden" name="RETURN_URL" value="">
+    <input type="hidden" name="WEBAPI_FLAG" value="Y">
+    <input type="hidden" name="CANCEL_FLAG" value="N">
+
+    <!-- 휴대폰 결제 추가 필드 -->
+    <input type="hidden" name="READONLY_HP" value="Y">
+    <input type="hidden" name="MOBILE_NUMBER" value="">
+
+    <!-- Visible Fields -->
+    <div class="form-group">
+      <label>주문번호:</label>
+      <input type="text" name="ORDER_ID" readonly>
+      <button type="button" onclick="makeOrderId()">주문번호 생성</button>
+    </div>
+    <div class="form-group">
+      <label>구매자 ID:</label>
+      <input type="text" name="USER_ID">
+    </div>
+    <div class="form-group">
+      <label>구매자명:</label>
+      <input type="text" name="USER_NAME">
+    </div>
+    <div class="form-group">
+      <label>이메일:</label>
+      <input type="text" name="USER_EMAIL">
+    </div>
+    <div class="form-group">
+      <label>휴대폰:</label>
+      <input type="text" name="MOBILE_NUMBER">
+    </div>
+    <div class="form-group">
+      <label>상품코드:</label>
+      <input type="text" name="ITEM_CODE">
+    </div>
+    <div class="form-group">
+      <label>상품명:</label>
+      <input type="text" name="ITEM_NAME">
+    </div>
+    <div class="form-group">
+      <label>결제금액:</label>
+      <input type="text" name="AMOUNT">
+    </div>
+
+    <!-- Payment Buttons -->
+    <div style="text-align: center; margin-top: 20px;">
+      <button type="button" onclick="requestPay()">결제하기</button>
+      <button type="button" onclick="layer_close()">창 닫기</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  function init() {
+    var HForm = document.payment;
+
+    // IE에서 EUC-KR 인코딩 처리
+    document.payment.acceptCharset = 'euc-kr';
+    let agent = navigator.userAgent.toLowerCase();
+    if (agent.indexOf("msie") !== -1 || agent.indexOf('trident') !== -1) {
+      document.charset = 'euc-kr';
+    }
+
+    HForm.SERVICE_ID.value = "glx_api";                                    // 테스트 아이디
+    HForm.SERVICE_TYPE.value = "0000";                                     // 서비스 타입
+    HForm.ORDER_DATE.value = getStrDate();                                // 주문일시
+    HForm.ORDER_ID.value = "test_" + getStrDate();                        // 주문번호
+    HForm.USER_ID.value = "user@example.com";                            // 고객ID (이메일)
+    HForm.USER_NAME.value = "홍길동";                                     // 고객명
+    HForm.USER_EMAIL.value = "user@example.com";                         // 고객이메일
+    HForm.MOBILE_NUMBER.value = "01012341234";                           // 휴대폰번호
+    HForm.ITEM_CODE.value = "PINCOIN";                                   // 상품코드
+    HForm.ITEM_NAME.value = "상품권 구매";                                // 상품명
+    HForm.AMOUNT.value = "1004";                                         // 금액
+    HForm.RETURN_URL.value = "http://localhost:8080/payment/billgate/callback";  // 가맹점 측 리턴 URL
+    HForm.WEBAPI_FLAG.value = "Y"                                        // WEBAPI 사용 여부
+    HForm.CANCEL_FLAG.value = "N"                                        // 취소결과 전달 여부
+    HForm.READONLY_HP.value = "Y"                                        // 휴대폰번호 수정 불가
+  }
+
+  function requestPay() {
+    var HForm = document.payment;
+
+    var serviceCode = HForm.SERVICE_CODE.value;
+    if ("" === serviceCode) {
+      alert("결제수단을 선택해주세요.");
+      return;
+    }
+
+    // 실서버 연동
+    GX_pay('payment', 'popup', 'https_pay');
+  }
+
+  function layer_close() {
+    GX_payClose();
+  }
+
+  function getStrDate() {
+    var date = new Date();
+    var strDate = (date.getFullYear().toString()) +
+        ((date.getMonth() + 1) < 10 ? "0" + (date.getMonth() + 1).toString() : (date.getMonth()
+            + 1).toString()) +
+        ((date.getDate()) < 10 ? "0" + (date.getDate()).toString() : (date.getDate()).toString()) +
+        ((date.getHours()) < 10 ? "0" + (date.getHours()).toString() : (date.getHours()).toString())
+        +
+        ((date.getMinutes()) < 10 ? "0" + (date.getMinutes()).toString()
+            : (date.getMinutes()).toString()) +
+        ((date.getSeconds()) < 10 ? "0" + (date.getSeconds()).toString()
+            : (date.getSeconds()).toString());
+    return strDate;
+  }
+
+  function makeOrderId() {
+    document.payment.ORDER_ID.value = "test_" + getStrDate();    // 주문번호 신규생성
+  }
+</script>
+</body>
+</html>

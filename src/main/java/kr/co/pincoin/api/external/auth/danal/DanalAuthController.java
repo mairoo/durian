@@ -89,14 +89,13 @@ public class DanalAuthController {
         return ResponseEntity.badRequest().body(result);
       }
     } catch (Exception e) {
-      return ResponseEntity.internalServerError().body(
-          Map.of("error", e.getMessage())
-      );
+      return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
     }
   }
 
   @PostMapping("/callback")
-  @CrossOrigin(origins = {"https://wauth.teledit.com", "https://uas.teledit.com", "null"},
+  @CrossOrigin(
+      origins = {"https://wauth.teledit.com", "https://uas.teledit.com", "null"},
       allowCredentials = "false", // 리다이렉션으로 origin = null 포함 시 false
       methods = RequestMethod.POST,
       maxAge = 1800)
@@ -125,16 +124,15 @@ public class DanalAuthController {
       if ("0000".equals(result.get("RETURNCODE"))) {
         return ResponseEntity.ok(result);
       } else {
-        log.error("다날휴대폰인증 실패 - Error: {}, Message: {}",
+        log.error(
+            "다날휴대폰인증 실패 - Error: {}, Message: {}",
             result.get("RETURNCODE"),
             result.get("RETURNMSG"));
         return ResponseEntity.badRequest().body(result);
       }
     } catch (Exception e) {
       log.error("Danal Auth Callback Error", e);
-      return ResponseEntity.internalServerError().body(
-          Map.of("error", e.getMessage())
-      );
+      return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
     }
   }
 
