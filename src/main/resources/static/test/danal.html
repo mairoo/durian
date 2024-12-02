@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <title>다날 본인인증 테스트</title>
+  <meta charset="UTF-8">
+</head>
+<body>
+<h2>다날 본인인증 테스트</h2>
+
+<h3>1. 인증 요청</h3>
+<button onclick="requestAuth()">인증 요청하기</button>
+<div id="requestResult"></div>
+
+<h3>2. 인증 확인</h3>
+<label for="tid"></label><input type="text" id="tid" placeholder="TID 입력">
+<button onclick="confirmAuth()">인증 확인하기</button>
+<div id="confirmResult"></div>
+
+<form id="authForm" method="post" action="" style="display: none;">
+  <!-- 다날 인증 페이지로 전송할 hidden 필드들 -->
+</form>
+
+<script>
+  async function requestAuth() {
+    try {
+      const response = await fetch('/auth/danal/request', {
+        method: 'POST'
+      });
+      const data = await response.json();
+      document.getElementById('requestResult').innerText = JSON.stringify(data, null, 2);
+
+      if (data.result.RETURNCODE === "0000") {
+        // 다날 인증 페이지로 POST 요청
+        const form = document.getElementById('authForm');
+        form.action = data.authUrl;
+
+        // TID 등 필요한 파라미터 추가
+        form.innerHTML = `
+                        <input type="hidden" name="TID" value="${data.tid}">
+                        <input type="hidden" name="BackURL" value="http://localhost:8080/test/danal.html">
+                        <input type="hidden" name="BgColor" value="00">
+                    `;
+
+        form.submit();
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+</script>
+</body>
+</html>
