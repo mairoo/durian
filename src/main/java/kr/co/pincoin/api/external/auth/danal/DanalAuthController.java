@@ -97,13 +97,12 @@ public class DanalAuthController {
 
   @PostMapping("/callback")
   @CrossOrigin(origins = {"https://wauth.teledit.com", "https://uas.teledit.com", "null"},
-      allowCredentials = "false",
+      allowCredentials = "false", // 리다이렉션으로 origin = null 포함 시 false
       methods = RequestMethod.POST,
       maxAge = 1800)
   public ResponseEntity<?> handleCallback(@RequestParam String TID) {
     Map<String, String> transR = new HashMap<>();
 
-    // CPCGI.jsp 참고하여 필수 파라미터 설정
     transR.put("TXTYPE", "CONFIRM");
     transR.put("TID", TID);
     transR.put("CONFIRMOPTION", "0");
