@@ -17,7 +17,7 @@ public class ProductService {
   private final CatalogService catalogService;
 
   public Product getProductById(Long id) {
-    return catalogService.getProductById(id);
+    return catalogService.getProductById(id, ProductStatus.ENABLED, ProductStock.IN_STOCK);
   }
 
   public Product getProductByCode(String code) {

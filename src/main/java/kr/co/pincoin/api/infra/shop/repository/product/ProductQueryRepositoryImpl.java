@@ -3,6 +3,7 @@ package kr.co.pincoin.api.infra.shop.repository.product;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
@@ -21,12 +22,23 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
   private final QProductEntity product = QProductEntity.productEntity;
 
   @Override
+  public Optional<ProductEntity> findById(Long id, ProductStatus status, ProductStock stock) {
+    return Optional.ofNullable(queryFactory
+        .selectFrom(product)
+        .join(product.category).fetchJoin()
+        .where(
+            idEq(id),
+            statusEq(status),
+            stockEq(stock)
+        ).fetchOne());
+  }
+
+  @Override
   public List<ProductEntity> findAllByCategory(Long categoryId, String categorySlug,
       ProductStatus status, ProductStock stock) {
     return queryFactory
         .selectFrom(product)
         .join(product.category).fetchJoin()
-        .join(product.store).fetchJoin()
         .where(
             categoryIdEq(categoryId),
             categorySlugEq(categorySlug),
@@ -34,6 +46,10 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
             stockEq(stock)
         )
         .fetch();
+  }
+
+  private BooleanExpression idEq(Long id) {
+    return product.id.eq(id);
   }
 
   private BooleanExpression categoryIdEq(Long categoryId) {

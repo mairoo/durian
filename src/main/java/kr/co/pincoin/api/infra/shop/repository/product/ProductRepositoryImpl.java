@@ -34,11 +34,6 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
-  public Optional<Product> findById(Long id) {
-    return jpaRepository.findById(id).map(mapper::toModel);
-  }
-
-  @Override
   public Optional<Product> findByCode(String code) {
     return jpaRepository.findByCode(code).map(mapper::toModel);
   }
@@ -85,9 +80,14 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
+  public Optional<Product> findById(Long id, ProductStatus status, ProductStock stock) {
+    return queryRepository.findById(id, status, stock).map(mapper::toModel);
+  }
+
+  @Override
   public void softDelete(Product product) {
     Product deletedProduct =
-        findById(product.getId())
+        findById(product.getId(), null, null)
             .map(
                 p -> {
                   p.softDelete();
@@ -99,7 +99,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
   @Override
   public void softDeleteById(Long id) {
-    findById(id)
+    findById(id, null, null)
         .map(
             p -> {
               p.softDelete();
@@ -111,7 +111,7 @@ public class ProductRepositoryImpl implements ProductRepository {
   @Override
   public void restore(Product product) {
     Product restoredProduct =
-        findById(product.getId())
+        findById(product.getId(), null, null)
             .map(
                 p -> {
                   p.restore();
@@ -123,7 +123,7 @@ public class ProductRepositoryImpl implements ProductRepository {
 
   @Override
   public void restoreById(Long id) {
-    findById(id)
+    findById(id, null, null)
         .map(
             p -> {
               p.restore();

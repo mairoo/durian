@@ -117,14 +117,14 @@ public class CatalogService {
 
   @Transactional
   public Product markProductAsSoldOut(Long productId) {
-    Product product = getProductById(productId);
+    Product product = getProductById(productId, ProductStatus.ENABLED, ProductStock.IN_STOCK);
     product.updateStockQuantity(0);
     return catalogPersistence.saveProduct(product);
   }
 
   @Transactional
   public Product suspendProductSale(Long productId) {
-    Product product = getProductById(productId);
+    Product product = getProductById(productId, ProductStatus.ENABLED, ProductStock.IN_STOCK);
     product.updateStatus(ProductStatus.DISABLED);
     return catalogPersistence.saveProduct(product);
   }
@@ -136,14 +136,14 @@ public class CatalogService {
 
   @Transactional
   public Product updateProductPrice(Long productId, BigDecimal listPrice, BigDecimal sellingPrice) {
-    Product product = getProductById(productId);
+    Product product = getProductById(productId, ProductStatus.ENABLED, null);
     product.updatePrices(listPrice, sellingPrice);
     return catalogPersistence.saveProduct(product);
   }
 
   @Transactional
   public Product updateProductStockQuantity(Long productId, Integer stockQuantity) {
-    Product product = getProductById(productId);
+    Product product = getProductById(productId, ProductStatus.ENABLED, null);
     product.updateStockQuantity(stockQuantity);
     return catalogPersistence.saveProduct(product);
   }
@@ -164,9 +164,9 @@ public class CatalogService {
     return catalogPersistence.saveProduct(product);
   }
 
-  public Product getProductById(Long productId) {
+  public Product getProductById(Long productId, ProductStatus status, ProductStock stock) {
     return catalogPersistence
-        .findProductById(productId)
+        .findProductById(productId, status, stock)
         .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
   }
 

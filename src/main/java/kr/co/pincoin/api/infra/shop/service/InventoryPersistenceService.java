@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.Voucher;
+import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class InventoryPersistenceService {
   private final ProductRepository productRepository;
 
   public Optional<Product> findProductById(Long id) {
-    return productRepository.findById(id);
+    return productRepository.findById(id, ProductStatus.ENABLED, null);
   }
 
   public Optional<Voucher> findVoucherById(Long id) {

@@ -61,8 +61,8 @@ public class CatalogPersistenceService {
     return productRepository.save(product);
   }
 
-  public Optional<Product> findProductById(Long id) {
-    return productRepository.findById(id);
+  public Optional<Product> findProductById(Long id, ProductStatus status, ProductStock stock) {
+    return productRepository.findById(id, status, stock);
   }
 
   public Optional<Product> findProductByCode(String code) {

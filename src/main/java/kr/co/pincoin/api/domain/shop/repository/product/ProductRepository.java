@@ -17,7 +17,7 @@ public interface ProductRepository {
 
   void deleteById(Long id);
 
-  Optional<Product> findById(Long id);
+  Optional<Product> findById(Long id, ProductStatus status, ProductStock stock);
 
   Optional<Product> findByCode(String code);
 
