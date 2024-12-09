@@ -22,7 +22,7 @@ public class ProductController {
 
   private final ProductService productService;
 
-  @GetMapping("/")
+  @GetMapping("")
   public ApiResponse<List<ProductResponse>> getProducts(
       @RequestParam(required = false) Long categoryId,
       @RequestParam(required = false) String categorySlug) throws BadRequestException {
