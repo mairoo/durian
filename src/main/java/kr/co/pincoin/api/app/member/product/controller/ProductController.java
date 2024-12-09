@@ -60,12 +60,4 @@ public class ProductController {
     Product product = productService.getProductByCode(code);
     return ApiResponse.of(ProductResponse.from(product));
   }
-
-  @GetMapping("/category/{categoryId}/available")
-  public ApiResponse<List<ProductResponse>> getAvailableProductsByCategory(
-      @PathVariable Long categoryId) {
-    List<Product> products = productService.getAvailableProductsByCategory(categoryId);
-    List<ProductResponse> responses = products.stream().map(ProductResponse::from).toList();
-    return ApiResponse.of(responses);
-  }
 }

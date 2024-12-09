@@ -7,6 +7,7 @@ import kr.co.pincoin.api.app.admin.product.request.ProductCreateRequest;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
+import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
 import kr.co.pincoin.api.global.exception.BusinessException;
 import kr.co.pincoin.api.global.exception.ErrorCode;
@@ -128,12 +129,9 @@ public class CatalogService {
     return catalogPersistence.saveProduct(product);
   }
 
-  public List<Product> getProductsByCategory(Long categoryId) {
-    return catalogPersistence.findProductsByCategoryId(categoryId);
-  }
-
-  public List<Product> getProductsByCategorySlug(String categorySlug) {
-    return catalogPersistence.findProductsByCategorySlug(categorySlug);
+  public List<Product> getProductsByCategory(Long categoryId, String categorySlug,
+      ProductStatus status, ProductStock stock) {
+    return catalogPersistence.findProductsByCategory(categoryId, categorySlug, status, stock);
   }
 
   @Transactional

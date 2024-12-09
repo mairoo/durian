@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
+import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
+import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
 import kr.co.pincoin.api.infra.shop.mapper.product.ProductMapper;
 import lombok.RequiredArgsConstructor;
@@ -66,13 +68,10 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
-  public List<Product> findAllByCategoryIdWithCategory(Long categoryId) {
-    return mapper.toModelList(jpaRepository.findAllByCategoryIdWithCategory(categoryId));
-  }
-
-  @Override
-  public List<Product> findAllByCategorySlugWithCategory(String categorySlug) {
-    return mapper.toModelList(jpaRepository.findAllByCategorySlugWithCategory(categorySlug));
+  public List<Product> findAllByCategory(Long categoryId, String categorySlug,
+      ProductStatus status, ProductStock stock) {
+    return mapper.toModelList(
+        queryRepository.findAllByCategory(categoryId, categorySlug, status, stock));
   }
 
   @Override

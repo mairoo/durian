@@ -25,17 +25,12 @@ public class ProductService {
   }
 
   public List<Product> getProductsByCategory(Long categoryId) {
-    return catalogService.getProductsByCategory(categoryId);
+    return catalogService.getProductsByCategory(categoryId, null, ProductStatus.ENABLED,
+        ProductStock.IN_STOCK);
   }
 
   public List<Product> getProductsByCategorySlug(String categorySlug) {
-    return catalogService.getProductsByCategorySlug(categorySlug);
-  }
-
-  public List<Product> getAvailableProductsByCategory(Long categoryId) {
-    return catalogService.getProductsByCategory(categoryId).stream()
-        .filter(product -> product.getStatus() == ProductStatus.ENABLED)
-        .filter(product -> product.getStock() == ProductStock.IN_STOCK)
-        .toList();
+    return catalogService.getProductsByCategory(null, categorySlug, ProductStatus.ENABLED,
+        ProductStock.IN_STOCK);
   }
 }
