@@ -35,6 +35,7 @@ public enum ErrorCode {
   FILE_SIZE_EXCEEDED(HttpStatus.PAYLOAD_TOO_LARGE, "업로드 파일 크기가 제한을 초과했습니다"),
   INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류가 발생했습니다."),
   NO_INSTANCE_ALLOWED(HttpStatus.INTERNAL_SERVER_ERROR, "상수 클래스는 인스턴스화할 수 없습니다"),
+  INVALID_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
 
   // 인증 및 권한
   INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 인증 토큰입니다"),

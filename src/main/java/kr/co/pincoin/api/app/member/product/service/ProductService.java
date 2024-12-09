@@ -28,6 +28,10 @@ public class ProductService {
     return catalogService.getProductsByCategory(categoryId);
   }
 
+  public List<Product> getProductsByCategorySlug(String categorySlug) {
+    return catalogService.getProductsByCategorySlug(categorySlug);
+  }
+
   public List<Product> getAvailableProductsByCategory(Long categoryId) {
     return catalogService.getProductsByCategory(categoryId).stream()
         .filter(product -> product.getStatus() == ProductStatus.ENABLED)

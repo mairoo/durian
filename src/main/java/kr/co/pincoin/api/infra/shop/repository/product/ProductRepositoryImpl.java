@@ -71,6 +71,11 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
+  public List<Product> findAllByCategorySlugWithCategory(String categorySlug) {
+    return mapper.toModelList(jpaRepository.findAllByCategorySlugWithCategory(categorySlug));
+  }
+
+  @Override
   public void delete(Product product) {
     jpaRepository.delete(mapper.toEntity(product));
   }

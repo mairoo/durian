@@ -74,4 +74,8 @@ public class CatalogPersistenceService {
   public List<Product> findProductsByCategoryId(Long categoryId) {
     return productRepository.findAllByCategoryIdWithCategory(categoryId);
   }
+
+  public List<Product> findProductsByCategorySlug(String categorySlug) {
+    return productRepository.findAllByCategorySlugWithCategory(categorySlug);
+  }
 }

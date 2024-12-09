@@ -7,9 +7,11 @@ import kr.co.pincoin.api.global.response.model.ProductResponse;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -19,6 +21,33 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductController {
 
   private final ProductService productService;
+
+  @GetMapping("/")
+  public ApiResponse<List<ProductResponse>> getProducts(
+      @RequestParam(required = false) Long categoryId,
+      @RequestParam(required = false) String categorySlug) throws BadRequestException {
+    if (categoryId != null && categorySlug != null) {
+      throw new BadRequestException("카테고리 ID와 이름을 동시에 사용할 수 없습니다");
+    }
+
+    if (categoryId == null && categorySlug == null) {
+      throw new BadRequestException("카테고리 ID 또는 이름을 반드시 제공해야 합니다");
+    }
+
+    List<Product> products;
+
+    if (categoryId != null) {
+      products = productService.getProductsByCategory(categoryId);
+    } else {
+      products = productService.getProductsByCategorySlug(categorySlug);
+    }
+
+    List<ProductResponse> responses = products.stream()
+        .map(ProductResponse::from)
+        .toList();
+
+    return ApiResponse.of(responses);
+  }
 
   @GetMapping("/{id}")
   public ApiResponse<ProductResponse> getProductById(@PathVariable Long id) {
@@ -30,13 +59,6 @@ public class ProductController {
   public ApiResponse<ProductResponse> getProductByCode(@PathVariable String code) {
     Product product = productService.getProductByCode(code);
     return ApiResponse.of(ProductResponse.from(product));
-  }
-
-  @GetMapping("/category/{categoryId}")
-  public ApiResponse<List<ProductResponse>> getProductsByCategory(@PathVariable Long categoryId) {
-    List<Product> products = productService.getProductsByCategory(categoryId);
-    List<ProductResponse> responses = products.stream().map(ProductResponse::from).toList();
-    return ApiResponse.of(responses);
   }
 
   @GetMapping("/category/{categoryId}/available")

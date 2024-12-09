@@ -132,6 +132,10 @@ public class CatalogService {
     return catalogPersistence.findProductsByCategoryId(categoryId);
   }
 
+  public List<Product> getProductsByCategorySlug(String categorySlug) {
+    return catalogPersistence.findProductsByCategorySlug(categorySlug);
+  }
+
   @Transactional
   public Product updateProductPrice(Long productId, BigDecimal listPrice, BigDecimal sellingPrice) {
     Product product = getProductById(productId);

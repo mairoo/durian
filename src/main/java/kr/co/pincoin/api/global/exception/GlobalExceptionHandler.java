@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import kr.co.pincoin.api.global.response.error.ErrorResponse;
 import kr.co.pincoin.api.global.response.error.ValidationError;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -80,6 +81,18 @@ public class GlobalExceptionHandler {
                 ErrorCode.INVALID_INPUT_VALUE.getStatus(),
                 ErrorCode.INVALID_INPUT_VALUE.getMessage(),
                 validationErrors));
+  }
+
+  @ExceptionHandler(BadRequestException.class)
+  protected ResponseEntity<ErrorResponse> handleBadRequestException(
+      BadRequestException e, HttpServletRequest request) {
+    log.error("[Bad Request] {}", e.getMessage());
+    return ResponseEntity.status(ErrorCode.INVALID_REQUEST.getStatus())
+        .body(ErrorResponse.of(
+            request,
+            ErrorCode.INVALID_REQUEST.getStatus(),
+            e.getMessage() != null ? e.getMessage() : ErrorCode.INVALID_REQUEST.getMessage()
+        ));
   }
 
   /** JSON 파싱 오류 처리 잘못된 JSON 형식이나 타입 불일치로 인한 파싱 실패 시 발생하는 예외 처리 */

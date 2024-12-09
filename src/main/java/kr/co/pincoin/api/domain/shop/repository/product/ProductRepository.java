@@ -29,6 +29,8 @@ public interface ProductRepository {
 
   List<Product> findAllByCategoryIdWithCategory(Long categoryId);
 
+  List<Product> findAllByCategorySlugWithCategory(String categorySlug);
+
   void softDelete(Product product);
 
   void softDeleteById(Long id);
