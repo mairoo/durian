@@ -54,6 +54,7 @@ public class WebConfig implements WebMvcConfigurer {
     configuration.setAllowedMethods(List.of(allowedMethods.split(",")));
     configuration.setAllowedHeaders(List.of(allowedHeaders.split(",")));
     configuration.setAllowCredentials(true);
+    configuration.setExposedHeaders(List.of("Set-Cookie"));
     configuration.setMaxAge(maxAge);
 
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
