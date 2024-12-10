@@ -30,9 +30,9 @@ public class CartController {
      * - 장바구니가 없는 경우 빈 장바구니를 생성하여 반환
      */
     @GetMapping
-    public ResponseEntity<ApiResponse<Cart>> getCart(@CurrentUser User user) {
+    public ResponseEntity<ApiResponse<CartResponse>> getCart(@CurrentUser User user) {
         Cart cart = cartService.getCart(user);
-        return ResponseEntity.ok(ApiResponse.of(cart, "장바구니를 조회했습니다."));
+        return ResponseEntity.ok(ApiResponse.of(CartResponse.from(cart), "장바구니를 조회했습니다."));
     }
 
     /**
@@ -52,9 +52,9 @@ public class CartController {
      * 장바구니 초기화 사용자의 장바구니를 빈 상태로 초기화
      */
     @PostMapping("/clear")
-    public ResponseEntity<ApiResponse<Cart>> clearCart(@CurrentUser User user) {
+    public ResponseEntity<ApiResponse<CartResponse>> clearCart(@CurrentUser User user) {
         Cart emptyCart = Cart.createEmptyCart(user);
         Cart clearedCart = cartService.syncCart(user, emptyCart);
-        return ResponseEntity.ok(ApiResponse.of(clearedCart, "장바구니가 초기화되었습니다."));
+        return ResponseEntity.ok(ApiResponse.of(CartResponse.from(clearedCart), "장바구니가 초기화되었습니다."));
     }
 }
