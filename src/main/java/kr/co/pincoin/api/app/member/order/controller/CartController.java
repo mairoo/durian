@@ -1,5 +1,7 @@
 package kr.co.pincoin.api.app.member.order.controller;
 
+import kr.co.pincoin.api.app.member.order.request.CartSyncRequest;
+import kr.co.pincoin.api.app.member.order.response.CartResponse;
 import kr.co.pincoin.api.app.member.order.service.CartService;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Cart;
@@ -38,11 +40,12 @@ public class CartController {
      * - 장바구니 데이터는 JSON 문자열 형태로 전달
      */
     @PutMapping("/sync")
-    public ResponseEntity<ApiResponse<Cart>> syncCart(
+    public ResponseEntity<ApiResponse<CartResponse>> syncCart(
         @CurrentUser User user,
-        @RequestBody Cart cart) {
+        @RequestBody CartSyncRequest request) {
+        Cart cart = request.toCart(user);
         Cart syncedCart = cartService.syncCart(user, cart);
-        return ResponseEntity.ok(ApiResponse.of(syncedCart, "장바구니가 동기화되었습니다."));
+        return ResponseEntity.ok(ApiResponse.of(CartResponse.from(syncedCart), "장바구니가 동기화되었습니다."));
     }
 
     /**
@@ -50,7 +53,8 @@ public class CartController {
      */
     @PostMapping("/clear")
     public ResponseEntity<ApiResponse<Cart>> clearCart(@CurrentUser User user) {
-        Cart clearedCart = cartService.syncCart(user, Cart.createEmptyCart(user));
+        Cart emptyCart = Cart.createEmptyCart(user);
+        Cart clearedCart = cartService.syncCart(user, emptyCart);
         return ResponseEntity.ok(ApiResponse.of(clearedCart, "장바구니가 초기화되었습니다."));
     }
 }
