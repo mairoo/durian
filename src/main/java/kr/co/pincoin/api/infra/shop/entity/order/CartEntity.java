@@ -16,7 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Version;
 
 @Entity
 @Table(name = "shop_cart")
@@ -38,7 +37,6 @@ public class CartEntity extends BaseDateTime {
     @Column(name = "cart_data", columnDefinition = "json") // MariaDB, PostgreSQL = jsonb
     private String cartData;
 
-    @Version  // 동시성 제어를 위한 버전 관리
     @Column(name = "version")
     private Long version;
 }
