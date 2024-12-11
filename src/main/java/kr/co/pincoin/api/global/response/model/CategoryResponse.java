@@ -2,7 +2,6 @@ package kr.co.pincoin.api.global.response.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -38,20 +37,6 @@ public class CategoryResponse {
 
   private final String naverMakerName;
 
-  private final Integer level;
-
-  private final Long parentId;
-
-  private final String parentTitle;
-
-  private final Long storeId;
-
-  private final String storeName;
-
-  private final LocalDateTime created;
-
-  private final LocalDateTime modified;
-
   // 도메인 모델 객체에서 응답 객체 초기화
   public static CategoryResponse from(Category category) {
     return CategoryResponse.builder()
@@ -67,13 +52,6 @@ public class CategoryResponse {
         .naverSearchTag(category.getNaverSearchTag())
         .naverBrandName(category.getNaverBrandName())
         .naverMakerName(category.getNaverMakerName())
-        .level(category.getLevel())
-        .parentId(category.getParent() != null ? category.getParent().getId() : null)
-        .parentTitle(category.getParent() != null ? category.getParent().getTitle() : null)
-        .storeId(category.getStore().getId())
-        .storeName(category.getStore().getName())
-        .created(category.getCreated())
-        .modified(category.getModified())
         .build();
   }
 }

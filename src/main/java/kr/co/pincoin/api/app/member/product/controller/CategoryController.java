@@ -20,15 +20,11 @@ public class CategoryController {
 
   private final CategoryService categoryService;
 
-  @GetMapping("/{id}")
-  public ApiResponse<CategoryResponse> getCategoryById(@PathVariable Long id) {
-    Category category = categoryService.getCategoryById(id);
-    return ApiResponse.of(CategoryResponse.from(category));
-  }
-
-  @GetMapping("/slug/{slug}")
-  public ApiResponse<CategoryResponse> getCategoryBySlug(@PathVariable String slug) {
-    Category category = categoryService.getCategoryBySlug(slug);
+  @GetMapping("/{identifier}")
+  public ApiResponse<CategoryResponse> getCategory(@PathVariable String identifier) {
+    Category category = identifier.matches("\\d+")
+        ? categoryService.getCategoryById(Long.parseLong(identifier))
+        : categoryService.getCategoryBySlug(identifier);
     return ApiResponse.of(CategoryResponse.from(category));
   }
 
