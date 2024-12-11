@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.app.member.user.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import kr.co.pincoin.api.domain.auth.model.user.User;
 import lombok.Getter;
 
 @Getter
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MyUserResponse extends UserResponse {
   // User 정보 - 개인정보
   @JsonProperty("email")

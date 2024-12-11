@@ -7,7 +7,7 @@ import kr.co.pincoin.api.app.admin.product.service.AdminProductService;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
-import kr.co.pincoin.api.global.response.model.ProductResponse;
+import kr.co.pincoin.api.app.admin.product.response.ProductResponse;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
