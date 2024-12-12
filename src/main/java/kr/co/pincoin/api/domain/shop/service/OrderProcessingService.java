@@ -10,8 +10,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
-import kr.co.pincoin.api.app.member.order.request.OrderLineItem;
+import kr.co.pincoin.api.app.member.order.request.CartItem;
+import kr.co.pincoin.api.app.member.order.request.CartOrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
@@ -59,42 +59,39 @@ public class OrderProcessingService {
     return persistenceService.findUser(userId);
   }
 
-  // 주문 처리
   @Transactional
-  public Order createOrder(
-      User user, OrderCreateRequest request, ClientUtils.ClientInfo clientInfo) {
-    List<Product> products = validateProductsForOrder(request.getItems());
+  public Order createOrderFromCart(User user, CartOrderCreateRequest request,
+      ClientUtils.ClientInfo clientInfo) {
+    List<Product> products = validateProductsForCartOrder(request.getItems());
 
-    BigDecimal totalListPrice =
-        calculateTotalPrice(products, request.getItems(), Product::getListPrice);
-    BigDecimal totalSellingPrice =
-        calculateTotalPrice(products, request.getItems(), Product::getSellingPrice);
+    validateCartPrices(products, request.getItems());
 
-    Order order =
-        Order.builder()
-            .orderNo(generateOrderNumber())
-            .fullname(user.getLastName() + user.getFirstName())
-            .userAgent(clientInfo.getUserAgent())
-            .acceptLanguage(clientInfo.getAcceptLanguage())
-            .ipAddress(clientInfo.getIpAddress())
-            .totalListPrice(totalListPrice)
-            .totalSellingPrice(totalSellingPrice)
-            .currency(OrderCurrency.KRW)
-            .parent(null)
-            .user(user)
-            .paymentMethod(request.getPaymentMethod())
-            .status(OrderStatus.PAYMENT_PENDING)
-            .visibility(OrderVisibility.VISIBLE)
-            .transactionId("")
-            .message("")
-            .suspicious(false)
-            .removed(false)
-            .build();
+    BigDecimal totalListPrice = calculateTotalListPrice(request.getItems());
+    BigDecimal totalSellingPrice = calculateTotalSellingPrice(request.getItems());
+
+    Order order = Order.builder()
+        .orderNo(generateOrderNumber())
+        .fullname(user.getLastName() + user.getFirstName())
+        .userAgent(clientInfo.getUserAgent())
+        .acceptLanguage(clientInfo.getAcceptLanguage())
+        .ipAddress(clientInfo.getIpAddress())
+        .totalListPrice(totalListPrice)
+        .totalSellingPrice(totalSellingPrice)
+        .currency(OrderCurrency.KRW)
+        .parent(null)
+        .user(user)
+        .paymentMethod(request.getPaymentMethod())
+        .status(OrderStatus.PAYMENT_PENDING)
+        .visibility(OrderVisibility.VISIBLE)
+        .transactionId("")
+        .message("")
+        .suspicious(false)
+        .removed(false)
+        .build();
 
     Order savedOrder = persistenceService.saveAndFlush(order);
 
-    List<OrderProduct> orderProducts =
-        createOrderProducts(products, request.getItems(), savedOrder);
+    List<OrderProduct> orderProducts = createOrderProductsFromCart(request.getItems(), savedOrder);
     persistenceService.saveOrderProducts(orderProducts);
 
     return savedOrder;
@@ -209,84 +206,6 @@ public class OrderProcessingService {
     return UUID.randomUUID().toString().replace("-", "");
   }
 
-  private List<Product> validateProductsForOrder(List<OrderLineItem> items) {
-    List<Product> products = persistenceService.findProducts(items);
-
-    Set<String> requestedCodes =
-        items.stream().map(OrderLineItem::getCode).collect(Collectors.toSet());
-
-    Set<String> foundCodes = products.stream().map(Product::getCode).collect(Collectors.toSet());
-
-    if (!foundCodes.containsAll(requestedCodes)) {
-      Set<String> notFoundCodes = new HashSet<>(requestedCodes);
-      notFoundCodes.removeAll(foundCodes);
-      throw new EntityNotFoundException("상품을 찾을 수 없습니다: " + String.join(", ", notFoundCodes));
-    }
-
-    Map<String, Integer> quantityByCode =
-        items.stream()
-            .collect(
-                Collectors.groupingBy(
-                    OrderLineItem::getCode, Collectors.summingInt(OrderLineItem::getQuantity)));
-
-    List<String> errors = new ArrayList<>();
-    for (Product product : products) {
-      Integer requestedQuantity = quantityByCode.get(product.getCode());
-      if (product.getStatus() == ProductStatus.DISABLED
-          || product.getStock() == ProductStock.SOLD_OUT) {
-        errors.add("판매 중인 상품이 아닙니다: " + product.getCode());
-      } else if (product.getStockQuantity() < requestedQuantity) {
-        errors.add(
-            String.format(
-                "상품 '%s'의 재고가 부족합니다. 요청: %d, 재고: %d",
-                product.getName(), requestedQuantity, product.getStockQuantity()));
-      }
-    }
-
-    if (!errors.isEmpty()) {
-      throw new IllegalStateException(String.join("\n", errors));
-    }
-
-    return products;
-  }
-
-  private List<OrderProduct> createOrderProducts(
-      List<Product> products, List<OrderLineItem> items, Order order) {
-    Map<String, Product> productMap =
-        products.stream().collect(Collectors.toMap(Product::getCode, Function.identity()));
-
-    return items.stream()
-        .map(
-            item -> {
-              Product product = productMap.get(item.getCode());
-              return OrderProduct.of(
-                  product.getName(),
-                  product.getSubtitle(),
-                  product.getCode(),
-                  product.getListPrice(),
-                  product.getSellingPrice(),
-                  item.getQuantity(),
-                  order);
-            })
-        .collect(Collectors.toList());
-  }
-
-  private BigDecimal calculateTotalPrice(
-      List<Product> products,
-      List<OrderLineItem> items,
-      Function<Product, BigDecimal> priceExtractor) {
-    Map<String, Product> productMap =
-        products.stream().collect(Collectors.toMap(Product::getCode, Function.identity()));
-
-    return items.stream()
-        .map(
-            item -> {
-              Product product = productMap.get(item.getCode());
-              return priceExtractor.apply(product).multiply(BigDecimal.valueOf(item.getQuantity()));
-            })
-        .reduce(BigDecimal.ZERO, BigDecimal::add);
-  }
-
   private void validateOrderStatus(Order order, Set<OrderStatus> validStatuses, String message) {
     if (!validStatuses.contains(order.getStatus())) {
       throw new IllegalStateException(message);
@@ -303,5 +222,100 @@ public class OrderProcessingService {
     if (OrderVisibility.HIDDEN.equals(order.getVisibility())) {
       throw new IllegalStateException("이미 숨김 처리된 주문입니다.");
     }
+  }
+
+  private List<Product> validateProductsForCartOrder(List<CartItem> items) {
+    List<String> codes = items.stream()
+        .map(CartItem::getCode)
+        .distinct()
+        .toList();
+
+    List<Product> products = new ArrayList<>(persistenceService.findProductsByCode(codes).values());
+
+    Set<String> requestedCodes = new HashSet<>(codes);
+    Set<String> foundCodes = products.stream()
+        .map(Product::getCode)
+        .collect(Collectors.toSet());
+
+    if (!foundCodes.containsAll(requestedCodes)) {
+      Set<String> notFoundCodes = new HashSet<>(requestedCodes);
+      notFoundCodes.removeAll(foundCodes);
+      throw new EntityNotFoundException("상품을 찾을 수 없습니다: " + String.join(", ", notFoundCodes));
+    }
+
+    Map<String, Integer> quantityByCode = items.stream()
+        .collect(Collectors.groupingBy(
+            CartItem::getCode,
+            Collectors.summingInt(CartItem::getQuantity)
+        ));
+
+    List<String> errors = new ArrayList<>();
+    for (Product product : products) {
+      Integer requestedQuantity = quantityByCode.get(product.getCode());
+      if (product.getStatus() == ProductStatus.DISABLED
+          || product.getStock() == ProductStock.SOLD_OUT) {
+        errors.add("판매 중인 상품이 아닙니다: " + product.getCode());
+      } else if (product.getStockQuantity() < requestedQuantity) {
+        errors.add(String.format(
+            "상품 '%s'의 재고가 부족합니다. 요청: %d, 재고: %d",
+            product.getName(), requestedQuantity, product.getStockQuantity()
+        ));
+      }
+    }
+
+    if (!errors.isEmpty()) {
+      throw new IllegalStateException(String.join("\n", errors));
+    }
+
+    return products;
+  }
+
+  private void validateCartPrices(List<Product> products, List<CartItem> items) {
+    Map<Long, Product> productMap = products.stream()
+        .collect(Collectors.toMap(Product::getId, Function.identity()));
+
+    List<String> priceErrors = new ArrayList<>();
+
+    for (CartItem item : items) {
+      Product product = productMap.get(item.getProductId());
+      if (!product.getSellingPrice().equals(item.getSellingPrice())) {
+        priceErrors.add(String.format(
+            "상품 '%s'의 가격이 변경되었습니다. 장바구니: %s, 실제: %s",
+            product.getName(),
+            item.getSellingPrice(),
+            product.getSellingPrice()
+        ));
+      }
+    }
+
+    if (!priceErrors.isEmpty()) {
+      throw new IllegalStateException(String.join("\n", priceErrors));
+    }
+  }
+
+  private List<OrderProduct> createOrderProductsFromCart(List<CartItem> items, Order order) {
+    return items.stream()
+        .map(item -> OrderProduct.of(
+            item.getName(),
+            item.getSubtitle(),
+            item.getCode(),
+            item.getSellingPrice(),
+            item.getSellingPrice(),
+            item.getQuantity(),
+            order
+        ))
+        .collect(Collectors.toList());
+  }
+
+  private BigDecimal calculateTotalListPrice(List<CartItem> items) {
+    return items.stream()
+        .map(item -> item.getListPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
+  }
+
+  private BigDecimal calculateTotalSellingPrice(List<CartItem> items) {
+    return items.stream()
+        .map(item -> item.getSellingPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
+        .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 }

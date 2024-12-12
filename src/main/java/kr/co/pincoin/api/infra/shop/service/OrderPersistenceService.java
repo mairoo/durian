@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import kr.co.pincoin.api.app.member.order.request.OrderLineItem;
+import kr.co.pincoin.api.app.member.order.request.CartItem;
 import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.auth.repository.profile.ProfileRepository;
@@ -112,9 +112,9 @@ public class OrderPersistenceService {
   }
 
   /** 상품과 바우처 조회 */
-  public List<Product> findProducts(List<OrderLineItem> items) {
+  public List<Product> findProductsByCartItems(List<CartItem> items) {
     return productRepository.findAllByCodeIn(
-        items.stream().map(OrderLineItem::getCode).distinct().toList());
+        items.stream().map(CartItem::getCode).distinct().toList());
   }
 
   public Map<String, Product> findProductsByCode(List<String> codes) {

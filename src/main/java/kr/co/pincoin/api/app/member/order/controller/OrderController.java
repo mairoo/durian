@@ -2,7 +2,7 @@ package kr.co.pincoin.api.app.member.order.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
+import kr.co.pincoin.api.app.member.order.request.CartOrderCreateRequest;
 import kr.co.pincoin.api.app.member.order.service.OrderService;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
@@ -18,7 +18,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/orders")
@@ -71,7 +77,7 @@ public class OrderController {
   @PostMapping
   public ResponseEntity<ApiResponse<OrderResponse>> createOrder(
       @CurrentUser User user,
-      @Valid @RequestBody OrderCreateRequest request,
+      @Valid @RequestBody CartOrderCreateRequest request,
       HttpServletRequest servletRequest) {
     ClientUtils.ClientInfo clientInfo = ClientUtils.getClientInfo(servletRequest);
 

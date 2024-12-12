@@ -1,6 +1,6 @@
 package kr.co.pincoin.api.app.member.order.service;
 
-import kr.co.pincoin.api.app.member.order.request.OrderCreateRequest;
+import kr.co.pincoin.api.app.member.order.request.CartOrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
@@ -54,8 +54,8 @@ public class OrderService {
    * @return 생성된 주문 정보
    */
   public Order createOrder(
-      OrderCreateRequest request, User user, ClientUtils.ClientInfo clientInfo) {
-    return orderProcessingService.createOrder(user, request, clientInfo);
+      CartOrderCreateRequest request, User user, ClientUtils.ClientInfo clientInfo) {
+    return orderProcessingService.createOrderFromCart(user, request, clientInfo);
   }
 
   /**

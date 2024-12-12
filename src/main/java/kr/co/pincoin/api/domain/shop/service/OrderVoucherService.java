@@ -3,7 +3,7 @@ package kr.co.pincoin.api.domain.shop.service;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import kr.co.pincoin.api.app.member.order.request.OrderLineItem;
+import kr.co.pincoin.api.app.member.order.request.CartItem;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
@@ -98,8 +98,7 @@ public class OrderVoucherService {
   /** 바우처 발행을 위한 상품 검증 */
   private Product validateProductForVoucherIssue(OrderProduct orderProduct) {
     return persistenceService
-        .findProducts(
-            List.of(new OrderLineItem(orderProduct.getCode(), orderProduct.getQuantity())))
+        .findProductsByCartItems(List.of(CartItem.from(orderProduct)))
         .stream()
         .findFirst()
         .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다: " + orderProduct.getCode()));
