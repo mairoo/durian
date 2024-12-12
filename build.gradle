@@ -69,6 +69,11 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+// 버전 태그 없이 jar 파일 빌드, 배포 시 용이
+bootJar {
+	archiveFileName = "${rootProject.name}.jar"
+}
+
 spotless {
 	java {
 		removeUnusedImports()
