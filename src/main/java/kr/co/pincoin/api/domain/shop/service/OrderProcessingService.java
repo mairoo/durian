@@ -55,6 +55,10 @@ public class OrderProcessingService {
     return persistenceService.findUserOrder(userId, orderNo);
   }
 
+  public List<OrderProduct> getUserOrderProducts(String orderNo) {
+    return persistenceService.findOrderProductsByOrderNo(orderNo);
+  }
+
   public User getUser(Integer userId) {
     return persistenceService.findUser(userId);
   }

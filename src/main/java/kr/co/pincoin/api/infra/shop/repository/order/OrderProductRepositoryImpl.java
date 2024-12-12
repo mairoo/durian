@@ -32,6 +32,20 @@ public class OrderProductRepositoryImpl implements OrderProductRepository {
   }
 
   @Override
+  public List<OrderProduct> findByOrderId(Long orderId) {
+    List<OrderProductEntity> entries = jpaRepository.findByOrderId(orderId);
+
+    return mapper.toModelList(entries);
+  }
+
+  @Override
+  public List<OrderProduct> findByOrderNo(String orderNo) {
+    List<OrderProductEntity> entries = jpaRepository.findByOrder_OrderNo(orderNo);
+
+    return mapper.toModelList(entries);
+  }
+
+  @Override
   public List<OrderProduct> findAllByOrderNoAndUserIdWithOrder(String orderNo, Integer userId) {
     List<OrderProductEntity> entries =
         jpaRepository.findAllByOrderNoAndUserIdWithOrder(orderNo, userId);

@@ -2,10 +2,13 @@ package kr.co.pincoin.api.app.member.order.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import java.util.List;
 import kr.co.pincoin.api.app.member.order.request.CartOrderCreateRequest;
+import kr.co.pincoin.api.app.member.order.response.OrderProductResponse;
 import kr.co.pincoin.api.app.member.order.service.OrderService;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
+import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.global.response.model.OrderResponse;
 import kr.co.pincoin.api.global.response.page.PageResponse;
@@ -55,6 +58,17 @@ public class OrderController {
       @CurrentUser User user, @PathVariable String orderNo) {
     Order order = orderService.getMyOrder(user, orderNo);
     return ResponseEntity.ok(ApiResponse.of(OrderResponse.from(order)));
+  }
+
+  @GetMapping("/{orderNo}/items")
+  public ResponseEntity<ApiResponse<List<OrderProductResponse>>> getMyOrderProducts(
+      @CurrentUser User user, @PathVariable String orderNo
+  ) {
+    List<OrderProduct> orderProducts = orderService.getMyOrderProducts(user, orderNo);
+    List<OrderProductResponse> orderProductResponses = orderProducts.stream()
+        .map(OrderProductResponse::from)
+        .toList();
+    return ResponseEntity.ok(ApiResponse.of(orderProductResponses));
   }
 
   /** 내 주문 삭제 */

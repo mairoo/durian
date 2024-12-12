@@ -1,8 +1,10 @@
 package kr.co.pincoin.api.app.member.order.service;
 
+import java.util.List;
 import kr.co.pincoin.api.app.member.order.request.CartOrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
+import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.service.OrderProcessingService;
 import kr.co.pincoin.api.domain.shop.service.OrderRefundService;
@@ -43,6 +45,10 @@ public class OrderService {
    */
   public Order getMyOrder(User user, String orderNo) {
     return orderProcessingService.getUserOrder(user.getId(), orderNo);
+  }
+
+  public List<OrderProduct> getMyOrderProducts(User user, String orderNo) {
+    return orderProcessingService.getUserOrderProducts(orderNo);
   }
 
   /**

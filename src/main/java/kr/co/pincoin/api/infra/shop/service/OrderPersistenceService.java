@@ -53,7 +53,15 @@ public class OrderPersistenceService {
         .orElseThrow(() -> new EntityNotFoundException("주문을 찾을 수 없습니다."));
   }
 
-  public List<OrderProduct> findOrderProductsFetchOrder(Order order) {
+  public List<OrderProduct> findOrderProductsByOrderId(Long orderId) {
+    return orderProductRepository.findByOrderId(orderId);
+  }
+
+  public List<OrderProduct> findOrderProductsByOrderNo(String orderNo) {
+    return orderProductRepository.findByOrderNo(orderNo);
+  }
+
+  public List<OrderProduct> findOrderProductsWithOrder(Order order) {
     return orderProductRepository.findAllByOrderWithOrder(order);
   }
 

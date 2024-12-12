@@ -24,7 +24,7 @@ public class OrderVoucherService {
   /** 주문에 대한 바우처를 발행한다. */
   @Transactional
   public Order issueVouchers(Order order) {
-    List<OrderProduct> orderProducts = persistenceService.findOrderProductsFetchOrder(order);
+    List<OrderProduct> orderProducts = persistenceService.findOrderProductsWithOrder(order);
 
     List<OrderProductVoucher> allVouchers = new ArrayList<>();
     List<Voucher> vouchersToUpdate = new ArrayList<>();
