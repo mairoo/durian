@@ -1,10 +1,12 @@
 package kr.co.pincoin.api.global.config;
 
+import java.util.List;
 import kr.co.pincoin.api.global.security.handler.ApiAccessDeniedHandler;
 import kr.co.pincoin.api.global.security.handler.ApiAuthenticationEntryPoint;
 import kr.co.pincoin.api.global.security.jwt.JwtAuthenticationFilter;
 import kr.co.pincoin.api.infra.auth.support.DjangoPasswordEncoder;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -15,6 +17,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -27,9 +32,24 @@ public class SecurityConfig {
 
   private final ApiAccessDeniedHandler accessDeniedHandler;
 
-  @Bean
+    @Value("${web-config.cors.allowed-origins:*}")
+    private String allowedOrigins;
+
+    @Value("${web-config.cors.allowed-methods:GET,POST,PUT,DELETE,OPTIONS}")
+    private String allowedMethods;
+
+    @Value("${web-config.cors.allowed-headers:*}")
+    private String allowedHeaders;
+
+    @Value("${web-config.cors.max-age:3600}")
+    private long maxAge;
+
+    @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
+        // CORS 설정 추가 (WebConfig에서 하지 않고 시큐리티 설정에서 처리)
+        .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+
         // 1. HTTP 보안 헤더 설정
         .headers(
             headers -> {
@@ -107,6 +127,21 @@ public class SecurityConfig {
 
     return http.build();
   }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(List.of(allowedOrigins.split(",")));
+        configuration.setAllowedMethods(List.of(allowedMethods.split(",")));
+        configuration.setAllowedHeaders(List.of(allowedHeaders.split(",")));
+        configuration.setAllowCredentials(true);
+        configuration.setExposedHeaders(List.of("Set-Cookie"));
+        configuration.setMaxAge(maxAge);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
   @Bean
   public PasswordEncoder passwordEncoder() {
