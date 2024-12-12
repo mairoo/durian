@@ -7,30 +7,40 @@ import kr.co.pincoin.api.infra.shop.entity.order.CartEntity;
 import lombok.Builder;
 import lombok.Getter;
 
+
 @Getter
 public class Cart {
-
     private final Long id;
     private final User user;
-    private final String cartData;
     private final Long version;
+
+    private String cartData;
 
     @Builder
     private Cart(
         Long id,
         User user,
-        String cartData,
-        Long version) {
+        Long version,
+        String cartData) {
         this.id = id;
         this.user = user;
-        this.cartData = cartData;
         this.version = version;
+        this.cartData = cartData;
     }
 
     // 정적 팩토리 메서드
     public static Cart of(
         User user,
+        Long version,
         String cartData) {
+        return Cart.builder()
+            .user(user)
+            .version(version)
+            .cartData(cartData)
+            .build();
+    }
+
+    public static Cart of(User user, String cartData) {
         return Cart.builder()
             .user(user)
             .cartData(cartData)
@@ -41,8 +51,8 @@ public class Cart {
     public static Cart createEmptyCart(User user) {
         return Cart.builder()
             .user(user)
-            .cartData("[]")
             .version(0L)
+            .cartData("[]")
             .build();
     }
 
@@ -51,20 +61,16 @@ public class Cart {
         return CartEntity.builder()
             .id(this.getId())
             .user(this.getUser().toEntity())
-            .cartData(this.getCartData())
             .version(this.getVersion())
+            .cartData(this.getCartData())
             .build();
     }
 
     // 1. 상태/속성 변경 메서드
     public Cart updateCartData(String cartData) {
         validateCartData(cartData);
-        return Cart.builder()
-            .id(this.id)
-            .user(this.user)
-            .cartData(cartData)
-            .version(this.version)
-            .build();
+        this.cartData = cartData;
+        return this;
     }
 
     // 2. JSON 검증 메서드

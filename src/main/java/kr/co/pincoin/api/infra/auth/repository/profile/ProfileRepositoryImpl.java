@@ -42,7 +42,7 @@ public class ProfileRepositoryImpl implements ProfileRepository {
 
   @Override
   public Optional<Profile> findByUserWithUser(User user) {
-    return jpaRepository.findByUserWithUser(user).map(mapper::toModel);
+    return jpaRepository.findByUserWithUser(user.toEntity()).map(mapper::toModel);
   }
 
   @Override

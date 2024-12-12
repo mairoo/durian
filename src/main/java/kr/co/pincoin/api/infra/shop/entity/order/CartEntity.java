@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
 import kr.co.pincoin.api.infra.common.BaseDateTime;
 import lombok.AccessLevel;
@@ -38,5 +39,6 @@ public class CartEntity extends BaseDateTime {
     private String cartData;
 
     @Column(name = "version")
+    @Version
     private Long version;
 }

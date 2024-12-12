@@ -43,8 +43,7 @@ public class CartController {
     public ResponseEntity<ApiResponse<CartResponse>> syncCart(
         @CurrentUser User user,
         @RequestBody CartSyncRequest request) {
-        Cart cart = request.toCart(user);
-        Cart syncedCart = cartService.syncCart(user, cart);
+        Cart syncedCart = cartService.syncCartData(user, request.getCartData());
         return ResponseEntity.ok(ApiResponse.of(CartResponse.from(syncedCart), "장바구니가 동기화되었습니다."));
     }
 
@@ -53,8 +52,7 @@ public class CartController {
      */
     @PostMapping("/clear")
     public ResponseEntity<ApiResponse<CartResponse>> clearCart(@CurrentUser User user) {
-        Cart emptyCart = Cart.createEmptyCart(user);
-        Cart clearedCart = cartService.syncCart(user, emptyCart);
+        Cart clearedCart = cartService.syncCartData(user, "[]");
         return ResponseEntity.ok(ApiResponse.of(CartResponse.from(clearedCart), "장바구니가 초기화되었습니다."));
     }
 }

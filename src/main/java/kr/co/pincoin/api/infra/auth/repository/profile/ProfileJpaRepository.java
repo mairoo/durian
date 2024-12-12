@@ -1,8 +1,8 @@
 package kr.co.pincoin.api.infra.auth.repository.profile;
 
 import java.util.Optional;
-import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.infra.auth.entity.profile.ProfileEntity;
+import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,5 +21,5 @@ public interface ProfileJpaRepository extends JpaRepository<ProfileEntity, Long>
   Optional<ProfileEntity> findByUserIdWithUser(@Param("userId") Integer userId);
 
   @Query("SELECT p FROM ProfileEntity p JOIN FETCH p.user WHERE p.user = :user")
-  Optional<ProfileEntity> findByUserWithUser(@Param("user") User user);
+  Optional<ProfileEntity> findByUserWithUser(@Param("user") UserEntity userEntity);
 }

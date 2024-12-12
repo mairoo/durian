@@ -14,9 +14,9 @@ public interface ProfileRepository {
 
   Optional<Profile> findByUserId(Integer userId);
 
-  Page<Profile> findAllWithUser(Pageable pageable); // findAllWithUserFetch에서 변경
+  Page<Profile> findAllWithUser(Pageable pageable);
 
-  Optional<Profile> findByUserIdWithUser(Integer userId); // findByUserIdWithFetch에서 변경
+  Optional<Profile> findByUserIdWithUser(Integer userId);
 
-  Optional<Profile> findByUserWithUser(User user); // findByUserWithFetch에서 변경
+  Optional<Profile> findByUserWithUser(User user);
 }

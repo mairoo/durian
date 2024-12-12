@@ -22,10 +22,11 @@ public class CartService {
     }
 
     @Transactional
-    public Cart syncCart(User user, Cart cart) {
+    public Cart syncCartData(User user, String cartData) {
         Cart existingCart = cartRepository.findByUser(user)
             .orElseGet(() -> Cart.createEmptyCart(user));
 
-        return cartRepository.save(existingCart.updateCartData(cart.getCartData()));
+        existingCart.updateCartData(cartData);
+        return cartRepository.save(existingCart);
     }
 }
