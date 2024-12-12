@@ -278,7 +278,8 @@ public class OrderProcessingService {
 
     for (CartItem item : items) {
       Product product = productMap.get(item.getProductId());
-      if (!product.getSellingPrice().equals(item.getSellingPrice())) {
+
+      if (product.getSellingPrice().compareTo(item.getSellingPrice()) != 0) {
         priceErrors.add(String.format(
             "상품 '%s'의 가격이 변경되었습니다. 장바구니: %s, 실제: %s",
             product.getName(),
