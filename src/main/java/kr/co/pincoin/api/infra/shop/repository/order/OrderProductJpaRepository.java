@@ -11,10 +11,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OrderProductJpaRepository extends JpaRepository<OrderProductEntity, Long> {
 
-  List<OrderProductEntity> findByOrderId(Long orderId);
-
-  List<OrderProductEntity> findByOrder_OrderNo(String orderNo);
-
   @Query(
       "SELECT op FROM OrderProductEntity op "
           + "JOIN FETCH op.order o "

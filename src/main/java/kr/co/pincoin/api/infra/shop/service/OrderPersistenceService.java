@@ -16,6 +16,7 @@ import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
+import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
@@ -54,11 +55,11 @@ public class OrderPersistenceService {
   }
 
   public List<OrderProduct> findOrderProductsByOrderId(Long orderId) {
-    return orderProductRepository.findByOrderId(orderId);
+    return orderProductRepository.findOrderProducts(OrderProductSearchCondition.ofOrderId(orderId));
   }
 
   public List<OrderProduct> findOrderProductsByOrderNo(String orderNo) {
-    return orderProductRepository.findByOrderNo(orderNo);
+    return orderProductRepository.findOrderProducts(OrderProductSearchCondition.ofOrderNo(orderNo));
   }
 
   public List<OrderProduct> findOrderProductsWithOrder(Order order) {

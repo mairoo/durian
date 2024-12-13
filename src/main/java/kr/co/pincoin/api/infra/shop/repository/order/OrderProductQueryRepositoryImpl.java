@@ -1,6 +1,14 @@
 package kr.co.pincoin.api.infra.shop.repository.order;
 
+import static kr.co.pincoin.api.infra.auth.entity.user.QUserEntity.userEntity;
+import static kr.co.pincoin.api.infra.shop.entity.order.QOrderEntity.orderEntity;
+import static kr.co.pincoin.api.infra.shop.entity.order.QOrderProductEntity.orderProductEntity;
+
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
+import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCondition;
+import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -8,4 +16,38 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class OrderProductQueryRepositoryImpl implements OrderProductQueryRepository {
   private final JPAQueryFactory queryFactory;
+
+  @Override
+  public List<OrderProductEntity> findOrderProducts(OrderProductSearchCondition condition) {
+    var query = queryFactory
+        .selectFrom(orderProductEntity);
+
+    if (condition.hasOrderId() || condition.hasOrderNo()) {
+      query.innerJoin(orderProductEntity.order, orderEntity);
+    }
+
+    if (condition.hasUserId()) {
+      query.innerJoin(orderEntity.user, userEntity);
+    }
+
+    return query
+        .where(
+            orderIdEq(condition.getOrderId()),
+            orderNoEq(condition.getOrderNo()),
+            userIdEq(condition.getUserId())
+        )
+        .fetch();
+  }
+
+  private BooleanExpression orderIdEq(Long orderId) {
+    return orderId != null ? orderProductEntity.order.id.eq(orderId) : null;
+  }
+
+  private BooleanExpression orderNoEq(String orderNo) {
+    return orderNo != null ? orderProductEntity.order.orderNo.eq(orderNo) : null;
+  }
+
+  private BooleanExpression userIdEq(Integer userId) {
+    return userId != null ? orderProductEntity.order.user.id.eq(userId) : null;
+  }
 }
