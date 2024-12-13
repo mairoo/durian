@@ -12,6 +12,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -38,6 +39,19 @@ public class GlobalExceptionHandler {
   }
 
   // 2. 인증 / 보안 예외
+  /** 메소드 보안 검사 실패 예외 */
+  @ExceptionHandler(AuthorizationDeniedException.class)
+  protected ResponseEntity<ErrorResponse> handleAuthorizationDeniedException(
+      AuthorizationDeniedException e, HttpServletRequest request) {
+    log.error("[Authorization Denied] {}", e.getMessage());
+    return ResponseEntity.status(ErrorCode.FORBIDDEN.getStatus())
+        .body(ErrorResponse.of(
+            request,
+            ErrorCode.FORBIDDEN.getStatus(),
+            ErrorCode.FORBIDDEN.getMessage()
+        ));
+  }
+
   /** null 예외 처리 인증/보안 예외처리 */
   @ExceptionHandler(NullPointerException.class)
   protected ResponseEntity<ErrorResponse> handleNullPointerException(
