@@ -49,7 +49,7 @@ public class OrderService {
    * @param orderNo 조회할 주문 번호
    * @return 사용자의 주문 정보
    */
-  @PreAuthorize("isAuthenticated()")
+  @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
   public Order getMyOrder(User user, String orderNo) {
     return orderProcessingService.getUserOrder(user.getId(), orderNo);
   }
@@ -61,7 +61,7 @@ public class OrderService {
    * @param orderNo 조회할 주문 번호
    * @return 주문에 포함된 상품 목록
    */
-  @PreAuthorize("isAuthenticated()")
+  @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
   public List<OrderProduct> getMyOrderProducts(User user, String orderNo) {
     return orderProcessingService.getUserOrderProducts(user, orderNo);
   }
@@ -74,6 +74,7 @@ public class OrderService {
    * @param clientInfo 클라이언트 정보
    * @return 생성된 주문 정보
    */
+  @PreAuthorize("isAuthenticated()")
   public Order createOrder(
       CartOrderCreateRequest request, User user, ClientUtils.ClientInfo clientInfo) {
     return orderProcessingService.createOrderFromCart(user, request, clientInfo);
@@ -87,6 +88,7 @@ public class OrderService {
    * @param clientInfo 클라이언트 정보
    * @return 생성된 재주문 정보
    */
+  @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
   public Order reorder(User user, String orderNo, ClientUtils.ClientInfo clientInfo) {
     return orderProcessingService.createReorder(user.getId(), orderNo, clientInfo);
   }
@@ -99,6 +101,7 @@ public class OrderService {
    * @param orderNo 환불 요청할 주문 번호
    * @return 환불 요청된 주문 정보
    */
+  @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
   public Order requestRefund(User user, String message, String orderNo) {
     Order order = orderProcessingService.getUserOrder(user.getId(), orderNo);
     return orderRefundService.requestRefund(user, order, message);
@@ -110,6 +113,7 @@ public class OrderService {
    * @param user 삭제 요청하는 사용자
    * @param orderNo 삭제할 주문 번호
    */
+  @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
   public void deleteMyOrder(User user, String orderNo) {
     orderProcessingService.softDeleteUserOrder(user.getId(), orderNo);
   }
@@ -120,6 +124,7 @@ public class OrderService {
    * @param user 숨김 처리를 요청하는 사용자
    * @param orderNo 숨길 주문 번호
    */
+  @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
   public void hideMyOrder(User user, String orderNo) {
     orderProcessingService.hideUserOrder(user.getId(), orderNo);
   }
