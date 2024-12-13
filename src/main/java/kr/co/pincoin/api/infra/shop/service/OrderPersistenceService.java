@@ -55,20 +55,20 @@ public class OrderPersistenceService {
   }
 
   public List<OrderProduct> findOrderProductsByOrderId(Long orderId) {
-    return orderProductRepository.findOrderProducts(OrderProductSearchCondition.ofOrderId(orderId));
+    return orderProductRepository.findAll(OrderProductSearchCondition.ofOrderId(orderId));
   }
 
   public List<OrderProduct> findOrderProductsByUserIdAndOrderNo(Integer userId, String orderNo) {
-    return orderProductRepository
-        .findOrderProducts(OrderProductSearchCondition.ofOrderNo(orderNo).withUserId(userId));
+    return orderProductRepository.findAll(
+        OrderProductSearchCondition.ofOrderNo(orderNo).withUserId(userId));
   }
 
   public List<OrderProduct> findOrderProductsWithOrder(Order order) {
-    return orderProductRepository.findAllByOrderWithOrder(order);
+    return orderProductRepository.findAllWithOrder(order);
   }
 
   public List<OrderProduct> findOriginalOrderProducts(String orderNo, Integer userId) {
-    return orderProductRepository.findAllByOrderNoAndUserIdWithOrder(orderNo, userId);
+    return orderProductRepository.findAllWithOrderAndUser(orderNo, userId);
   }
 
   public List<OrderPayment> findPaymentsByOrder(Order order) {

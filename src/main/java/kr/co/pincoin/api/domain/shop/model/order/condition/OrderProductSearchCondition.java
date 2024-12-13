@@ -43,7 +43,6 @@ public class OrderProductSearchCondition {
             .build();
     }
 
-    // 기존 조건에 orderId를 추가한 새로운 OrderProductSearchCondition을 반환하는 메서드
     public OrderProductSearchCondition withOrderId(Long orderId) {
         return OrderProductSearchCondition.builder()
             .orderId(orderId)
@@ -52,7 +51,6 @@ public class OrderProductSearchCondition {
             .build();
     }
 
-    // 기존 조건에 userId를 추가한 새로운 OrderProductSearchCondition을 반환하는 메서드
     public OrderProductSearchCondition withUserId(Integer userId) {
         return OrderProductSearchCondition.builder()
             .orderId(this.orderId)

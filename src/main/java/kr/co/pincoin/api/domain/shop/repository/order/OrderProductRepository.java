@@ -8,9 +8,9 @@ import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCon
 public interface OrderProductRepository {
   List<OrderProduct> saveAll(List<OrderProduct> orderProducts);
 
-  List<OrderProduct> findOrderProducts(OrderProductSearchCondition condition);
+  List<OrderProduct> findAll(OrderProductSearchCondition condition);
 
-  List<OrderProduct> findAllByOrderNoAndUserIdWithOrder(String orderNo, Integer userId);
+  List<OrderProduct> findAllWithOrderAndUser(String orderNo, Integer userId);
 
-  List<OrderProduct> findAllByOrderWithOrder(Order order);
+  List<OrderProduct> findAllWithOrder(Order order);
 }

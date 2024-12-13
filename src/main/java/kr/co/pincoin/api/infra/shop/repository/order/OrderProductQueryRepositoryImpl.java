@@ -8,6 +8,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCondition;
+import kr.co.pincoin.api.infra.shop.entity.order.OrderEntity;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -18,7 +19,7 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
   private final JPAQueryFactory queryFactory;
 
   @Override
-  public List<OrderProductEntity> findOrderProducts(OrderProductSearchCondition condition) {
+  public List<OrderProductEntity> findAll(OrderProductSearchCondition condition) {
     var query = queryFactory
         .selectFrom(orderProductEntity);
 
@@ -36,6 +37,28 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
             orderNoEq(condition.getOrderNo()),
             userIdEq(condition.getUserId())
         )
+        .fetch();
+  }
+
+
+  @Override
+  public List<OrderProductEntity> findAllWithOrderAndUser(String orderNo, Integer userId) {
+    return queryFactory
+        .selectFrom(orderProductEntity)
+        .innerJoin(orderProductEntity.order, orderEntity).fetchJoin()
+        .where(
+            orderNoEq(orderNo),
+            userIdEq(userId)
+        )
+        .fetch();
+  }
+
+  @Override
+  public List<OrderProductEntity> findAllWithOrder(OrderEntity order) {
+    return queryFactory
+        .selectFrom(orderProductEntity)
+        .innerJoin(orderProductEntity.order, orderEntity).fetchJoin()
+        .where(orderEntity.eq(order))
         .fetch();
   }
 
