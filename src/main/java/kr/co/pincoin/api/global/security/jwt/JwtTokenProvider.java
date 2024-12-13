@@ -1,12 +1,21 @@
 package kr.co.pincoin.api.global.security.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.annotation.PostConstruct;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import javax.crypto.SecretKey;
 import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.global.exception.JwtAuthenticationException;
@@ -75,23 +84,31 @@ public class JwtTokenProvider {
   public Optional<String> validateToken(String jws) {
     try {
       Jws<Claims> parsed = Jwts.parser().verifyWith(key).build().parseSignedClaims(jws);
-
-      // 커스텀 클레임 읽을 때 타입 명시
-      // String username = parsed.getPayload().get("username", String.class);
-
       return Optional.ofNullable(parsed.getPayload().getSubject());
-    } catch (SignatureException | DecodingException ex) {
-      // 잘못된 비밀키
+    } catch (SignatureException ex) { // 서명 검증 실패
+      log.warn("Invalid JWT signature: {}", ex.getMessage());
       throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);
-    } catch (ExpiredJwtException ex) {
-      // 만료된 토큰
+    } catch (DecodingException ex) { // Base64 디코딩 실패
+      log.warn("JWT decoding error: {}", ex.getMessage());
+      throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);
+    } catch (ExpiredJwtException ex) { // 만료된 토큰
+      log.warn("Expired JWT token: {}", ex.getMessage());
       throw new JwtAuthenticationException(ErrorCode.EXPIRED_TOKEN);
-    } catch (UnsupportedJwtException
-        | MalformedJwtException
-        | SecurityException
-        | IllegalArgumentException ex) {
-      // 토큰 형식 오류
+    } catch (UnsupportedJwtException ex) { // 지원되지 않는 JWT
+      log.warn("Unsupported JWT token: {}", ex.getMessage());
       throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);
+    } catch (MalformedJwtException ex) { // JWT 형식이 잘못됨
+      log.warn("Malformed JWT token: {}", ex.getMessage());
+      throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);
+    } catch (SecurityException ex) { // 보안 관련 예외
+      log.error("JWT security error: {}", ex.getMessage());
+      throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);
+    } catch (IllegalArgumentException ex) { // 잘못된 인자
+      log.warn("JWT claims string is empty: {}", ex.getMessage());
+      throw new JwtAuthenticationException(ErrorCode.INVALID_TOKEN);
+    } catch (Exception ex) { // 예상치 못한 예외는 서버 에러로 처리
+      log.error("Unexpected error while validating JWT: {}", ex.getMessage(), ex);
+      throw new JwtAuthenticationException(ErrorCode.INTERNAL_SERVER_ERROR);
     }
   }
 }
