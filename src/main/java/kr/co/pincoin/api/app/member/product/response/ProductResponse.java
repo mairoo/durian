@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
-import kr.co.pincoin.api.domain.shop.model.product.ProductList;
+import kr.co.pincoin.api.domain.shop.model.product.ProductDetached;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import lombok.Getter;
@@ -69,7 +69,7 @@ public class ProductResponse {
         this.categoryId = product.getCategory().getId();
     }
 
-    protected ProductResponse(ProductList product) {
+    protected ProductResponse(ProductDetached product) {
         this.id = product.getId();
         this.name = product.getName();
         this.subtitle = product.getSubtitle();
@@ -90,7 +90,7 @@ public class ProductResponse {
         return new ProductResponse(product);
     }
 
-    public static ProductResponse from(ProductList product) {
+    public static ProductResponse from(ProductDetached product) {
         return new ProductResponse(product);
     }
 }

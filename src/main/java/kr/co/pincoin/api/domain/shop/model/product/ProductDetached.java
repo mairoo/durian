@@ -8,7 +8,7 @@ import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
 import lombok.Getter;
 
 @Getter
-public class ProductList {
+public class ProductDetached {
 
     // 핵심 식별 정보
     private final Long id;
@@ -49,7 +49,7 @@ public class ProductList {
     // 삭제 상태
     private final Boolean isRemoved;
 
-    public ProductList(
+    public ProductDetached(
         Long id,
         String code,
         String name,
@@ -104,8 +104,8 @@ public class ProductList {
     }
 
     // 엔티티로부터 생성하는 팩토리 메서드
-    public static ProductList from(ProductEntity entity) {
-        return new ProductList(
+    public static ProductDetached from(ProductEntity entity) {
+        return new ProductDetached(
             entity.getId(),
             entity.getCode(),
             entity.getName(),

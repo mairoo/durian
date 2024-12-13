@@ -5,7 +5,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Optional;
-import kr.co.pincoin.api.domain.shop.model.product.ProductList;
+import kr.co.pincoin.api.domain.shop.model.product.ProductDetached;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
@@ -36,10 +36,10 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
   }
 
   @Override
-  public List<ProductList> findAllByCategory(Long categoryId, String categorySlug,
+  public List<ProductDetached> findAllByCategory(Long categoryId, String categorySlug,
       ProductStatus status, ProductStock stock) {
     return queryFactory
-        .select(Projections.constructor(ProductList.class,
+        .select(Projections.constructor(ProductDetached.class,
             product.id,
             product.name,
             product.subtitle,

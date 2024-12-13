@@ -5,7 +5,7 @@ import java.util.List;
 import kr.co.pincoin.api.app.admin.product.request.ProductCreateRequest;
 import kr.co.pincoin.api.app.admin.product.service.AdminProductService;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
-import kr.co.pincoin.api.domain.shop.model.product.ProductList;
+import kr.co.pincoin.api.domain.shop.model.product.ProductDetached;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.app.admin.product.response.AdminProductResponse;
@@ -51,7 +51,7 @@ public class AdminProductController {
 
   @GetMapping("/category/{categoryId}")
   public ApiResponse<List<AdminProductResponse>> getProductsByCategory(@PathVariable Long categoryId) {
-    List<ProductList> products = adminProductService.getProductsByCategory(categoryId, null,
+    List<ProductDetached> products = adminProductService.getProductsByCategory(categoryId, null,
         ProductStatus.ENABLED, ProductStock.IN_STOCK);
     List<AdminProductResponse> responses = products.stream().map(AdminProductResponse::from).toList();
     return ApiResponse.of(responses);

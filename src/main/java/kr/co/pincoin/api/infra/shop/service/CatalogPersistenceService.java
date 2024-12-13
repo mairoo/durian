@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
-import kr.co.pincoin.api.domain.shop.model.product.ProductList;
+import kr.co.pincoin.api.domain.shop.model.product.ProductDetached;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
@@ -74,7 +74,7 @@ public class CatalogPersistenceService {
     return productRepository.findByIdWithCategory(id);
   }
 
-  public List<ProductList> findProductsByCategory(Long categoryId, String categorySlug,
+  public List<ProductDetached> findProductsByCategory(Long categoryId, String categorySlug,
       ProductStatus status, ProductStock stock) {
     return productRepository.findAllByCategory(categoryId, categorySlug, status, stock);
   }
