@@ -21,6 +21,10 @@ public class OrderVoucherService {
 
   private final OrderPersistenceService persistenceService;
 
+  public List<OrderProductVoucher> getOrderProductVouchers(Order order) {
+    return persistenceService.findOrderProductVouchers(order.getId());
+  }
+
   /** 주문에 대한 바우처를 발행한다. */
   @Transactional
   public Order issueVouchers(Order order) {

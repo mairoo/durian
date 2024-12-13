@@ -5,6 +5,7 @@ import kr.co.pincoin.api.app.member.order.request.CartOrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
+import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.service.OrderProcessingService;
 import kr.co.pincoin.api.domain.shop.service.OrderRefundService;
@@ -127,5 +128,18 @@ public class OrderService {
   @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
   public void hideMyOrder(User user, String orderNo) {
     orderProcessingService.hideUserOrder(user.getId(), orderNo);
+  }
+
+  /**
+   * 현재 로그인한 사용자의 특정 주문에 포함된 상품권 목록을 조회한다.
+   *
+   * @param user    현재 로그인한 사용자
+   * @param orderNo 조회할 주문 번호
+   * @return 주문에 포함된 상품권 목록
+   */
+  @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
+  public List<OrderProductVoucher> getMyOrderVouchers(User user, String orderNo) {
+    Order order = orderProcessingService.getUserOrder(user.getId(), orderNo);
+    return orderProcessingService.findOrderProductVouchers(order.getId());
   }
 }
