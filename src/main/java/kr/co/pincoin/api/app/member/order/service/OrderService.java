@@ -47,8 +47,15 @@ public class OrderService {
     return orderProcessingService.getUserOrder(user.getId(), orderNo);
   }
 
+  /**
+   * 현재 로그인한 사용자의 특정 주문에 포함된 상품 목록을 조회한다.
+   *
+   * @param user    현재 로그인한 사용자
+   * @param orderNo 조회할 주문 번호
+   * @return 주문에 포함된 상품 목록
+   */
   public List<OrderProduct> getMyOrderProducts(User user, String orderNo) {
-    return orderProcessingService.getUserOrderProducts(orderNo);
+    return orderProcessingService.getUserOrderProducts(user, orderNo);
   }
 
   /**

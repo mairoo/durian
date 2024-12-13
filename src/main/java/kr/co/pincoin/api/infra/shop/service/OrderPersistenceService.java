@@ -58,8 +58,9 @@ public class OrderPersistenceService {
     return orderProductRepository.findOrderProducts(OrderProductSearchCondition.ofOrderId(orderId));
   }
 
-  public List<OrderProduct> findOrderProductsByOrderNo(String orderNo) {
-    return orderProductRepository.findOrderProducts(OrderProductSearchCondition.ofOrderNo(orderNo));
+  public List<OrderProduct> findOrderProductsByUserIdAndOrderNo(Integer userId, String orderNo) {
+    return orderProductRepository
+        .findOrderProducts(OrderProductSearchCondition.ofOrderNo(orderNo).withUserId(userId));
   }
 
   public List<OrderProduct> findOrderProductsWithOrder(Order order) {
