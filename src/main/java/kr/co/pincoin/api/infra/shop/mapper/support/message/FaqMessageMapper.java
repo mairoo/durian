@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.support.message.FaqMessage;
 import kr.co.pincoin.api.infra.auth.mapper.user.UserMapper;
 import kr.co.pincoin.api.infra.shop.entity.support.message.FaqMessageEntity;
-import kr.co.pincoin.api.infra.shop.mapper.store.StoreMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class FaqMessageMapper {
   private final UserMapper userMapper;
-  private final StoreMapper storeMapper;
 
   public FaqMessage toModel(FaqMessageEntity entity) {
     if (entity == null) {
@@ -30,7 +28,6 @@ public class FaqMessageMapper {
         .category(entity.getCategory())
         .position(entity.getPosition())
         .owner(userMapper.toModel(entity.getOwner()))
-        .store(storeMapper.toModel(entity.getStore()))
         .created(entity.getCreated())
         .modified(entity.getModified())
         .isRemoved(entity.isRemoved())

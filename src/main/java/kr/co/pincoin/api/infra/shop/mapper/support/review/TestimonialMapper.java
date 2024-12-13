@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.support.review.Testimonial;
 import kr.co.pincoin.api.infra.auth.mapper.user.UserMapper;
 import kr.co.pincoin.api.infra.shop.entity.support.review.TestimonialEntity;
-import kr.co.pincoin.api.infra.shop.mapper.store.StoreMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TestimonialMapper {
   private final UserMapper userMapper;
-  private final StoreMapper storeMapper;
 
   public Testimonial toModel(TestimonialEntity entity) {
     if (entity == null) {
@@ -28,7 +26,6 @@ public class TestimonialMapper {
         .keywords(entity.getKeywords())
         .content(entity.getContent())
         .owner(userMapper.toModel(entity.getOwner()))
-        .store(storeMapper.toModel(entity.getStore()))
         .created(entity.getCreated())
         .modified(entity.getModified())
         .isRemoved(entity.isRemoved())

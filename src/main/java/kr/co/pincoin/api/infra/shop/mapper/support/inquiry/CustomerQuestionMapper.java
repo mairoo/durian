@@ -7,7 +7,6 @@ import kr.co.pincoin.api.domain.shop.model.support.inquiry.CustomerQuestion;
 import kr.co.pincoin.api.infra.auth.mapper.user.UserMapper;
 import kr.co.pincoin.api.infra.shop.entity.support.inquiry.CustomerQuestionEntity;
 import kr.co.pincoin.api.infra.shop.mapper.order.OrderMapper;
-import kr.co.pincoin.api.infra.shop.mapper.store.StoreMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 public class CustomerQuestionMapper {
   private final UserMapper userMapper;
   private final OrderMapper orderMapper;
-  private final StoreMapper storeMapper;
 
   public CustomerQuestion toModel(CustomerQuestionEntity entity) {
     if (entity == null) {
@@ -32,7 +30,6 @@ public class CustomerQuestionMapper {
         .category(entity.getCategory())
         .owner(userMapper.toModel(entity.getOwner()))
         .order(orderMapper.toModel(entity.getOrder()))
-        .store(storeMapper.toModel(entity.getStore()))
         .created(entity.getCreated())
         .modified(entity.getModified())
         .isRemoved(entity.isRemoved())

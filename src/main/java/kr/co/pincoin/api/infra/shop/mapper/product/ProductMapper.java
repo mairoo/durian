@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
-import kr.co.pincoin.api.infra.shop.mapper.store.StoreMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +12,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ProductMapper {
   private final CategoryMapper categoryMapper;
-
-  private final StoreMapper storeMapper;
 
   public Product toModel(ProductEntity entity) {
     if (entity == null) {
@@ -44,7 +41,6 @@ public class ProductMapper {
         .naverPartnerTitlePg(entity.getNaverPartnerTitlePg())
         .naverAttribute(entity.getNaverAttribute())
         .category(categoryMapper.toModel(entity.getCategory()))
-        .store(storeMapper.toModel(entity.getStore()))
         .created(entity.getCreated())
         .modified(entity.getModified())
         .isRemoved(entity.isRemoved())

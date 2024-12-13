@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.support.message.NoticeMessage;
 import kr.co.pincoin.api.infra.auth.mapper.user.UserMapper;
 import kr.co.pincoin.api.infra.shop.entity.support.message.NoticeMessageEntity;
-import kr.co.pincoin.api.infra.shop.mapper.store.StoreMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class NoticeMessageMapper {
   private final UserMapper userMapper;
-  private final StoreMapper storeMapper;
 
   public NoticeMessage toModel(NoticeMessageEntity entity) {
     if (entity == null) {
@@ -29,7 +27,6 @@ public class NoticeMessageMapper {
         .content(entity.getContent())
         .category(entity.getCategory())
         .owner(userMapper.toModel(entity.getOwner()))
-        .store(storeMapper.toModel(entity.getStore()))
         .created(entity.getCreated())
         .modified(entity.getModified())
         .isRemoved(entity.isRemoved())

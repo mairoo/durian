@@ -5,14 +5,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
 import kr.co.pincoin.api.infra.shop.entity.product.CategoryEntity;
-import kr.co.pincoin.api.infra.shop.mapper.store.StoreMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
 public class CategoryMapper {
-  private final StoreMapper storeMapper;
 
   public Category toModel(CategoryEntity entity) {
     if (entity == null) {
@@ -37,7 +35,6 @@ public class CategoryMapper {
         .treeId(entity.getTreeId())
         .level(entity.getLevel())
         .parent(toModel(entity.getParent())) // 재귀적 변환
-        .store(storeMapper.toModel(entity.getStore()))
         .created(entity.getCreated())
         .modified(entity.getModified())
         .build();
