@@ -186,7 +186,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
     response.setCharacterEncoding("UTF-8");
 
-    log.error(e.getMessage(), e);
+    log.warn("[JWT] 인증실패: {}", e.getMessage());
 
     ErrorResponse errorResponse =
         ErrorResponse.of(
