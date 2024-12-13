@@ -39,7 +39,7 @@ public class OrderService {
         ? condition.withUserId(user.getId())
         : OrderSearchCondition.ofUserId(user.getId());
 
-    return orderProcessingService.getUserOrders(user.getId(), finalCondition, pageable);
+    return orderProcessingService.getOrders(finalCondition, pageable);
   }
 
   /**
@@ -49,6 +49,7 @@ public class OrderService {
    * @param orderNo 조회할 주문 번호
    * @return 사용자의 주문 정보
    */
+  @PreAuthorize("isAuthenticated()")
   public Order getMyOrder(User user, String orderNo) {
     return orderProcessingService.getUserOrder(user.getId(), orderNo);
   }
@@ -60,6 +61,7 @@ public class OrderService {
    * @param orderNo 조회할 주문 번호
    * @return 주문에 포함된 상품 목록
    */
+  @PreAuthorize("isAuthenticated()")
   public List<OrderProduct> getMyOrderProducts(User user, String orderNo) {
     return orderProcessingService.getUserOrderProducts(user, orderNo);
   }

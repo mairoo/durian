@@ -96,10 +96,9 @@ public class OrderPersistenceService {
   }
 
   /** 사용자 관련 주문 조회 */
-  public Page<Order> searchUserOrders(
-      Integer userId, OrderSearchCondition condition, Pageable pageable) {
+  public Page<Order> searchUserOrders(OrderSearchCondition condition, Pageable pageable) {
     return searchOrders(
-        Optional.ofNullable(condition).orElseGet(OrderSearchCondition::empty).withUserId(userId),
+        Optional.ofNullable(condition).orElseGet(OrderSearchCondition::empty),
         pageable);
   }
 

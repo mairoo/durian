@@ -46,11 +46,6 @@ public class OrderProcessingService {
     return persistenceService.findOrder(orderId);
   }
 
-  public Page<Order> getUserOrders(
-      Integer userId, OrderSearchCondition condition, Pageable pageable) {
-    return persistenceService.searchUserOrders(userId, condition, pageable);
-  }
-
   public Order getUserOrder(Integer userId, String orderNo) {
     return persistenceService.findUserOrder(userId, orderNo);
   }
