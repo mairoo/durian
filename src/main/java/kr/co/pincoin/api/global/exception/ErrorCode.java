@@ -25,6 +25,7 @@ public enum ErrorCode {
   INVALID_VOUCHER_STATUS(HttpStatus.BAD_REQUEST, "잘못된 상품권 상태입니다."),
   DUPLICATE_VOUCHER_CODE(HttpStatus.CONFLICT, "상품권 번호가 중복입니다. [개별]"),
   DUPLICATE_VOUCHER_CODES(HttpStatus.CONFLICT, "상품권 번호가 중복입니다. [일괄]"),
+  ORDER_NOT_FOUND(HttpStatus.FORBIDDEN, "주문을 찾을 수 없습니다."),
 
   // 공통
   INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "잘못된 입력값입니다."),

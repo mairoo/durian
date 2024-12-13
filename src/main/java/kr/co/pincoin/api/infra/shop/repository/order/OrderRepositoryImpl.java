@@ -19,21 +19,14 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepository {
-
   private final OrderJpaRepository jpaRepository;
-
   private final OrderQueryRepository queryRepository;
-
   private final OrderMapper mapper;
 
+  // 기본 CRUD 작업
   @Override
   public Order save(Order order) {
     return mapper.toModel(jpaRepository.save(mapper.toEntity(order)));
-  }
-
-  @Override
-  public List<Order> saveAll(Collection<Order> orders) {
-    return mapper.toModelList(jpaRepository.saveAll(mapper.toEntityList(orders.stream().toList())));
   }
 
   @Override
@@ -42,6 +35,12 @@ public class OrderRepositoryImpl implements OrderRepository {
   }
 
   @Override
+  public List<Order> saveAll(Collection<Order> orders) {
+    return mapper.toModelList(jpaRepository.saveAll(mapper.toEntityList(orders.stream().toList())));
+  }
+
+  // ID 기반 단일 조회
+  @Override
   public Optional<Order> findById(Long id) {
     return jpaRepository.findById(id).map(mapper::toModel);
   }
@@ -49,6 +48,25 @@ public class OrderRepositoryImpl implements OrderRepository {
   @Override
   public Optional<Order> findByIdWithUser(Long orderId) {
     return jpaRepository.findByIdWithUser(orderId).map(mapper::toModel);
+  }
+
+  @Override
+  public Optional<Integer> findUserIdById(Long id) {
+    return queryRepository.findUserIdByOrderId(id);
+  }
+
+  // OrderNo 기반 조회
+  @Override
+  public Optional<Integer> findUserIdByOrderNo(String orderNo) {
+    return queryRepository.findUserIdByOrderNo(orderNo);
+  }
+
+  // 사용자 관련 조회
+  @Override
+  public List<Order> findByUserId(Integer userId) {
+    return jpaRepository.findByUserId(userId).stream()
+        .map(mapper::toModel)
+        .collect(Collectors.toList());
   }
 
   @Override
@@ -61,13 +79,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     return jpaRepository.findByOrderNoAndUserId(orderNo, userId).map(mapper::toModel);
   }
 
-  @Override
-  public List<Order> findByUserId(Integer userId) {
-    return jpaRepository.findByUserId(userId).stream()
-        .map(mapper::toModel)
-        .collect(Collectors.toList());
-  }
-
+  // 상태 기반 조회
   @Override
   public List<Order> findByStatus(OrderStatus status) {
     return jpaRepository.findByStatus(status).stream()
@@ -82,13 +94,13 @@ public class OrderRepositoryImpl implements OrderRepository {
         .collect(Collectors.toList());
   }
 
+  // 검색/페이징
   @Override
   public Page<Order> searchOrders(OrderSearchCondition condition, Pageable pageable) {
     Page<OrderEntity> orderEntities = queryRepository.searchOrders(condition, pageable);
-
-    List<Order> orders =
-        orderEntities.getContent().stream().map(mapper::toModel).collect(Collectors.toList());
-
+    List<Order> orders = orderEntities.getContent().stream()
+        .map(mapper::toModel)
+        .collect(Collectors.toList());
     return new PageImpl<>(orders, pageable, orderEntities.getTotalElements());
   }
 }

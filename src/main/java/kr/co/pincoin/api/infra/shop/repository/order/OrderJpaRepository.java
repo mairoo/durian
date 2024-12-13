@@ -15,13 +15,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
-  @Query(
-      "SELECT o FROM OrderEntity o "
-          + "LEFT JOIN FETCH o.user u "
-          + "LEFT JOIN ProfileEntity p ON p.user = u "
-          + "WHERE o.orderNo = :orderNo")
-  Optional<OrderEntity> findByOrderNo(String orderNo);
-
+  // 기본 CRUD + 오버라이드
   @Override
   @NonNull
   @EntityGraph(attributePaths = {"user"})
@@ -31,6 +25,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
           + "WHERE o.id = :id")
   Optional<OrderEntity> findById(@NonNull Long id);
 
+  // ID 기반 단일 조회
   @Query("SELECT o FROM OrderEntity o " + "JOIN FETCH o.user " + "WHERE o.id = :orderId")
   Optional<OrderEntity> findByIdWithUser(Long orderId);
 
@@ -42,6 +37,14 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
   Optional<OrderEntity> findByIdAndUserId(
       @Param("orderId") Long orderId, @Param("userId") Integer userId);
 
+  // OrderNo 기반 조회
+  @Query(
+      "SELECT o FROM OrderEntity o "
+          + "LEFT JOIN FETCH o.user u "
+          + "LEFT JOIN ProfileEntity p ON p.user = u "
+          + "WHERE o.orderNo = :orderNo")
+  Optional<OrderEntity> findByOrderNoWithUserProfile(String orderNo);
+
   @Query(
       "SELECT o FROM OrderEntity o "
           + "LEFT JOIN FETCH o.user u "
@@ -50,9 +53,11 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
   Optional<OrderEntity> findByOrderNoAndUserId(
       @Param("orderNo") String orderNo, @Param("userId") Integer userId);
 
+  // 사용자 관련 조회
   @Query("SELECT o FROM OrderEntity o LEFT JOIN FETCH o.user WHERE o.user.id = :userId")
   List<OrderEntity> findByUserId(Integer userId);
 
+  // 상태 기반 조회
   @Query("SELECT o FROM OrderEntity o LEFT JOIN FETCH o.user WHERE o.status = :status")
   List<OrderEntity> findByStatus(OrderStatus status);
 
@@ -60,6 +65,7 @@ public interface OrderJpaRepository extends JpaRepository<OrderEntity, Long> {
       "SELECT o FROM OrderEntity o LEFT JOIN FETCH o.user WHERE o.suspicious = true AND o.modified IS NULL")
   List<OrderEntity> findSuspiciousOrders();
 
+  // 상태 업데이트
   @Modifying
   @Query("UPDATE OrderEntity o SET o.status = :status WHERE o.id = :orderId")
   void updateOrderStatus(Long orderId, OrderStatus status);

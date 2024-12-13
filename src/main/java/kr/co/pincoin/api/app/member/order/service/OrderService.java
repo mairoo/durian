@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,8 +33,13 @@ public class OrderService {
    * @param pageable 페이징 정보
    * @return 사용자의 주문 목록
    */
+  @PreAuthorize("isAuthenticated()")
   public Page<Order> getMyOrders(User user, OrderSearchCondition condition, Pageable pageable) {
-    return orderProcessingService.getUserOrders(user.getId(), condition, pageable);
+    OrderSearchCondition finalCondition = (condition != null)
+        ? condition.withUserId(user.getId())
+        : OrderSearchCondition.ofUserId(user.getId());
+
+    return orderProcessingService.getUserOrders(user.getId(), finalCondition, pageable);
   }
 
   /**
