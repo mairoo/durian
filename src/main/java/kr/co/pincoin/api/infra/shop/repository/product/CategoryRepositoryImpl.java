@@ -3,6 +3,7 @@ package kr.co.pincoin.api.infra.shop.repository.product;
 import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
+import kr.co.pincoin.api.domain.shop.model.product.CategoryDetached;
 import kr.co.pincoin.api.domain.shop.repository.product.CategoryRepository;
 import kr.co.pincoin.api.infra.shop.mapper.product.CategoryMapper;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,16 @@ public class CategoryRepositoryImpl implements CategoryRepository {
   @Override
   public Optional<Category> findById(Long id) {
     return jpaRepository.findById(id).map(mapper::toModel);
+  }
+
+  @Override
+  public Optional<CategoryDetached> findDetachedBySlug(String slug) {
+    return queryRepository.findDetachedBySlug(slug);
+  }
+
+  @Override
+  public Optional<CategoryDetached> findDetachedById(Long id) {
+    return queryRepository.findDetachedById(id);
   }
 
   @Override

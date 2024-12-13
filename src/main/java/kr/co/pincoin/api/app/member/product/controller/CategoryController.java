@@ -3,6 +3,7 @@ package kr.co.pincoin.api.app.member.product.controller;
 import java.util.List;
 import kr.co.pincoin.api.app.member.product.service.CategoryService;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
+import kr.co.pincoin.api.domain.shop.model.product.CategoryDetached;
 import kr.co.pincoin.api.global.response.model.CategoryResponse;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,7 @@ public class CategoryController {
 
   @GetMapping("/{identifier}")
   public ApiResponse<CategoryResponse> getCategory(@PathVariable String identifier) {
-    Category category = identifier.matches("\\d+")
+    CategoryDetached category = identifier.matches("\\d+")
         ? categoryService.getCategoryById(Long.parseLong(identifier))
         : categoryService.getCategoryBySlug(identifier);
     return ApiResponse.of(CategoryResponse.from(category));
@@ -31,13 +32,6 @@ public class CategoryController {
   @GetMapping("/store/{storeId}")
   public ApiResponse<List<CategoryResponse>> getCategoryListByStore(@PathVariable Long storeId) {
     List<Category> categories = categoryService.getCategoryListByStore(storeId);
-    List<CategoryResponse> responses = categories.stream().map(CategoryResponse::from).toList();
-    return ApiResponse.of(responses);
-  }
-
-  @GetMapping("/children/{parentId}")
-  public ApiResponse<List<CategoryResponse>> getChildCategories(@PathVariable Long parentId) {
-    List<Category> categories = categoryService.getChildCategories(parentId);
     List<CategoryResponse> responses = categories.stream().map(CategoryResponse::from).toList();
     return ApiResponse.of(responses);
   }

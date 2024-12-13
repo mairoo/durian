@@ -3,12 +3,17 @@ package kr.co.pincoin.api.domain.shop.repository.product;
 import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
+import kr.co.pincoin.api.domain.shop.model.product.CategoryDetached;
 
 public interface CategoryRepository {
 
   Category save(Category category);
 
   Optional<Category> findById(Long id);
+
+  Optional<CategoryDetached> findDetachedBySlug(String slug);
+
+  Optional<CategoryDetached> findDetachedById(Long id);
 
   void delete(Category category);
 

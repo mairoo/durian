@@ -3,6 +3,7 @@ package kr.co.pincoin.api.global.response.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.math.BigDecimal;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
+import kr.co.pincoin.api.domain.shop.model.product.CategoryDetached;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,6 +40,24 @@ public class CategoryResponse {
 
   // 도메인 모델 객체에서 응답 객체 초기화
   public static CategoryResponse from(Category category) {
+    return CategoryResponse.builder()
+        .id(category.getId())
+        .title(category.getTitle())
+        .slug(category.getSlug())
+        .thumbnail(category.getThumbnail())
+        .description(category.getDescription())
+        .description1(category.getDescription1())
+        .discountRate(category.getDiscountRate())
+        .pg(category.getPg())
+        .pgDiscountRate(category.getPgDiscountRate())
+        .naverSearchTag(category.getNaverSearchTag())
+        .naverBrandName(category.getNaverBrandName())
+        .naverMakerName(category.getNaverMakerName())
+        .build();
+  }
+
+  // CategoryDetached 객체에서 응답 객체 초기화
+  public static CategoryResponse from(CategoryDetached category) {
     return CategoryResponse.builder()
         .id(category.getId())
         .title(category.getTitle())

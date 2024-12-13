@@ -4,6 +4,7 @@ import java.util.List;
 import kr.co.pincoin.api.app.admin.product.request.CategoryCreateRequest;
 import kr.co.pincoin.api.app.admin.product.service.AdminCategoryService;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
+import kr.co.pincoin.api.domain.shop.model.product.CategoryDetached;
 import kr.co.pincoin.api.global.response.model.CategoryResponse;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +32,14 @@ public class AdminCategoryController {
 
   @GetMapping("/{id}")
   public ResponseEntity<ApiResponse<CategoryResponse>> getCategoryById(@PathVariable Long id) {
-    Category category = adminCategoryService.getCategoryById(id);
+    CategoryDetached category = adminCategoryService.getCategoryById(id);
     return ResponseEntity.ok(ApiResponse.of(CategoryResponse.from(category)));
   }
 
   @GetMapping("/slug/{slug}")
   public ResponseEntity<ApiResponse<CategoryResponse>> getCategoryBySlug(
       @PathVariable String slug) {
-    Category category = adminCategoryService.getCategoryBySlug(slug);
+    CategoryDetached category = adminCategoryService.getCategoryBySlug(slug);
     return ResponseEntity.ok(ApiResponse.of(CategoryResponse.from(category)));
   }
 
@@ -46,14 +47,6 @@ public class AdminCategoryController {
   public ResponseEntity<ApiResponse<List<CategoryResponse>>> getCategoryListByStore(
       @PathVariable Long storeId) {
     List<Category> categories = adminCategoryService.getCategoryListByStore(storeId);
-    return ResponseEntity.ok(
-        ApiResponse.of(categories.stream().map(CategoryResponse::from).toList()));
-  }
-
-  @GetMapping("/children/{parentId}")
-  public ResponseEntity<ApiResponse<List<CategoryResponse>>> getChildCategories(
-      @PathVariable Long parentId) {
-    List<Category> categories = adminCategoryService.getChildCategories(parentId);
     return ResponseEntity.ok(
         ApiResponse.of(categories.stream().map(CategoryResponse::from).toList()));
   }

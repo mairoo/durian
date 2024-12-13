@@ -3,6 +3,7 @@ package kr.co.pincoin.api.infra.shop.service;
 import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
+import kr.co.pincoin.api.domain.shop.model.product.CategoryDetached;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.ProductDetached;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
@@ -33,7 +34,6 @@ public class CatalogPersistenceService {
   }
 
   // Category 관련 메서드
-  @Transactional
   public Category saveCategory(Category category) {
     return categoryRepository.save(category);
   }
@@ -44,6 +44,14 @@ public class CatalogPersistenceService {
 
   public Optional<Category> findCategoryBySlug(String slug) {
     return categoryRepository.findBySlug(slug);
+  }
+
+  public Optional<CategoryDetached> findCategoryDetachedById(Long id) {
+    return categoryRepository.findDetachedById(id);
+  }
+
+  public Optional<CategoryDetached> findCategoryDetachedBySlug(String slug) {
+    return categoryRepository.findDetachedBySlug(slug);
   }
 
   public List<Category> findCategoriesByStoreId(Long storeId) {

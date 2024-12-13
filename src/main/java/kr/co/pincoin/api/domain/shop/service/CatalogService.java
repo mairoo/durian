@@ -5,6 +5,7 @@ import java.util.List;
 import kr.co.pincoin.api.app.admin.product.request.CategoryCreateRequest;
 import kr.co.pincoin.api.app.admin.product.request.ProductCreateRequest;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
+import kr.co.pincoin.api.domain.shop.model.product.CategoryDetached;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.ProductDetached;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
@@ -60,25 +61,20 @@ public class CatalogService {
     return catalogPersistence.saveCategory(category);
   }
 
-  public Category getCategoryById(Long id) {
+  public CategoryDetached getCategoryDetachedById(Long id) {
     return catalogPersistence
-        .findCategoryById(id)
+        .findCategoryDetachedById(id)
         .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
   }
 
-  public Category getCategoryBySlug(String slug) {
+  public CategoryDetached getCategoryDetachedBySlug(String slug) {
     return catalogPersistence
-        .findCategoryBySlug(slug)
+        .findCategoryDetachedBySlug(slug)
         .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
   }
 
   public List<Category> getCategoryListByStore(Long storeId) {
     return catalogPersistence.findCategoriesByStoreId(storeId);
-  }
-
-  public List<Category> getChildCategories(Long parentId) {
-    Category parentCategory = getCategoryById(parentId);
-    return catalogPersistence.findChildCategories(parentCategory);
   }
 
   public List<Category> getRootCategories(Long storeId) {

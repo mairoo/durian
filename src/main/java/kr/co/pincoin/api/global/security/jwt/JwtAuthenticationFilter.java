@@ -63,6 +63,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         Arrays.asList(
             new AntPathRequestMatcher("/auth/**"),
             new AntPathRequestMatcher("/oauth2/**"),
+            new AntPathRequestMatcher("/products/**"),
+            new AntPathRequestMatcher("/categories/**"),
             new AntPathRequestMatcher("/public/**"));
 
     return permitAllMatchers.stream().anyMatch(matcher -> matcher.matches(request));
