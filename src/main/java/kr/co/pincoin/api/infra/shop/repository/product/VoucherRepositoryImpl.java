@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.product.Voucher;
 import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
 import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
+import kr.co.pincoin.api.global.exception.BusinessException;
+import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.infra.shop.entity.product.VoucherEntity;
 import kr.co.pincoin.api.infra.shop.mapper.product.VoucherMapper;
 import lombok.RequiredArgsConstructor;
@@ -85,7 +87,7 @@ public class VoucherRepositoryImpl implements VoucherRepository {
                   v.softDelete();
                   return v;
                 })
-            .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
+            .orElseThrow(() -> new BusinessException(ErrorCode.VOUCHER_NOT_FOUND));
     save(deletedVoucher);
   }
 
@@ -97,7 +99,7 @@ public class VoucherRepositoryImpl implements VoucherRepository {
               v.softDelete();
               return save(v);
             })
-        .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
+        .orElseThrow(() -> new BusinessException(ErrorCode.VOUCHER_NOT_FOUND));
   }
 
   @Override
@@ -109,7 +111,7 @@ public class VoucherRepositoryImpl implements VoucherRepository {
                   v.restore();
                   return v;
                 })
-            .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
+            .orElseThrow(() -> new BusinessException(ErrorCode.VOUCHER_NOT_FOUND));
     save(restoredVoucher);
   }
 
@@ -121,6 +123,6 @@ public class VoucherRepositoryImpl implements VoucherRepository {
               v.restore();
               return save(v);
             })
-        .orElseThrow(() -> new IllegalArgumentException("Voucher not found"));
+        .orElseThrow(() -> new BusinessException(ErrorCode.VOUCHER_NOT_FOUND));
   }
 }

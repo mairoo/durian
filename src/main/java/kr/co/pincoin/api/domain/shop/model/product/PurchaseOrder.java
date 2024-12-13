@@ -2,6 +2,8 @@ package kr.co.pincoin.api.domain.shop.model.product;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import kr.co.pincoin.api.global.exception.BusinessException;
+import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.infra.shop.entity.product.PurchaseOrderEntity;
 import lombok.Builder;
 import lombok.Getter;
@@ -73,7 +75,7 @@ public class PurchaseOrder {
 
   public void updateTitle(String title) {
     if (title == null || title.trim().isEmpty()) {
-      throw new IllegalArgumentException("Title cannot be empty");
+      throw new BusinessException(ErrorCode.CANNOT_UPDATE_PAID_PURCHASE_ORDER);
     }
     this.title = title;
   }
@@ -84,28 +86,28 @@ public class PurchaseOrder {
 
   public void updateBankAccount(String bankAccount) {
     if (this.paid) {
-      throw new IllegalStateException("Cannot update bank account for paid purchase order");
+      throw new BusinessException(ErrorCode.PURCHASE_ORDER_ALREADY_PAID);
     }
     this.bankAccount = bankAccount;
   }
 
   public void markAsPaid() {
     if (this.paid) {
-      throw new IllegalStateException("Purchase order is already paid");
+      throw new BusinessException(ErrorCode.PURCHASE_ORDER_ALREADY_PAID);
     }
     this.paid = true;
   }
 
   public void markAsUnpaid() {
     if (!this.paid) {
-      throw new IllegalStateException("Purchase order is already unpaid");
+      throw new BusinessException(ErrorCode.PURCHASE_ORDER_ALREADY_UNPAID);
     }
     this.paid = false;
   }
 
   public void softDelete() {
     if (this.paid) {
-      throw new IllegalStateException("Cannot remove paid purchase order");
+      throw new BusinessException(ErrorCode.CANNOT_REMOVE_PAID_PURCHASE_ORDER);
     }
     this.isRemoved = true;
   }
@@ -128,10 +130,10 @@ public class PurchaseOrder {
 
   private void validatePurchaseOrder() {
     if (title == null || title.trim().isEmpty()) {
-      throw new IllegalArgumentException("Title cannot be empty");
+      throw new BusinessException(ErrorCode.PURCHASE_ORDER_TITLE_REQUIRED);
     }
     if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
-      throw new IllegalArgumentException("Amount must be positive");
+      throw new BusinessException(ErrorCode.PURCHASE_ORDER_AMOUNT_MUST_BE_POSITIVE);
     }
   }
 }

@@ -8,6 +8,8 @@ import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
+import kr.co.pincoin.api.global.exception.BusinessException;
+import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.infra.shop.mapper.product.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -93,7 +95,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                   p.softDelete();
                   return p;
                 })
-            .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+            .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
     save(deletedProduct);
   }
 
@@ -105,7 +107,7 @@ public class ProductRepositoryImpl implements ProductRepository {
               p.softDelete();
               return save(p);
             })
-        .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+        .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
   }
 
   @Override
@@ -117,7 +119,7 @@ public class ProductRepositoryImpl implements ProductRepository {
                   p.restore();
                   return p;
                 })
-            .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+            .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
     save(restoredProduct);
   }
 
@@ -129,6 +131,6 @@ public class ProductRepositoryImpl implements ProductRepository {
               p.restore();
               return save(p);
             })
-        .orElseThrow(() -> new IllegalArgumentException("Product not found"));
+        .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
   }
 }
