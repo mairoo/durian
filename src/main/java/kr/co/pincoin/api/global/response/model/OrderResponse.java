@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
+import kr.co.pincoin.api.domain.shop.model.order.OrderDetached;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderCurrency;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderPaymentMethod;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
@@ -56,6 +57,24 @@ public class OrderResponse {
 
   // 도메인 모델 객체에서 응답 객체 초기화
   public static OrderResponse from(Order order) {
+    return OrderResponse.builder()
+        .id(order.getId())
+        .orderNo(order.getOrderNo())
+        .fullname(order.getFullname())
+        .totalListPrice(order.getTotalListPrice())
+        .totalSellingPrice(order.getTotalSellingPrice())
+        .currency(order.getCurrency())
+        .status(order.getStatus())
+        .paymentMethod(order.getPaymentMethod())
+        .created(order.getCreated())
+        .modified(order.getModified())
+        .suspicious(order.getSuspicious())
+        .removed(order.getRemoved())
+        .build();
+  }
+  
+  // OrderDetached 객체에서 응답 객체 초기화
+  public static OrderResponse from(OrderDetached order) {
     return OrderResponse.builder()
         .id(order.getId())
         .orderNo(order.getOrderNo())

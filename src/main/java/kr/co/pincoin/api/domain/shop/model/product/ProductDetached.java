@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
-import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
 import lombok.Getter;
 
 @Getter
@@ -101,36 +100,5 @@ public class ProductDetached {
         this.reviewCount = reviewCount;
         this.reviewCountPg = reviewCountPg;
         this.isRemoved = isRemoved;
-    }
-
-    // 엔티티로부터 생성하는 팩토리 메서드
-    public static ProductDetached from(ProductEntity entity) {
-        return new ProductDetached(
-            entity.getId(),
-            entity.getCode(),
-            entity.getName(),
-            entity.getSubtitle(),
-            entity.getPg(),
-            entity.getNaverPartner(),
-            entity.getNaverPartnerTitle(),
-            entity.getNaverPartnerTitlePg(),
-            entity.getNaverAttribute(),
-            entity.getCreated(),
-            entity.getModified(),
-            entity.getCategory().getId(),
-            entity.getStatus(),
-            entity.getStock(),
-            entity.getListPrice(),
-            entity.getSellingPrice(),
-            entity.getPgSellingPrice(),
-            entity.getMinimumStockLevel(),
-            entity.getMaximumStockLevel(),
-            entity.getStockQuantity(),
-            entity.getDescription(),
-            entity.getPosition(),
-            entity.getReviewCount(),
-            entity.getReviewCountPg(),
-            entity.isRemoved()
-        );
     }
 }
