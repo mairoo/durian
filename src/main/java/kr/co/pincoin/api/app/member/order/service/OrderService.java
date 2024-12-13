@@ -9,6 +9,7 @@ import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.service.OrderProcessingService;
 import kr.co.pincoin.api.domain.shop.service.OrderRefundService;
+import kr.co.pincoin.api.global.security.authorization.context.OrderRequestContext;
 import kr.co.pincoin.api.global.utils.ClientUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,8 @@ public class OrderService {
   private final OrderProcessingService orderProcessingService;
 
   private final OrderRefundService orderRefundService;
+
+  private final OrderRequestContext orderContext;
 
   /**
    * 현재 로그인한 사용자의 주문 목록을 페이징하여 조회한다.
@@ -139,7 +142,8 @@ public class OrderService {
    */
   @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
   public List<OrderProductVoucher> getMyOrderVouchers(User user, String orderNo) {
-    Order order = orderProcessingService.getUserOrder(user.getId(), orderNo);
-    return orderProcessingService.findOrderProductVouchers(order.getId());
+
+    log.debug("getMyOrderVouchers: {} {}", orderNo, orderContext.getOrderId());
+    return null;
   }
 }

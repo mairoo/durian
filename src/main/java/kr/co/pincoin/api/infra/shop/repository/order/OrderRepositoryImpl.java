@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
+import kr.co.pincoin.api.domain.shop.model.order.OrderDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
@@ -20,7 +21,9 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepository {
   private final OrderJpaRepository jpaRepository;
+
   private final OrderQueryRepository queryRepository;
+
   private final OrderMapper mapper;
 
   // 기본 CRUD 작업
@@ -77,6 +80,11 @@ public class OrderRepositoryImpl implements OrderRepository {
   @Override
   public Optional<Order> findByOrderNoAndUserId(String orderNo, Integer userId) {
     return jpaRepository.findByOrderNoAndUserId(orderNo, userId).map(mapper::toModel);
+  }
+
+  @Override
+  public Optional<OrderDetached> findByOrderDetachedNoAndUserId(String orderNo, Integer userId) {
+    return queryRepository.findByOrderDetachedNoAndUserId(orderNo, userId);
   }
 
   // 상태 기반 조회

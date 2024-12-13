@@ -2,6 +2,7 @@ package kr.co.pincoin.api.global.config;
 
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
 import kr.co.pincoin.api.global.security.authorization.OrderSecurityRule;
+import kr.co.pincoin.api.global.security.authorization.context.OrderRequestContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -11,7 +12,9 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 public class SecurityRuleConfig {
 
     @Bean
-    public OrderSecurityRule orderSecurityRule(OrderRepository orderRepository) {
-        return new OrderSecurityRule(orderRepository);
+    public OrderSecurityRule orderSecurityRule(
+        OrderRepository orderRepository,
+        OrderRequestContext orderRequestContext) {
+        return new OrderSecurityRule(orderRepository, orderRequestContext);
     }
 }

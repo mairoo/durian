@@ -2,13 +2,16 @@ package kr.co.pincoin.api.infra.shop.repository.order;
 
 import static kr.co.pincoin.api.infra.shop.entity.order.QOrderEntity.orderEntity;
 
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import kr.co.pincoin.api.domain.shop.model.order.OrderDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.infra.auth.entity.profile.QProfileEntity;
@@ -49,6 +52,18 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         .fetchOne();
 
     return Optional.ofNullable(userId);
+  }
+
+  @Override
+  public Optional<OrderDetached> findByOrderDetachedNoAndUserId(String orderNo, Integer userId) {
+    return Optional.ofNullable(queryFactory
+        .select(getOrderDetachedProjection())
+        .from(orderEntity)
+        .where(
+            orderNoEquals(orderNo),
+            userIdEquals(userId)
+        )
+        .fetchOne());
   }
 
   // 검색/페이징
@@ -103,6 +118,31 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
     long count = total != null ? total : 0L;
 
     return new PageImpl<>(orders, pageable, count);
+  }
+
+  private Expression<OrderDetached> getOrderDetachedProjection() {
+    return Projections.constructor(OrderDetached.class,
+        orderEntity.id,
+        orderEntity.orderNo,
+        orderEntity.fullname,
+        orderEntity.userAgent,
+        orderEntity.acceptLanguage,
+        orderEntity.ipAddress,
+        orderEntity.totalListPrice,
+        orderEntity.totalSellingPrice,
+        orderEntity.currency,
+        orderEntity.parent.id,
+        orderEntity.user.id,
+        orderEntity.created,
+        orderEntity.modified,
+        orderEntity.paymentMethod,
+        orderEntity.status,
+        orderEntity.visibility,
+        orderEntity.transactionId,
+        orderEntity.message,
+        orderEntity.suspicious,
+        orderEntity.isRemoved
+    );
   }
 
   // 기본 조건절
