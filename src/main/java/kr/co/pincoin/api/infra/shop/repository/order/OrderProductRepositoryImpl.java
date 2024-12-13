@@ -3,6 +3,7 @@ package kr.co.pincoin.api.infra.shop.repository.order;
 import java.util.List;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
+import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCondition;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
@@ -37,6 +38,11 @@ public class OrderProductRepositoryImpl implements OrderProductRepository {
     List<OrderProductEntity> entries = queryRepository.findAll(condition);
 
     return mapper.toModelList(entries);
+  }
+
+  @Override
+  public List<OrderProductDetached> findAllDetached(OrderProductSearchCondition condition) {
+    return queryRepository.findAllDetached(condition);
   }
 
   @Override

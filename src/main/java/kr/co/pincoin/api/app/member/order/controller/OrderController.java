@@ -9,7 +9,7 @@ import kr.co.pincoin.api.app.member.order.response.OrderVoucherResponse;
 import kr.co.pincoin.api.app.member.order.service.OrderService;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
-import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
+import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.global.response.model.OrderResponse;
@@ -66,7 +66,7 @@ public class OrderController {
   public ResponseEntity<ApiResponse<List<OrderProductResponse>>> getMyOrderProducts(
       @CurrentUser User user, @PathVariable String orderNo
   ) {
-    List<OrderProduct> orderProducts = orderService.getMyOrderProducts(user, orderNo);
+    List<OrderProductDetached> orderProducts = orderService.getMyOrderProducts(user, orderNo);
     List<OrderProductResponse> orderProductResponses = orderProducts.stream()
         .map(OrderProductResponse::from)
         .toList();

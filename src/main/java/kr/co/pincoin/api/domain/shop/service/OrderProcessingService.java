@@ -15,6 +15,7 @@ import kr.co.pincoin.api.app.member.order.request.CartOrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
+import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderCurrency;
@@ -53,6 +54,10 @@ public class OrderProcessingService {
 
   public List<OrderProduct> getUserOrderProducts(User user, String orderNo) {
     return persistenceService.findOrderProductsByUserIdAndOrderNo(user.getId(), orderNo);
+  }
+
+  public List<OrderProductDetached> getUserOrderProductsDetached(User user, String orderNo) {
+    return persistenceService.findOrderProductsDetachedByUserIdAndOrderNo(user.getId(), orderNo);
   }
 
   public User getUser(Integer userId) {

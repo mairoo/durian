@@ -4,9 +4,12 @@ import static kr.co.pincoin.api.infra.auth.entity.user.QUserEntity.userEntity;
 import static kr.co.pincoin.api.infra.shop.entity.order.QOrderEntity.orderEntity;
 import static kr.co.pincoin.api.infra.shop.entity.order.QOrderProductEntity.orderProductEntity;
 
+import com.querydsl.core.types.Expression;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCondition;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderEntity;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
@@ -38,6 +41,35 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
             userIdEq(condition.getUserId())
         )
         .fetch();
+  }
+
+  @Override
+  public List<OrderProductDetached> findAllDetached(OrderProductSearchCondition condition) {
+    return queryFactory
+        .select(getOrderProductDetachedProjection())
+        .from(orderProductEntity)
+        .innerJoin(orderProductEntity.order, orderEntity)
+        .where(
+            orderIdEq(condition.getOrderId()),
+            orderNoEq(condition.getOrderNo())
+        )
+        .fetch();
+  }
+
+  private Expression<OrderProductDetached> getOrderProductDetachedProjection() {
+    return Projections.constructor(OrderProductDetached.class,
+        orderProductEntity.id,
+        orderProductEntity.order.id,
+        orderProductEntity.name,
+        orderProductEntity.subtitle,
+        orderProductEntity.code,
+        orderProductEntity.listPrice,
+        orderProductEntity.sellingPrice,
+        orderProductEntity.quantity,
+        orderProductEntity.created,
+        orderProductEntity.modified,
+        orderProductEntity.isRemoved
+    );
   }
 
   @Override

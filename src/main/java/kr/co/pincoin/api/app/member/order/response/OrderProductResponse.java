@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
+import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,6 +39,19 @@ public class OrderProductResponse {
 
     // 도메인 모델 객체에서 응답 객체 초기화
     public static OrderProductResponse from(OrderProduct orderProduct) {
+        return OrderProductResponse.builder()
+            .id(orderProduct.getId())
+            .name(orderProduct.getName())
+            .subtitle(orderProduct.getSubtitle())
+            .code(orderProduct.getCode())
+            .listPrice(orderProduct.getListPrice())
+            .sellingPrice(orderProduct.getSellingPrice())
+            .quantity(orderProduct.getQuantity())
+            .build();
+    }
+
+    // OrderProductDetached에서 응답 객체 초기화
+    public static OrderProductResponse from(OrderProductDetached orderProduct) {
         return OrderProductResponse.builder()
             .id(orderProduct.getId())
             .name(orderProduct.getName())

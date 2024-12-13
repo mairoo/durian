@@ -4,7 +4,7 @@ import java.util.List;
 import kr.co.pincoin.api.app.member.order.request.CartOrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
-import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
+import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.service.OrderProcessingService;
@@ -63,8 +63,8 @@ public class OrderService {
    * @return 주문에 포함된 상품 목록
    */
   @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
-  public List<OrderProduct> getMyOrderProducts(User user, String orderNo) {
-    return orderProcessingService.getUserOrderProducts(user, orderNo);
+  public List<OrderProductDetached> getMyOrderProducts(User user, String orderNo) {
+    return orderProcessingService.getUserOrderProductsDetached(user, orderNo);
   }
 
   /**
