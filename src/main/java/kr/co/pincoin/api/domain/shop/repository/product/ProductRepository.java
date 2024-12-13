@@ -20,6 +20,8 @@ public interface ProductRepository {
 
   Optional<Product> findById(Long id, ProductStatus status, ProductStock stock);
 
+  Optional<ProductDetached> findDetachedById(Long id, ProductStatus status, ProductStock stock);
+
   Optional<Product> findByCode(String code);
 
   List<Product> findAll();

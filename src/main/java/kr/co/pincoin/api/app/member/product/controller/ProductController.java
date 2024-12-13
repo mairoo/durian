@@ -52,7 +52,7 @@ public class ProductController {
 
   @GetMapping("/{id}")
   public ApiResponse<ProductResponse> getProductById(@PathVariable Long id) {
-    Product product = productService.getProductById(id);
+    ProductDetached product = productService.getProductDetachedById(id);
     return ApiResponse.of(ProductResponse.from(product));
   }
 

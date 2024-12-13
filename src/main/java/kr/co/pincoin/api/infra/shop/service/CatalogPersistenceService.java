@@ -12,12 +12,14 @@ import kr.co.pincoin.api.domain.shop.repository.product.CategoryRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.store.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class CatalogPersistenceService {
   private final CategoryRepository categoryRepository;
 
@@ -64,6 +66,11 @@ public class CatalogPersistenceService {
 
   public Optional<Product> findProductById(Long id, ProductStatus status, ProductStock stock) {
     return productRepository.findById(id, status, stock);
+  }
+
+  public Optional<ProductDetached> findProductDetachedById(Long id, ProductStatus status,
+      ProductStock stock) {
+    return productRepository.findDetachedById(id, status, stock);
   }
 
   public Optional<Product> findProductByCode(String code) {

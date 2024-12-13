@@ -87,6 +87,12 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
+  public Optional<ProductDetached> findDetachedById(Long id, ProductStatus status,
+      ProductStock stock) {
+    return queryRepository.findDetachedById(id, status, stock);
+  }
+
+  @Override
   public void softDelete(Product product) {
     Product deletedProduct =
         findById(product.getId(), null, null)

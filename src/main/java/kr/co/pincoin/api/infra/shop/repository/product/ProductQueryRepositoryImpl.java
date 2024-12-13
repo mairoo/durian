@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.infra.shop.repository.product;
 
+import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -36,36 +37,25 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
   }
 
   @Override
+  public Optional<ProductDetached> findDetachedById(Long id, ProductStatus status,
+      ProductStock stock) {
+    return Optional.ofNullable(queryFactory
+        .select(getProductDetachedProjection())
+        .from(product)
+        .join(product.category)
+        .where(
+            idEq(id),
+            statusEq(status),
+            stockEq(stock)
+        )
+        .fetchOne());
+  }
+
+  @Override
   public List<ProductDetached> findAllByCategory(Long categoryId, String categorySlug,
       ProductStatus status, ProductStock stock) {
     return queryFactory
-        .select(Projections.constructor(ProductDetached.class,
-            product.id,
-            product.name,
-            product.subtitle,
-            product.code,
-            product.pg,
-            product.naverPartner,
-            product.naverPartnerTitle,
-            product.naverPartnerTitlePg,
-            product.naverAttribute,
-            product.created,
-            product.modified,
-            product.category.id,
-            product.status,
-            product.stock,
-            product.listPrice,
-            product.sellingPrice,
-            product.pgSellingPrice,
-            product.minimumStockLevel,
-            product.maximumStockLevel,
-            product.stockQuantity,
-            product.description,
-            product.position,
-            product.reviewCount,
-            product.reviewCountPg,
-            product.isRemoved
-        ))
+        .select(getProductDetachedProjection())
         .from(product)
         .join(product.category)
         .where(
@@ -75,6 +65,36 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
             stockEq(stock)
         )
         .fetch();
+  }
+
+  private Expression<ProductDetached> getProductDetachedProjection() {
+    return Projections.constructor(ProductDetached.class,
+        product.id,
+        product.name,
+        product.subtitle,
+        product.code,
+        product.pg,
+        product.naverPartner,
+        product.naverPartnerTitle,
+        product.naverPartnerTitlePg,
+        product.naverAttribute,
+        product.created,
+        product.modified,
+        product.category.id,
+        product.status,
+        product.stock,
+        product.listPrice,
+        product.sellingPrice,
+        product.pgSellingPrice,
+        product.minimumStockLevel,
+        product.maximumStockLevel,
+        product.stockQuantity,
+        product.description,
+        product.position,
+        product.reviewCount,
+        product.reviewCountPg,
+        product.isRemoved
+    );
   }
 
   private BooleanExpression idEq(Long id) {

@@ -11,6 +11,8 @@ public interface ProductQueryRepository {
 
     Optional<ProductEntity> findById(Long id, ProductStatus status, ProductStock stock);
 
+    Optional<ProductDetached> findDetachedById(Long id, ProductStatus status, ProductStock stock);
+
     List<ProductDetached> findAllByCategory(Long categoryId, String categorySlug,
         ProductStatus status, ProductStock stock);
 }

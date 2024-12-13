@@ -14,12 +14,14 @@ import kr.co.pincoin.api.global.exception.BusinessException;
 import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.infra.shop.service.CatalogPersistenceService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class CatalogService {
 
   private final CatalogPersistenceService catalogPersistence;
@@ -168,6 +170,13 @@ public class CatalogService {
   public Product getProductById(Long productId, ProductStatus status, ProductStock stock) {
     return catalogPersistence
         .findProductById(productId, status, stock)
+        .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
+  }
+
+  public ProductDetached getProductDetachedById(Long productId, ProductStatus status,
+      ProductStock stock) {
+    return catalogPersistence
+        .findProductDetachedById(productId, status, stock)
         .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
   }
 
