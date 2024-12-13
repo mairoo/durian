@@ -10,13 +10,13 @@ import kr.co.pincoin.api.app.member.order.service.OrderService;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
-import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.global.response.model.OrderResponse;
 import kr.co.pincoin.api.global.response.page.PageResponse;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import kr.co.pincoin.api.global.security.annotation.CurrentUser;
 import kr.co.pincoin.api.global.utils.ClientUtils;
+import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherProjection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -110,7 +110,8 @@ public class OrderController {
   public ResponseEntity<ApiResponse<List<OrderVoucherResponse>>> getOrderVouchers(
       @CurrentUser User user,
       @PathVariable String orderNo) {
-    List<OrderProductVoucher> orderVouchers = orderService.getMyOrderVouchers(user, orderNo);
+    List<OrderProductVoucherProjection> orderVouchers = orderService.getMyOrderVouchers(user,
+        orderNo);
     List<OrderVoucherResponse> orderVoucherResponses = orderVouchers.stream()
         .map(OrderVoucherResponse::from)
         .toList();

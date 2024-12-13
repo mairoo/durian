@@ -5,12 +5,12 @@ import kr.co.pincoin.api.app.member.order.request.CartOrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
-import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.service.OrderProcessingService;
 import kr.co.pincoin.api.domain.shop.service.OrderRefundService;
 import kr.co.pincoin.api.global.security.authorization.context.OrderRequestContext;
 import kr.co.pincoin.api.global.utils.ClientUtils;
+import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherProjection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -141,9 +141,8 @@ public class OrderService {
    * @return 주문에 포함된 상품권 목록
    */
   @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
-  public List<OrderProductVoucher> getMyOrderVouchers(User user, String orderNo) {
+  public List<OrderProductVoucherProjection> getMyOrderVouchers(User user, String orderNo) {
 
-    log.debug("getMyOrderVouchers: {} {}", orderNo, orderContext.getOrderId());
-    return null;
+    return orderProcessingService.findOrderProductVouchers(orderContext.getOrderId());
   }
 }

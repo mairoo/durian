@@ -42,7 +42,7 @@ public class OrderRefundService {
     persistenceService.saveOrders(order, refundOrder);
 
     // 발행된 바우처 취소 처리
-    orderVoucherService.revokeVouchers(order.getId());
+    //orderVoucherService.revokeVouchers(order.getId());
 
     return refundOrder;
   }

@@ -16,7 +16,6 @@ import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
-import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderCurrency;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
@@ -25,6 +24,7 @@ import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.global.utils.ClientUtils;
+import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherProjection;
 import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -206,7 +206,7 @@ public class OrderProcessingService {
     persistenceService.hideUserOrder(order);
   }
 
-  public List<OrderProductVoucher> findOrderProductVouchers(Long orderId) {
+  public List<OrderProductVoucherProjection> findOrderProductVouchers(Long orderId) {
     return persistenceService.findOrderProductVouchers(orderId);
   }
 

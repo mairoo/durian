@@ -5,6 +5,7 @@ import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherRepository;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductVoucherEntity;
 import kr.co.pincoin.api.infra.shop.mapper.order.OrderProductVoucherMapper;
+import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -32,9 +33,7 @@ public class OrderProductVoucherRepositoryImpl implements OrderProductVoucherRep
   }
 
   @Override
-  public List<OrderProductVoucher> findAllByOrderProductOrderId(Long orderId) {
-    List<OrderProductVoucherEntity> entries = jpaRepository.findAllByOrderProductOrderId(orderId);
-
-    return mapper.toModelList(entries);
+  public List<OrderProductVoucherProjection> findAllByOrderProductOrderId(Long orderId) {
+    return queryRepository.findAllByOrderProductOrderId(orderId);
   }
 }

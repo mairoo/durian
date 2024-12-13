@@ -29,6 +29,7 @@ import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherReposit
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
+import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -82,7 +83,7 @@ public class OrderPersistenceService {
     return orderPaymentRepository.findByOrderAndIsRemovedFalse(order);
   }
 
-  public List<OrderProductVoucher> findOrderProductVouchers(Long orderId) {
+  public List<OrderProductVoucherProjection> findOrderProductVouchers(Long orderId) {
     return orderProductVoucherRepository.findAllByOrderProductOrderId(orderId);
   }
 
