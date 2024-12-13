@@ -1,9 +1,11 @@
 package kr.co.pincoin.api.infra.shop.repository.product;
 
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.Optional;
+import kr.co.pincoin.api.domain.shop.model.product.ProductList;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
@@ -34,11 +36,38 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
   }
 
   @Override
-  public List<ProductEntity> findAllByCategory(Long categoryId, String categorySlug,
+  public List<ProductList> findAllByCategory(Long categoryId, String categorySlug,
       ProductStatus status, ProductStock stock) {
     return queryFactory
-        .selectFrom(product)
-        .join(product.category).fetchJoin()
+        .select(Projections.constructor(ProductList.class,
+            product.id,
+            product.name,
+            product.subtitle,
+            product.code,
+            product.pg,
+            product.naverPartner,
+            product.naverPartnerTitle,
+            product.naverPartnerTitlePg,
+            product.naverAttribute,
+            product.created,
+            product.modified,
+            product.category.id,
+            product.status,
+            product.stock,
+            product.listPrice,
+            product.sellingPrice,
+            product.pgSellingPrice,
+            product.minimumStockLevel,
+            product.maximumStockLevel,
+            product.stockQuantity,
+            product.description,
+            product.position,
+            product.reviewCount,
+            product.reviewCountPg,
+            product.isRemoved
+        ))
+        .from(product)
+        .join(product.category)
         .where(
             categoryIdEq(categoryId),
             categorySlugEq(categorySlug),

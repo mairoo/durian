@@ -1,9 +1,10 @@
 package kr.co.pincoin.api.app.member.product.controller;
 
 import java.util.List;
-import kr.co.pincoin.api.app.admin.product.response.ProductResponse;
+import kr.co.pincoin.api.app.member.product.response.ProductResponse;
 import kr.co.pincoin.api.app.member.product.service.ProductService;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
+import kr.co.pincoin.api.domain.shop.model.product.ProductList;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,7 @@ public class ProductController {
       throw new BadRequestException("카테고리 ID 또는 이름을 반드시 제공해야 합니다");
     }
 
-    List<Product> products;
+    List<ProductList> products;
 
     if (categoryId != null) {
       products = productService.getProductsByCategory(categoryId);

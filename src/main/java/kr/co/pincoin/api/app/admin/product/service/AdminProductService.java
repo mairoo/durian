@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import kr.co.pincoin.api.app.admin.product.request.ProductCreateRequest;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
+import kr.co.pincoin.api.domain.shop.model.product.ProductList;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.domain.shop.service.CatalogService;
@@ -33,7 +34,7 @@ public class AdminProductService {
     return catalogService.suspendProductSale(productId);
   }
 
-  public List<Product> getProductsByCategory(Long categoryId, String categorySlug,
+  public List<ProductList> getProductsByCategory(Long categoryId, String categorySlug,
       ProductStatus status, ProductStock stock) {
     return catalogService.getProductsByCategory(categoryId, categorySlug, status, stock);
   }

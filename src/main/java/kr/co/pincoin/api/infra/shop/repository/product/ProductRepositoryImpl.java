@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
+import kr.co.pincoin.api.domain.shop.model.product.ProductList;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
@@ -65,10 +66,9 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
-  public List<Product> findAllByCategory(Long categoryId, String categorySlug,
+  public List<ProductList> findAllByCategory(Long categoryId, String categorySlug,
       ProductStatus status, ProductStock stock) {
-    return mapper.toModelList(
-        queryRepository.findAllByCategory(categoryId, categorySlug, status, stock));
+    return queryRepository.findAllByCategory(categoryId, categorySlug, status, stock);
   }
 
   @Override

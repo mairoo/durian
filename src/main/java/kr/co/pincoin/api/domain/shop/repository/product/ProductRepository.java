@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
+import kr.co.pincoin.api.domain.shop.model.product.ProductList;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 
@@ -29,7 +30,7 @@ public interface ProductRepository {
 
   Optional<Product> findByIdWithCategory(Long id);
 
-  List<Product> findAllByCategory(Long categoryId, String categorySlug,
+  List<ProductList> findAllByCategory(Long categoryId, String categorySlug,
       ProductStatus status, ProductStock stock);
 
   void softDelete(Product product);
