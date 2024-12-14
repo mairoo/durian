@@ -23,6 +23,8 @@ import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
+import kr.co.pincoin.api.global.exception.BusinessException;
+import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.global.utils.ClientUtils;
 import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherProjection;
 import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
@@ -249,7 +251,7 @@ public class OrderProcessingService {
     if (!foundCodes.containsAll(requestedCodes)) {
       Set<String> notFoundCodes = new HashSet<>(requestedCodes);
       notFoundCodes.removeAll(foundCodes);
-      throw new EntityNotFoundException("상품을 찾을 수 없습니다: " + String.join(", ", notFoundCodes));
+      throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, String.join(", ", notFoundCodes));
     }
 
     Map<String, Integer> quantityByCode = items.stream()

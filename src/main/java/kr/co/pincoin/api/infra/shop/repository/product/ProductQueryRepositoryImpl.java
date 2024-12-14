@@ -70,9 +70,9 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
   private Expression<ProductDetached> getProductDetachedProjection() {
     return Projections.constructor(ProductDetached.class,
         product.id,
+        product.code,
         product.name,
         product.subtitle,
-        product.code,
         product.pg,
         product.naverPartner,
         product.naverPartnerTitle,
