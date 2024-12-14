@@ -43,7 +43,7 @@ public class OrderDetached {
 
     // 플래그
     private final Boolean suspicious;
-    private final Boolean removed;
+    private final Boolean isRemoved;
 
     public OrderDetached(
         Long id,
@@ -65,7 +65,7 @@ public class OrderDetached {
         String transactionId,
         String message,
         Boolean suspicious,
-        Boolean removed) {
+        Boolean isRemoved) {
 
         this.id = id;
         this.orderNo = orderNo;
@@ -86,6 +86,6 @@ public class OrderDetached {
         this.transactionId = transactionId;
         this.message = message;
         this.suspicious = suspicious;
-        this.removed = removed;
+        this.isRemoved = isRemoved;
     }
 }

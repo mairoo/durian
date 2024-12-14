@@ -52,8 +52,8 @@ public class OrderResponse {
   @JsonProperty("suspicious")
   private final Boolean suspicious;
 
-  @JsonProperty("removed")
-  private final Boolean removed;
+  @JsonProperty("isRemoved")
+  private final Boolean isRemoved;
 
   // 도메인 모델 객체에서 응답 객체 초기화
   public static OrderResponse from(Order order) {
@@ -69,7 +69,7 @@ public class OrderResponse {
         .created(order.getCreated())
         .modified(order.getModified())
         .suspicious(order.getSuspicious())
-        .removed(order.getRemoved())
+        .isRemoved(order.getRemoved())
         .build();
   }
   
@@ -87,7 +87,7 @@ public class OrderResponse {
         .created(order.getCreated())
         .modified(order.getModified())
         .suspicious(order.getSuspicious())
-        .removed(order.getRemoved())
+        .isRemoved(order.getIsRemoved())
         .build();
   }
 }

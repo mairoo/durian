@@ -228,9 +228,6 @@ public class Category {
     if (slug == null || slug.trim().isEmpty()) {
       throw new BusinessException(ErrorCode.INVALID_CATEGORY_SLUG);
     }
-    if (store == null) {
-      throw new BusinessException(ErrorCode.STORE_REQUIRED);
-    }
     validateDiscountRates(discountRate, pgDiscountRate);
   }
 
