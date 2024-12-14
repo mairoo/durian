@@ -20,7 +20,7 @@ import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderCurrency;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
-import kr.co.pincoin.api.domain.shop.model.product.Product;
+import kr.co.pincoin.api.domain.shop.model.product.ProductDetached;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.global.exception.BusinessException;
@@ -29,6 +29,7 @@ import kr.co.pincoin.api.global.utils.ClientUtils;
 import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherProjection;
 import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class OrderProcessingService {
 
   private final OrderPersistenceService persistenceService;
@@ -54,10 +56,6 @@ public class OrderProcessingService {
     return persistenceService.findUserOrder(userId, orderNo);
   }
 
-  public List<OrderProduct> getUserOrderProducts(User user, String orderNo) {
-    return persistenceService.findOrderProductsByUserIdAndOrderNo(user.getId(), orderNo);
-  }
-
   public List<OrderProductDetached> getUserOrderProductsDetached(User user, String orderNo) {
     return persistenceService.findOrderProductsDetachedByUserIdAndOrderNo(user.getId(), orderNo);
   }
@@ -69,7 +67,7 @@ public class OrderProcessingService {
   @Transactional
   public Order createOrderFromCart(User user, CartOrderCreateRequest request,
       ClientUtils.ClientInfo clientInfo) {
-    List<Product> products = validateProductsForCartOrder(request.getItems());
+    List<ProductDetached> products = validateProductsForCartOrder(request.getItems());
 
     validateCartPrices(products, request.getItems());
 
@@ -235,18 +233,25 @@ public class OrderProcessingService {
     }
   }
 
-  private List<Product> validateProductsForCartOrder(List<CartItem> items) {
+  private List<ProductDetached> validateProductsForCartOrder(List<CartItem> items) {
+    // 장바구니에 담긴 상품권 권종 목록 가져오기
     List<String> codes = items.stream()
         .map(CartItem::getCode)
         .distinct()
         .toList();
 
-    List<Product> products = new ArrayList<>(persistenceService.findProductsByCode(codes).values());
+    // 실제 데이터베이스에 존재하는 상품권 권종 목록 가져오기
+    List<ProductDetached> products = new ArrayList<>(
+        persistenceService.findProductsDetachedByCodeIn(codes).values());
 
     Set<String> requestedCodes = new HashSet<>(codes);
     Set<String> foundCodes = products.stream()
-        .map(Product::getCode)
+        .map(ProductDetached::getCode)
         .collect(Collectors.toSet());
+
+    for (String foundCode : foundCodes) {
+      log.warn(foundCode);
+    }
 
     if (!foundCodes.containsAll(requestedCodes)) {
       Set<String> notFoundCodes = new HashSet<>(requestedCodes);
@@ -261,7 +266,7 @@ public class OrderProcessingService {
         ));
 
     List<String> errors = new ArrayList<>();
-    for (Product product : products) {
+    for (ProductDetached product : products) {
       Integer requestedQuantity = quantityByCode.get(product.getCode());
       if (product.getStatus() == ProductStatus.DISABLED
           || product.getStock() == ProductStock.SOLD_OUT) {
@@ -281,14 +286,14 @@ public class OrderProcessingService {
     return products;
   }
 
-  private void validateCartPrices(List<Product> products, List<CartItem> items) {
-    Map<Long, Product> productMap = products.stream()
-        .collect(Collectors.toMap(Product::getId, Function.identity()));
+  private void validateCartPrices(List<ProductDetached> products, List<CartItem> items) {
+    Map<Long, ProductDetached> productMap = products.stream()
+        .collect(Collectors.toMap(ProductDetached::getId, Function.identity()));
 
     List<String> priceErrors = new ArrayList<>();
 
     for (CartItem item : items) {
-      Product product = productMap.get(item.getProductId());
+      ProductDetached product = productMap.get(item.getProductId());
 
       if (product.getSellingPrice().compareTo(item.getSellingPrice()) != 0) {
         priceErrors.add(String.format(

@@ -4,6 +4,7 @@ import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.ProductDetached;
@@ -61,6 +62,25 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
         .where(
             categoryIdEq(categoryId),
             categorySlugEq(categorySlug),
+            statusEq(status),
+            stockEq(stock)
+        )
+        .fetch();
+  }
+
+  @Override
+  public List<ProductDetached> findAllDetachedByCodeIn(Collection<String> codes,
+      ProductStatus status, ProductStock stock) {
+    if (codes == null || codes.isEmpty()) {
+      return List.of();
+    }
+
+    return queryFactory
+        .select(getProductDetachedProjection())
+        .from(product)
+        .join(product.category)
+        .where(
+            product.code.in(codes),
             statusEq(status),
             stockEq(stock)
         )

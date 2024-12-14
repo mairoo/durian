@@ -61,6 +61,12 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
+  public List<ProductDetached> findAllDetachedByCodeIn(Collection<String> codes,
+      ProductStatus status, ProductStock stock) {
+    return queryRepository.findAllDetachedByCodeIn(codes, status, stock);
+  }
+
+  @Override
   public Optional<Product> findByIdWithCategory(Long id) {
     return jpaRepository.findByIdWithCategory(id).map(mapper::toModel);
   }

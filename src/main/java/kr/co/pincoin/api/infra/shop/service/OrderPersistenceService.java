@@ -21,7 +21,10 @@ import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCon
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
+import kr.co.pincoin.api.domain.shop.model.product.ProductDetached;
 import kr.co.pincoin.api.domain.shop.model.product.Voucher;
+import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
+import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderPaymentRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
@@ -134,9 +137,16 @@ public class OrderPersistenceService {
         items.stream().map(CartItem::getCode).distinct().toList());
   }
 
-  public Map<String, Product> findProductsByCode(List<String> codes) {
+  public Map<String, Product> findProductsByCodeIn(List<String> codes) {
     return productRepository.findAllByCodeIn(codes).stream()
         .collect(Collectors.toMap(Product::getCode, Function.identity()));
+  }
+
+  public Map<String, ProductDetached> findProductsDetachedByCodeIn(List<String> codes) {
+    return productRepository.findAllDetachedByCodeIn(codes, ProductStatus.ENABLED,
+            ProductStock.IN_STOCK)
+        .stream()
+        .collect(Collectors.toMap(ProductDetached::getCode, Function.identity()));
   }
 
   public List<Voucher> findAvailableVouchers(String productCode, int quantity) {

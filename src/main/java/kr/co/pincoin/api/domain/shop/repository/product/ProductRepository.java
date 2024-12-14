@@ -30,6 +30,9 @@ public interface ProductRepository {
 
   List<Product> findAllByCodeIn(Collection<String> codes);
 
+  List<ProductDetached> findAllDetachedByCodeIn(Collection<String> codes, ProductStatus status,
+      ProductStock stock);
+
   Optional<Product> findByIdWithCategory(Long id);
 
   List<ProductDetached> findAllByCategory(Long categoryId, String categorySlug,

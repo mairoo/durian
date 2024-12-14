@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.infra.shop.repository.product;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.ProductDetached;
@@ -15,4 +16,7 @@ public interface ProductQueryRepository {
 
     List<ProductDetached> findAllByCategory(Long categoryId, String categorySlug,
         ProductStatus status, ProductStock stock);
+
+    List<ProductDetached> findAllDetachedByCodeIn(Collection<String> codes, ProductStatus status,
+        ProductStock stock);
 }
