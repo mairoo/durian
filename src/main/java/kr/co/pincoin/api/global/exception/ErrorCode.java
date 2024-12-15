@@ -155,7 +155,9 @@ public enum ErrorCode {
   EXTERNAL_SERVICE_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "외부 서비스 연동 중 오류가 발생했습니다"),
   GATEWAY_TIMEOUT(HttpStatus.GATEWAY_TIMEOUT, "외부 서비스 응답 시간을 초과했습니다"),
   MAILGUN_API_PARSE_ERROR(HttpStatus.BAD_REQUEST, "mailgun API 응답 파싱 오류"),
-  MAILGUN_API_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "mailgun API 발송 오류");
+  MAILGUN_API_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "mailgun API 발송 오류"),
+  LINE_NOTIFY_API_PARSE_ERROR(HttpStatus.BAD_REQUEST, "Line Notify API 응답 파싱 오류"),
+  LINE_NOTIFY_API_SEND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Line Notify API 발송 오류");
 
   private final HttpStatus status;
   private final String message;

@@ -34,4 +34,12 @@ public class WebClientConfig {
         .defaultHeader(HttpHeaders.CACHE_CONTROL, "no-cache")
         .build();
   }
+
+  @Bean
+  public WebClient lineNotifyWebClient(@Value("${line-notify.base-url}") String baseUrl) {
+    return WebClient.builder()
+        .baseUrl(baseUrl)
+        .defaultHeader("Cache-Control", "no-cache")
+        .build();
+  }
 }
