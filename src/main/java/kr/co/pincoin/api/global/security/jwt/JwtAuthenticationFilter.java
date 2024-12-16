@@ -1,9 +1,6 @@
 package kr.co.pincoin.api.global.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -41,12 +38,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private final JwtTokenProvider jwtTokenProvider;
   private final UserDetailsService userDetailsService;
   private final ObjectMapper objectMapper;
-
-  @PostConstruct
-  public void setup() {
-    objectMapper.registerModule(new JavaTimeModule());
-    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-  }
 
   @Override
   protected boolean shouldNotFilter(@NonNull HttpServletRequest request) {
