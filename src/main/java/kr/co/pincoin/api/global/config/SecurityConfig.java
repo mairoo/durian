@@ -101,14 +101,18 @@ public class SecurityConfig {
         // - /users, /products 같은 엔드포인트는 인증/미인증 요청을 모두 처리해야하는 경우가 많음
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/actuator/**")
-                    .denyAll() // actuator 등 민감한 엔드포인트는 명시적 차단
-                    .requestMatchers("/admin/**", // 관리자 대시보드
-                        "/users/me", // 개인정보
-                        "/orders/**") // 주문관련 정보
-                    .authenticated()
-                    .anyRequest()
-                    .permitAll()) // 나머지 모두 허용
+                auth
+                    .requestMatchers("/actuator/**").denyAll()
+                    .requestMatchers(
+                        "/auth/**",
+                        "/oauth2/**",
+                        "/products/**",
+                        "/categories/**",
+                        "/public/**",
+                        "/api/**"
+                    ).permitAll()
+                    .anyRequest().authenticated() // 나머지는 모두 인증 필요 (블랙리스트 패턴)
+        )
 
         // 5. 커스텀 필터 추가 (JWT 인증)
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
