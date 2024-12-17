@@ -4,18 +4,18 @@ import java.math.BigDecimal;
 import kr.co.pincoin.api.domain.auth.model.phone.enums.PhoneVerifiedStatus;
 import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
+import kr.co.pincoin.api.global.security.annotation.SuperUser;
 import kr.co.pincoin.api.infra.auth.service.UserProfilePersistenceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-@PreAuthorize("hasRole('ADMIN')")
+@SuperUser
 @RequiredArgsConstructor
 public class AdminProfileService {
   private final UserProfilePersistenceService persistenceService;
