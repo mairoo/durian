@@ -5,13 +5,15 @@ import kr.co.pincoin.api.app.admin.product.request.CategoryCreateRequest;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
 import kr.co.pincoin.api.domain.shop.model.product.CategoryDetached;
 import kr.co.pincoin.api.domain.shop.service.CatalogService;
+import kr.co.pincoin.api.global.security.annotation.SuperUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
+@SuperUser
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class AdminCategoryService {
 
   private final CatalogService catalogService;

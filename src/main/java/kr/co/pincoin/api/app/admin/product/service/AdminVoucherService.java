@@ -7,13 +7,15 @@ import kr.co.pincoin.api.app.admin.product.request.VoucherCreateRequest;
 import kr.co.pincoin.api.domain.shop.model.product.Voucher;
 import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
 import kr.co.pincoin.api.domain.shop.service.InventoryService;
+import kr.co.pincoin.api.global.security.annotation.SuperUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
+@SuperUser
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class AdminVoucherService {
 
   private final InventoryService inventoryService;

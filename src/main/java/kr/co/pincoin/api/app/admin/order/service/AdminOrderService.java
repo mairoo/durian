@@ -7,6 +7,7 @@ import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.service.OrderProcessingService;
 import kr.co.pincoin.api.domain.shop.service.OrderRefundService;
 import kr.co.pincoin.api.domain.shop.service.OrderVoucherService;
+import kr.co.pincoin.api.global.security.annotation.SuperUser;
 import kr.co.pincoin.api.global.utils.ClientUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@SuperUser
 @RequiredArgsConstructor
 @Slf4j
 public class AdminOrderService {
