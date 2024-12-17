@@ -1,4 +1,4 @@
-package kr.co.pincoin.api.external.payment.banktransfer.request;
+package kr.co.pincoin.api.external.payment.banktransfer;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

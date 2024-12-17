@@ -1,8 +1,7 @@
-package kr.co.pincoin.api.external.payment.banktransfer.controller;
+package kr.co.pincoin.api.external.payment.banktransfer;
 
 import jakarta.validation.Valid;
 import kr.co.pincoin.api.domain.shop.service.OrderPaymentService;
-import kr.co.pincoin.api.external.payment.banktransfer.request.BankTransferRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

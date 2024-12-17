@@ -2,7 +2,6 @@ package kr.co.pincoin.api.global.security.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -14,6 +13,7 @@ import kr.co.pincoin.api.global.exception.JwtAuthenticationException;
 import kr.co.pincoin.api.global.response.error.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -34,9 +34,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
   public static final String BEARER_PREFIX = "Bearer ";
-  public static final String X_AUTH_TOKEN = "X-Auth-Token";
+
+  public static final String TOKEN_PREFIX = "Token ";
+
+  @Value("${bank-transfer.token}")
+  private String BANK_TRANSFER_TOKEN;
+
   private final JwtTokenProvider jwtTokenProvider;
+
   private final UserDetailsService userDetailsService;
+
   private final ObjectMapper objectMapper;
 
   @Override
@@ -58,7 +65,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             new AntPathRequestMatcher("/products/**"),
             new AntPathRequestMatcher("/categories/**"),
             new AntPathRequestMatcher("/public/**"),
-            new AntPathRequestMatcher("/api/**")
+            new AntPathRequestMatcher("/api/**"),
+            new AntPathRequestMatcher("/payment/billgate/callback"),
+            new AntPathRequestMatcher("/payment/paypal/callback"),
+            new AntPathRequestMatcher("/payment/danal/callback")
         );
 
     // 명시적으로 공개된 엔드포인트가 아니면 모두 필터링
@@ -73,46 +83,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       @NonNull FilterChain filterChain)
       throws IOException {
     try {
-      // 1. HTTP 프로토콜 헤더에서 토큰 추출
-      Optional.ofNullable(getBearerToken(request))
-          // 2. JWT 토큰 유효성 확인 및 username 추출
-          .flatMap(jwtTokenProvider::validateToken)
-          //
-          .ifPresent(
-              sub -> {
-                try {
-                  // 3. 데이터베이스에서 username 조회
-                  UserDetails userDetails = userDetailsService.loadUserByUsername(sub);
+      String bearerToken = getBearerToken(request);
+      String apiToken = getToken(request);
 
-                  // 5. 인증 객체 생성
-                  Authentication auth =
-                      new UsernamePasswordAuthenticationToken(
-                          userDetails, null, userDetails.getAuthorities());
+      // 두 토큰이 모두 없는 경우 인증 실패 처리
+      if (bearerToken == null && apiToken == null) {
+        throw new JwtAuthenticationException(ErrorCode.UNAUTHORIZED);
+      }
 
-                  // 6. WebAuthenticationDetails, WebAuthenticationDetailsSource 저장
-                  // WebAuthenticationDetails 객체는 인증 요청과 관련된 웹 관련 정보
-                  // - RemoteAddress (클라이언트 IP 주소)
-                  // - SessionId (현재 세션 ID)
-                  // setDetails()의 활용 용도
-                  // - 특정 IP 주소나 지역에서의 접근 제한
-                  // - 세션 기반의 추가적인 보안 검증
-                  // - 사용자 행동 분석 및 로깅
-                  // - 감사(audit) 기록 생성
-                  // - 다중 요소 인증(MFA) 구현
-                  // - IP 기반 접근 제한이나 차단
-                  // authentication.setDetails(new
-                  // WebAuthenticationDetailsSource().buildDetails(request));
+      if (bearerToken != null) {
+        processBearerToken(bearerToken);
+      }
 
-                  // 7. 현재 인증된 사용자 정보를 보안 컨텍스트에 저장 = 로그인 처리
-                  SecurityContextHolder.getContext().setAuthentication(auth);
+      if (apiToken != null) {
+        processApiToken(apiToken);
+      }
 
-                  log.debug("logged in: {}", auth.getPrincipal());
-                } catch (UsernameNotFoundException e) {
-                  throw new JwtAuthenticationException(ErrorCode.INVALID_CREDENTIALS);
-                }
-              });
-
-      // 8. 이후 필터 실행
+      // 다음 필터 실행
       filterChain.doFilter(request, response);
     } catch (JwtAuthenticationException e) {
       SecurityContextHolder.clearContext();
@@ -124,20 +111,53 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
   }
 
-  // 토큰 추출 우선순위 설정
-  private String extractToken(HttpServletRequest request) {
-    // Bearer 토큰과 쿠키의 우선순위:
-    // - 어떤 것을 먼저 검사할지 명확히 정의
-    // - 동시에 존재할 경우의 처리 방침 수립
+  private void processBearerToken(String token) {
+    // JWT 토큰 유효성 확인 및 username 추출 후 인증 처리
+    Optional.of(token)
+        .flatMap(jwtTokenProvider::validateToken)
+        .ifPresent(this::authenticateUser);
+  }
 
-    // 1. Bearer 토큰 먼저 확인
-    String bearerToken = getBearerToken(request);
-    if (bearerToken != null) {
-      return bearerToken;
+  private void processApiToken(String token) {
+    if (!BANK_TRANSFER_TOKEN.equals(token)) {
+      throw new JwtAuthenticationException(ErrorCode.INVALID_CREDENTIALS);
     }
+    // API 토큰이 유효한 경우 아무 작업도 하지 않음
+    // - SecurityContextHolder에 인증 정보를 저장하지 않음
+    log.debug("Valid API token provided");
+  }
 
-    // 2. 쿠키 확인
-    return getCookieToken(request);
+  private void authenticateUser(String username) {
+    try {
+      // 1. 데이터베이스에서 username 조회
+      UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
+      // 2. 인증 객체 생성
+      Authentication auth =
+          new UsernamePasswordAuthenticationToken(
+              userDetails, null, userDetails.getAuthorities());
+
+      // 3. WebAuthenticationDetails, WebAuthenticationDetailsSource 저장
+      // WebAuthenticationDetails 객체는 인증 요청과 관련된 웹 관련 정보
+      // - RemoteAddress (클라이언트 IP 주소)
+      // - SessionId (현재 세션 ID)
+      // setDetails()의 활용 용도
+      // - 특정 IP 주소나 지역에서의 접근 제한
+      // - 세션 기반의 추가적인 보안 검증
+      // - 사용자 행동 분석 및 로깅
+      // - 감사(audit) 기록 생성
+      // - 다중 요소 인증(MFA) 구현
+      // - IP 기반 접근 제한이나 차단
+      // authentication.setDetails(new
+      // WebAuthenticationDetailsSource().buildDetails(request));
+
+      // 4. 현재 인증된 사용자 정보를 보안 컨텍스트에 저장 = 로그인 처리
+      SecurityContextHolder.getContext().setAuthentication(auth);
+
+      log.debug("logged in: {}", auth.getPrincipal());
+    } catch (UsernameNotFoundException e) {
+      throw new JwtAuthenticationException(ErrorCode.INVALID_CREDENTIALS);
+    }
   }
 
   private String getBearerToken(HttpServletRequest request) {
@@ -153,27 +173,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     return null;
   }
 
-  private String getCookieToken(HttpServletRequest request) {
-    Cookie[] cookies = request.getCookies();
-    if (cookies != null) {
-      for (Cookie cookie : cookies) {
-        if ("accessToken".equals(cookie.getName())) {
-          return cookie.getValue();
-        }
-      }
-    }
-    return null;
-  }
+  private String getToken(HttpServletRequest request) {
+    final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-  private String getXAuthToken(HttpServletRequest request) {
-    // Header format
-    // Non-standard header
-    // X-Auth-Token : JWTString=
-    final String header = request.getHeader(X_AUTH_TOKEN);
-
-    if (header != null && !header.isBlank()) {
-      return header;
+    if (header != null && header.startsWith(TOKEN_PREFIX)) {
+      return header.substring(TOKEN_PREFIX.length()).trim();
     }
+
     return null;
   }
 
@@ -184,7 +190,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
     response.setCharacterEncoding("UTF-8");
 
-    log.warn("[JWT] 인증실패: {}", e.getMessage());
+    log.warn("[Authentication] 인증실패: {}", e.getMessage());
 
     ErrorResponse errorResponse =
         ErrorResponse.of(

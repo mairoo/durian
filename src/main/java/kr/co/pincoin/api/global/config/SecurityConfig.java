@@ -109,7 +109,11 @@ public class SecurityConfig {
                         "/products/**",
                         "/categories/**",
                         "/public/**",
-                        "/api/**"
+                        "/api/**",
+                        "/payment/bank-transfer/callback", // 실제로는 토큰 검증 수행 JwtAuthenticationFilter
+                        "/payment/billgate/callback",
+                        "/payment/paypal/callback",
+                        "/payment/danal/callback"
                     ).permitAll()
                     .anyRequest().authenticated() // 나머지는 모두 인증 필요 (블랙리스트 패턴)
         )
