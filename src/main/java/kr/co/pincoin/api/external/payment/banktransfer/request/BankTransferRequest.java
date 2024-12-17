@@ -1,7 +1,9 @@
 package kr.co.pincoin.api.external.payment.banktransfer.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import kr.co.pincoin.api.domain.shop.model.order.enums.PaymentAccount;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +28,8 @@ public class BankTransferRequest {
      http://localhost:8080/payment/bank-transfer/callback
      */
 
-    @NotBlank(message = "입금계좌는 필수입니다.")
-    private String account;
+    @NotNull(message = "입금계좌는 필수입니다.")
+    private PaymentAccount account;
 
     @NotBlank(message = "입금시각은 필수입니다")
     private String received;
