@@ -33,6 +33,10 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+  private static final RequestMatcher BANK_TRANSFER_WEBHOOK_PATH =
+      new AntPathRequestMatcher("/payment/bank-transfer/callback");
+
   public static final String BEARER_PREFIX = "Bearer ";
 
   public static final String TOKEN_PREFIX = "Token ";
@@ -83,20 +87,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       @NonNull FilterChain filterChain)
       throws IOException {
     try {
+      boolean webhookPath = BANK_TRANSFER_WEBHOOK_PATH.matches(request);
+
       String bearerToken = getBearerToken(request);
       String apiToken = getToken(request);
 
-      // 두 토큰이 모두 없는 경우 인증 실패 처리
-      if (bearerToken == null && apiToken == null) {
+      if (apiToken == null && bearerToken == null) {
         throw new JwtAuthenticationException(ErrorCode.UNAUTHORIZED);
       }
 
-      if (bearerToken != null) {
-        processBearerToken(bearerToken);
-      }
-
-      if (apiToken != null) {
+      if (webhookPath) {
+        // API 토큰 경로인 경우
         processApiToken(apiToken);
+      } else {
+        // Bearer 토큰이 필요한 경로인 경우
+        processBearerToken(bearerToken);
       }
 
       // 다음 필터 실행
