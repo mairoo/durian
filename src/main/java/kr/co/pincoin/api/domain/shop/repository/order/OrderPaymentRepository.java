@@ -13,5 +13,7 @@ public interface OrderPaymentRepository {
 
   List<OrderPayment> findByOrderAndIsRemovedFalse(Order order);
 
+  List<OrderPayment> findByOrderId(Long orderId);
+
   BigDecimal getTotalAmountByOrder(Order order);
 }

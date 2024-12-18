@@ -5,7 +5,6 @@ import jakarta.validation.Valid;
 import java.util.List;
 import kr.co.pincoin.api.app.member.order.request.CartOrderCreateRequest;
 import kr.co.pincoin.api.app.member.order.response.OrderProductResponse;
-import kr.co.pincoin.api.app.member.order.response.OrderVoucherResponse;
 import kr.co.pincoin.api.app.member.order.service.OrderService;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
@@ -16,7 +15,6 @@ import kr.co.pincoin.api.global.response.page.PageResponse;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import kr.co.pincoin.api.global.security.annotation.CurrentUser;
 import kr.co.pincoin.api.global.utils.ClientUtils;
-import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherProjection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,12 +34,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class OrderController {
+
   private final OrderService orderService;
 
   // 재주문 하기
   // 환불 요청하기
 
-  /** 내 주문 목록 조회 */
+  /**
+   * 내 주문 목록 조회
+   */
   @GetMapping
   public ResponseEntity<ApiResponse<PageResponse<OrderResponse>>> getMyOrders(
       @CurrentUser User user,
@@ -53,7 +54,9 @@ public class OrderController {
     return ResponseEntity.ok(ApiResponse.of(PageResponse.from(responses)));
   }
 
-  /** 내 주문 상세 조회 */
+  /**
+   * 내 주문 상세 조회
+   */
   @GetMapping("/{orderNo}")
   public ResponseEntity<ApiResponse<OrderResponse>> getMyOrder(
       @CurrentUser User user, @PathVariable String orderNo) {
@@ -72,7 +75,9 @@ public class OrderController {
     return ResponseEntity.ok(ApiResponse.of(orderProductResponses));
   }
 
-  /** 내 주문 삭제 */
+  /**
+   * 내 주문 삭제
+   */
   @PostMapping("/{orderNo}/delete")
   public ResponseEntity<ApiResponse<Void>> deleteMyOrder(
       @CurrentUser User user, @PathVariable String orderNo) {
@@ -80,7 +85,9 @@ public class OrderController {
     return ResponseEntity.ok(ApiResponse.of(null, "주문이 삭제되었습니다."));
   }
 
-  /** 내 주문 숨김 처리 */
+  /**
+   * 내 주문 숨김 처리
+   */
   @PostMapping("/{orderNo}/hide")
   public ResponseEntity<ApiResponse<Void>> hideMyOrder(
       @CurrentUser User user, @PathVariable String orderNo) {
@@ -88,7 +95,9 @@ public class OrderController {
     return ResponseEntity.ok(ApiResponse.of(null, "주문이 숨김 처리되었습니다."));
   }
 
-  /** 신규 주문 */
+  /**
+   * 신규 주문
+   */
   @PostMapping
   public ResponseEntity<ApiResponse<OrderResponse>> createOrder(
       @CurrentUser User user,

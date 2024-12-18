@@ -39,6 +39,13 @@ public class OrderPaymentRepositoryImpl implements OrderPaymentRepository {
   }
 
   @Override
+  public List<OrderPayment> findByOrderId(Long orderId) {
+    List<OrderPaymentEntity> entries = jpaRepository.findByOrderId(orderId);
+
+    return mapper.toModelList(entries);
+  }
+
+  @Override
   public BigDecimal getTotalAmountByOrder(Order order) {
     return jpaRepository.getTotalAmountByOrder(order.toEntity());
   }

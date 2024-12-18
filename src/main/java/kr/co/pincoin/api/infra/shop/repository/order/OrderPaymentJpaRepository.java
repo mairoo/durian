@@ -18,6 +18,8 @@ public interface OrderPaymentJpaRepository extends JpaRepository<OrderPaymentEnt
   List<OrderPaymentEntity> findByOrderAndRemovedFalse(
       @Param("orderEntity") OrderEntity orderEntity);
 
+  List<OrderPaymentEntity> findByOrderId(Long orderId);
+
   @Query(
       "SELECT COALESCE(SUM(p.amount), 0) "
           + "FROM OrderPaymentEntity p "
