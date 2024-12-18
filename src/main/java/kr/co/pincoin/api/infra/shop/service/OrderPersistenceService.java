@@ -90,6 +90,10 @@ public class OrderPersistenceService {
     return orderProductVoucherRepository.findAllByOrderProductOrderId(orderId);
   }
 
+  public List<OrderPayment> findOrderPaymentsByOrderId(Long orderId) {
+    return orderPaymentRepository.findByOrderIdAndIsRemovedFalse(orderId);
+  }
+
   public Order findOrderWithUser(Long orderId) {
     return orderRepository
         .findByIdWithUser(orderId)

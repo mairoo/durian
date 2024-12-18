@@ -4,6 +4,7 @@ import java.util.List;
 import kr.co.pincoin.api.app.member.order.request.CartOrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
+import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.service.OrderProcessingService;
@@ -142,7 +143,12 @@ public class OrderService {
    */
   @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
   public List<OrderProductVoucherProjection> getMyOrderVouchers(User user, String orderNo) {
-
     return orderProcessingService.findOrderProductVouchers(orderContext.getOrderId());
+  }
+
+  @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
+  public List<OrderPayment> getMyOrderPayments(User user, String orderNo) {
+    return orderProcessingService.findOrderPayments(orderContext.getOrderId());
+  }
   }
 }

@@ -38,7 +38,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
   private final OrderService orderService;
 
-  // 주문 하기
   // 재주문 하기
   // 환불 요청하기
 
@@ -101,21 +100,5 @@ public class OrderController {
 
     return ResponseEntity.ok(
         ApiResponse.of(OrderResponse.from(createdOrder), "주문이 성공적으로 생성되었습니다."));
-  }
-
-  /**
-   * 내 주문 상품권 목록
-   */
-  @GetMapping("/{orderNo}/vouchers")
-  public ResponseEntity<ApiResponse<List<OrderVoucherResponse>>> getOrderVouchers(
-      @CurrentUser User user,
-      @PathVariable String orderNo) {
-    List<OrderProductVoucherProjection> orderVouchers = orderService.getMyOrderVouchers(user,
-        orderNo);
-    List<OrderVoucherResponse> orderVoucherResponses = orderVouchers.stream()
-        .map(OrderVoucherResponse::from)
-        .toList();
-
-    return ResponseEntity.ok(ApiResponse.of(orderVoucherResponses));
   }
 }
