@@ -14,7 +14,6 @@ import kr.co.pincoin.api.app.member.order.request.CartItem;
 import kr.co.pincoin.api.app.member.order.request.CartOrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
-import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
@@ -209,10 +208,6 @@ public class OrderProcessingService {
 
   public List<OrderProductVoucherProjection> findOrderProductVouchers(Long orderId) {
     return persistenceService.findOrderProductVouchers(orderId);
-  }
-
-  public List<OrderPayment> findOrderPayments(Long orderId) {
-    return persistenceService.findOrderPayments(orderId);
   }
 
   // Private 헬퍼 메서드들

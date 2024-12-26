@@ -2,7 +2,7 @@ package kr.co.pincoin.api.app.admin.order.service;
 
 import java.util.List;
 import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
-import kr.co.pincoin.api.domain.shop.service.OrderProcessingService;
+import kr.co.pincoin.api.domain.shop.service.OrderPaymentProcessingService;
 import kr.co.pincoin.api.global.security.annotation.SuperUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AdminOrderPaymentService {
 
-  private final OrderProcessingService orderProcessingService;
+  private final OrderPaymentProcessingService orderPaymentProcessingService;
 
   /**
    * 특정 주문에 포함된 입금 내역을 조회한다.
@@ -23,6 +23,6 @@ public class AdminOrderPaymentService {
    */
   @SuperUser
   public List<OrderPayment> getOrderPayments(Long orderId) {
-    return orderProcessingService.findOrderPayments(orderId);
+    return orderPaymentProcessingService.getPayments(orderId);
   }
 }

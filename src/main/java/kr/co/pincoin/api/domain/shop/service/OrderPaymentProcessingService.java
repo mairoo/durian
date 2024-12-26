@@ -28,6 +28,13 @@ public class OrderPaymentProcessingService {
   }
 
   /**
+   * 주문에 대한 결제 내역을 조회한다.
+   */
+  public List<OrderPayment> getPayments(Long orderId) {
+    return persistenceService.findOrderPayments(orderId);
+  }
+
+  /**
    * 주문에 대한 총 결제 금액을 조회한다.
    */
   public BigDecimal getTotalPaymentAmount(Order order) {

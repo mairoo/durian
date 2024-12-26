@@ -3,7 +3,7 @@ package kr.co.pincoin.api.app.member.order.service;
 import java.util.List;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
-import kr.co.pincoin.api.domain.shop.service.OrderProcessingService;
+import kr.co.pincoin.api.domain.shop.service.OrderPaymentProcessingService;
 import kr.co.pincoin.api.global.security.authorization.context.OrderRequestContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class OrderPaymentService {
 
-  private final OrderProcessingService orderProcessingService;
+  private final OrderPaymentProcessingService orderPaymentProcessingService;
 
   private final OrderRequestContext orderContext;
 
@@ -28,6 +28,6 @@ public class OrderPaymentService {
    */
   @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
   public List<OrderPayment> getMyOrderPayments(User user, String orderNo) {
-    return orderProcessingService.findOrderPayments(orderContext.getOrderId());
+    return orderPaymentProcessingService.getPayments(orderContext.getOrderId());
   }
 }
