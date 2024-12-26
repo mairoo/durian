@@ -18,8 +18,6 @@ public class OrderPaymentProcessingService {
 
   private final OrderPersistenceService persistenceService;
 
-  private final OrderProcessingService orderProcessingService;
-
   /**
    * 주문에 대한 결제 내역을 조회한다.
    */
@@ -55,7 +53,9 @@ public class OrderPaymentProcessingService {
       Profile profile = persistenceService.findProfileByOrderUserId(order.getUser().getId());
 
       OrderStatus newStatus = determineOrderStatus(profile);
-      orderProcessingService.updateOrderStatus(order, newStatus);
+      order.updateStatus(newStatus);
+
+      persistenceService.save(order);
     }
 
     return savedPayment;
