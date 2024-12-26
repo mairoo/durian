@@ -1,7 +1,7 @@
 package kr.co.pincoin.api.external.payment.banktransfer;
 
 import jakarta.validation.Valid;
-import kr.co.pincoin.api.domain.shop.service.OrderPaymentService;
+import kr.co.pincoin.api.domain.shop.service.OrderPaymentProcessingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class BankTransferPaymentController {
 
-    private OrderPaymentService orderPaymentService;
+    private OrderPaymentProcessingService orderPaymentProcessingService;
 
     @PostMapping("/callback")
     public ResponseEntity<Void> handleBankTransferCallback(

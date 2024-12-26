@@ -1,7 +1,7 @@
 package kr.co.pincoin.api.app.member.order.controller;
 
 import java.util.List;
-import kr.co.pincoin.api.app.member.order.service.OrderService;
+import kr.co.pincoin.api.app.member.order.service.OrderPaymentService;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
@@ -20,13 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class OrderPaymentController {
 
-  private final OrderService orderService;
+  private final OrderPaymentService orderPaymentService;
 
   @GetMapping("/{orderNo}/payments")
   public ResponseEntity<ApiResponse<List<OrderPayment>>> getMyOrderPayments(
       @CurrentUser User user,
       @PathVariable String orderNo) {
-    List<OrderPayment> orderPayments = orderService.getMyOrderPayments(user, orderNo);
+    List<OrderPayment> orderPayments = orderPaymentService.getMyOrderPayments(user, orderNo);
 
     return ResponseEntity.ok(ApiResponse.of(orderPayments));
   }

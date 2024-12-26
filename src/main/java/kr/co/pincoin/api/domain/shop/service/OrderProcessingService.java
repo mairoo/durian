@@ -190,7 +190,7 @@ public class OrderProcessingService {
   public void softDeleteUserOrder(Integer userId, String orderNo) {
     Order order = persistenceService.findUserOrder(userId, orderNo);
     validateSoftDelete(order);
-    persistenceService.softDeleteUserOrder(order);
+    persistenceService.softDeleteOrder(order);
   }
 
   @Transactional

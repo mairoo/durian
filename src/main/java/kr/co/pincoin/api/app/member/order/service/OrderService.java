@@ -4,12 +4,10 @@ import java.util.List;
 import kr.co.pincoin.api.app.member.order.request.CartOrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
-import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.service.OrderProcessingService;
 import kr.co.pincoin.api.domain.shop.service.OrderRefundService;
-import kr.co.pincoin.api.global.security.annotation.SuperUser;
 import kr.co.pincoin.api.global.security.authorization.context.OrderRequestContext;
 import kr.co.pincoin.api.global.utils.ClientUtils;
 import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherProjection;
@@ -145,28 +143,5 @@ public class OrderService {
   @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
   public List<OrderProductVoucherProjection> getMyOrderVouchers(User user, String orderNo) {
     return orderProcessingService.findOrderProductVouchers(orderContext.getOrderId());
-  }
-
-  /**
-   * 현재 로그인한 사용자의 특정 주문에 포함된 입금 내역을 조회한다.
-   *
-   * @param user    현재 로그인한 사용자
-   * @param orderNo 조회할 주문 번호
-   * @return 주문에 포함된 입금 내역
-   */
-  @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
-  public List<OrderPayment> getMyOrderPayments(User user, String orderNo) {
-    return orderProcessingService.findOrderPayments(orderContext.getOrderId());
-  }
-
-  /**
-   * 현재 로그인한 사용자의 특정 주문에 포함된 입금 내역을 조회한다.
-   *
-   * @param orderId 조회할 주문 번호
-   * @return 주문에 포함된 입금 내역
-   */
-  @SuperUser
-  public List<OrderPayment> getOrderPayments(Long orderId) {
-    return orderProcessingService.findOrderPayments(orderId);
   }
 }
