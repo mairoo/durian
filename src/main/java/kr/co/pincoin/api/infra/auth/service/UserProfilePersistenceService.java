@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.infra.auth.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.auth.repository.profile.ProfileRepository;
@@ -30,6 +31,13 @@ public class UserProfilePersistenceService {
     return profileRepository
         .findByUserIdWithUser(userId)
         .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND));
+  }
+
+  /** 사용자로 프로필 조회 */
+  public Profile findProfile(User user) {
+    return profileRepository
+        .findByUserWithUser(user)
+        .orElseThrow(() -> new EntityNotFoundException("사용자 프로필을 찾을 수 없습니다."));
   }
 
   public Page<Profile> findProfiles(Pageable pageable) {

@@ -1,7 +1,11 @@
 package kr.co.pincoin.api.infra.shop.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import kr.co.pincoin.api.app.member.order.request.CartItem;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
 import kr.co.pincoin.api.domain.shop.model.product.CategoryDetached;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
@@ -94,5 +98,41 @@ public class CatalogPersistenceService {
   public List<ProductDetached> findProductsByCategory(
       Long categoryId, String categorySlug, ProductStatus status, ProductStock stock) {
     return productRepository.findAllByCategory(categoryId, categorySlug, status, stock);
+  }
+
+  /** 장바구니 아이템으로 상품 목록 조회 */
+  public List<Product> findProductsByCartItems(List<CartItem> items) {
+    return productRepository.findAllByCodeIn(
+        items.stream().map(CartItem::getCode).distinct().toList());
+  }
+
+  /** 상품 코드 목록으로 상품 Map 조회 */
+  public Map<String, Product> findProductsByCodeIn(List<String> codes) {
+    return productRepository.findAllByCodeIn(codes).stream()
+        .collect(Collectors.toMap(Product::getCode, Function.identity()));
+  }
+
+  /** 상품 코드 목록으로 분리된 상품 Map 조회 (활성화되고 재고있는 상품만) */
+  public Map<String, ProductDetached> findProductsDetachedByCodeIn(List<String> codes) {
+    return productRepository
+        .findAllDetachedByCodeIn(codes, ProductStatus.ENABLED, ProductStock.IN_STOCK)
+        .stream()
+        .collect(Collectors.toMap(ProductDetached::getCode, Function.identity()));
+  }
+
+  /** 상품 업데이트 */
+  @Transactional
+  public void updateProduct(Product product) {
+    productRepository.save(product);
+  }
+
+  /** 상품 목록 일괄 업데이트 */
+  @Transactional
+  public void updateProductsBatch(List<Product> products) {
+    int batchSize = 100;
+    for (int i = 0; i < products.size(); i += batchSize) {
+      List<Product> batch = products.subList(i, Math.min(i + batchSize, products.size()));
+      productRepository.saveAll(batch);
+    }
   }
 }

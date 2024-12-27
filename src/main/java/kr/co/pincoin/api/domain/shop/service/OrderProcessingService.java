@@ -26,8 +26,12 @@ import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.global.exception.BusinessException;
 import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.global.utils.ClientUtils;
+import kr.co.pincoin.api.infra.auth.service.UserProfilePersistenceService;
 import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherProjection;
+import kr.co.pincoin.api.infra.shop.service.CatalogPersistenceService;
 import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
+import kr.co.pincoin.api.infra.shop.service.OrderProductPersistenceService;
+import kr.co.pincoin.api.infra.shop.service.OrderProductVoucherPersistenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -41,27 +45,36 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class OrderProcessingService {
 
-  private final OrderPersistenceService persistenceService;
+  private final UserProfilePersistenceService userProfilePersistenceService;
+
+  private final OrderPersistenceService orderPersistenceService;
+
+  private final OrderProductPersistenceService orderProductPersistenceService;
+
+  private final OrderProductVoucherPersistenceService orderProductVoucherPersistenceService;
+
+  private final CatalogPersistenceService catalogPersistenceService;
 
   // 주문 조회
   public Page<Order> getOrders(OrderSearchCondition condition, Pageable pageable) {
-    return persistenceService.searchOrders(condition, pageable);
+    return orderPersistenceService.searchOrders(condition, pageable);
   }
 
   public Order getOrder(Long orderId) {
-    return persistenceService.findOrder(orderId);
+    return orderPersistenceService.findOrder(orderId);
   }
 
   public Order getUserOrder(Integer userId, String orderNo) {
-    return persistenceService.findUserOrder(userId, orderNo);
+    return orderPersistenceService.findUserOrder(userId, orderNo);
   }
 
   public List<OrderProductDetached> getUserOrderProductsDetached(User user, String orderNo) {
-    return persistenceService.findOrderProductsDetachedByUserIdAndOrderNo(user.getId(), orderNo);
+    return orderProductPersistenceService.findOrderProductsDetachedByUserIdAndOrderNo(user.getId(),
+        orderNo);
   }
 
   public User getUser(Integer userId) {
-    return persistenceService.findUser(userId);
+    return userProfilePersistenceService.findUser(userId);
   }
 
   @Transactional
@@ -95,10 +108,10 @@ public class OrderProcessingService {
             .removed(false)
             .build();
 
-    Order savedOrder = persistenceService.saveAndFlush(order);
+    Order savedOrder = orderPersistenceService.saveAndFlush(order);
 
     List<OrderProduct> orderProducts = createOrderProductsFromCart(request.getItems(), savedOrder);
-    persistenceService.saveOrderProducts(orderProducts);
+    orderProductPersistenceService.saveOrderProducts(orderProducts);
 
     return savedOrder;
   }
@@ -106,7 +119,7 @@ public class OrderProcessingService {
   @Transactional
   public Order createReorder(Integer userId, String orderNo, ClientUtils.ClientInfo clientInfo) {
     List<OrderProduct> originalOrderProducts =
-        persistenceService.findOriginalOrderProducts(orderNo, userId);
+        orderProductPersistenceService.findOriginalOrderProducts(orderNo, userId);
     if (originalOrderProducts.isEmpty()) {
       throw new EntityNotFoundException("주문을 찾을 수 없습니다.");
     }
@@ -132,7 +145,7 @@ public class OrderProcessingService {
             .removed(false)
             .build();
 
-    Order savedReorder = persistenceService.saveAndFlush(reorder);
+    Order savedReorder = orderPersistenceService.saveAndFlush(reorder);
 
     List<OrderProduct> newOrderProducts =
         originalOrderProducts.stream()
@@ -148,7 +161,7 @@ public class OrderProcessingService {
                         savedReorder))
             .collect(Collectors.toList());
 
-    persistenceService.saveOrderProducts(newOrderProducts);
+    orderProductPersistenceService.saveOrderProducts(newOrderProducts);
 
     return savedReorder;
   }
@@ -162,7 +175,7 @@ public class OrderProcessingService {
         "결제 완료 또는 검토중 상태의 주문만 검증할 수 있습니다.");
 
     order.updateStatus(OrderStatus.PAYMENT_VERIFIED);
-    persistenceService.save(order);
+    orderPersistenceService.save(order);
   }
 
   @Transactional
@@ -170,45 +183,45 @@ public class OrderProcessingService {
     validateOrderStatus(order, Set.of(OrderStatus.PAYMENT_VERIFIED), "검증 완료 상태의 주문만 변경할 수 있습니다.");
 
     order.updateStatus(OrderStatus.UNDER_REVIEW);
-    persistenceService.save(order);
+    orderPersistenceService.save(order);
   }
 
   @Transactional
   public void updateOrderStatus(Order order, OrderStatus newStatus) {
     order.updateStatus(newStatus);
-    persistenceService.save(order);
+    orderPersistenceService.save(order);
   }
 
   @Transactional
   public void softDeleteOrder(Long orderId) {
-    Order order = persistenceService.findOrder(orderId);
+    Order order = orderPersistenceService.findOrder(orderId);
     validateSoftDelete(order);
-    persistenceService.softDeleteOrder(order);
+    orderPersistenceService.softDeleteOrder(order);
   }
 
   @Transactional
   public void softDeleteUserOrder(Integer userId, String orderNo) {
-    Order order = persistenceService.findUserOrder(userId, orderNo);
+    Order order = orderPersistenceService.findUserOrder(userId, orderNo);
     validateSoftDelete(order);
-    persistenceService.softDeleteOrder(order);
+    orderPersistenceService.softDeleteOrder(order);
   }
 
   @Transactional
   public void hideOrder(Long orderId) {
-    Order order = persistenceService.findOrder(orderId);
+    Order order = orderPersistenceService.findOrder(orderId);
     validateHideOrder(order);
-    persistenceService.hideOrder(order);
+    orderPersistenceService.hideOrder(order);
   }
 
   @Transactional
   public void hideUserOrder(Integer userId, String orderNo) {
-    Order order = persistenceService.findUserOrder(userId, orderNo);
+    Order order = orderPersistenceService.findUserOrder(userId, orderNo);
     validateHideOrder(order);
-    persistenceService.hideUserOrder(order);
+    orderPersistenceService.hideUserOrder(order);
   }
 
   public List<OrderProductVoucherProjection> findOrderProductVouchers(Long orderId) {
-    return persistenceService.findOrderProductVouchers(orderId);
+    return orderProductVoucherPersistenceService.findOrderProductVouchers(orderId);
   }
 
   // Private 헬퍼 메서드들
@@ -240,7 +253,7 @@ public class OrderProcessingService {
 
     // 실제 데이터베이스에 존재하는 상품권 권종 목록 가져오기
     List<ProductDetached> products =
-        new ArrayList<>(persistenceService.findProductsDetachedByCodeIn(codes).values());
+        new ArrayList<>(catalogPersistenceService.findProductsDetachedByCodeIn(codes).values());
 
     Set<String> requestedCodes = new HashSet<>(codes);
     Set<String> foundCodes =

@@ -7,6 +7,8 @@ import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
 import kr.co.pincoin.api.domain.shop.model.order.OrderPaymentDetached;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
+import kr.co.pincoin.api.infra.auth.service.UserProfilePersistenceService;
+import kr.co.pincoin.api.infra.shop.service.OrderPaymentPersistenceService;
 import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,38 +19,42 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OrderPaymentProcessingService {
 
-  private final OrderPersistenceService persistenceService;
+  private final UserProfilePersistenceService userProfilePersistenceService;
+
+  private final OrderPersistenceService orderPersistenceService;
+
+  private final OrderPaymentPersistenceService orderPaymentPersistenceService;
 
   /** 주문에 대한 결제 내역을 조회한다. */
   public List<OrderPayment> getPayments(Order order) {
-    return persistenceService.findPaymentsByOrder(order);
+    return orderPaymentPersistenceService.findPaymentsByOrder(order);
   }
 
   /** 주문에 대한 결제 내역을 조회한다. */
   public List<OrderPaymentDetached> getPayments(Long orderId) {
-    return persistenceService.findOrderPayments(orderId);
+    return orderPaymentPersistenceService.findOrderPayments(orderId);
   }
 
   /** 주문에 대한 총 결제 금액을 조회한다. */
   public BigDecimal getTotalPaymentAmount(Order order) {
-    return persistenceService.getTotalAmountByOrder(order);
+    return orderPaymentPersistenceService.getTotalAmountByOrder(order);
   }
 
   /** 주문에 새로운 결제를 추가하고, 결제 완료 여부에 따라 주문 상태를 업데이트한다. */
   @Transactional
   public OrderPayment addPayment(Long orderId, OrderPayment payment) {
-    Order order = persistenceService.findOrderWithUser(orderId);
-    OrderPayment savedPayment = persistenceService.savePayment(payment);
+    Order order = orderPersistenceService.findOrderWithUser(orderId);
+    OrderPayment savedPayment = orderPaymentPersistenceService.savePayment(payment);
 
-    BigDecimal totalPayments = persistenceService.getTotalAmountByOrder(order);
+    BigDecimal totalPayments = orderPaymentPersistenceService.getTotalAmountByOrder(order);
 
     if (isPaymentCompleted(totalPayments, order.getTotalSellingPrice())) {
-      Profile profile = persistenceService.findProfileByOrderUserId(order.getUser().getId());
+      Profile profile = userProfilePersistenceService.findProfile(order.getUser().getId());
 
       OrderStatus newStatus = determineOrderStatus(profile);
       order.updateStatus(newStatus);
 
-      persistenceService.save(order);
+      orderPersistenceService.save(order);
     }
 
     return savedPayment;

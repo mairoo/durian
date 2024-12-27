@@ -6,6 +6,7 @@ import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.Voucher;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
+import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
 import lombok.RequiredArgsConstructor;
@@ -51,5 +52,33 @@ public class InventoryPersistenceService {
   @Transactional
   public List<Voucher> saveAllVouchers(List<Voucher> vouchers) {
     return voucherRepository.saveAll(vouchers).stream().toList();
+  }
+
+  /**
+   * 상품 코드와 수량으로 사용 가능한 바우처 목록 조회
+   */
+  public List<Voucher> findAvailableVouchers(String productCode, int quantity) {
+    return voucherRepository.findTopNByProductCodeAndStatusOrderByIdAsc(
+        productCode, VoucherStatus.PURCHASED, quantity);
+  }
+
+  /**
+   * 바우처 업데이트
+   */
+  @Transactional
+  public void updateVoucher(Voucher voucher) {
+    voucherRepository.save(voucher);
+  }
+
+  /**
+   * 바우처 목록 일괄 업데이트
+   */
+  @Transactional
+  public void updateVouchersBatch(List<Voucher> vouchers) {
+    int batchSize = 100;
+    for (int i = 0; i < vouchers.size(); i += batchSize) {
+      List<Voucher> batch = vouchers.subList(i, Math.min(i + batchSize, vouchers.size()));
+      voucherRepository.saveAll(batch);
+    }
   }
 }

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@SuperUser
 @RequiredArgsConstructor
 @Slf4j
 public class AdminOrderPaymentService {
@@ -21,7 +22,7 @@ public class AdminOrderPaymentService {
    * @param orderId 조회할 주문 번호
    * @return 주문에 포함된 입금 내역
    */
-  @SuperUser
+
   public List<OrderPaymentDetached> getOrderPayments(Long orderId) {
     return orderPaymentProcessingService.getPayments(orderId);
   }

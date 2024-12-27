@@ -9,7 +9,11 @@ import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.Voucher;
+import kr.co.pincoin.api.infra.shop.service.CatalogPersistenceService;
+import kr.co.pincoin.api.infra.shop.service.InventoryPersistenceService;
 import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
+import kr.co.pincoin.api.infra.shop.service.OrderProductPersistenceService;
+import kr.co.pincoin.api.infra.shop.service.OrderProductVoucherPersistenceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +23,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OrderVoucherService {
 
-  private final OrderPersistenceService persistenceService;
+  private final OrderPersistenceService orderPersistenceService;
+
+  private final OrderProductPersistenceService orderProductPersistenceService;
+
+  private final OrderProductVoucherPersistenceService orderProductVoucherPersistenceService;
+
+  private final InventoryPersistenceService inventoryPersistenceService;
+
+  private final CatalogPersistenceService catalogPersistenceService;
 
   //  public List<OrderProductVoucher> getOrderProductVouchers(Order order) {
   //    return persistenceService.findOrderProductVouchers(order.getId());
@@ -28,7 +40,8 @@ public class OrderVoucherService {
   /** 주문에 대한 바우처를 발행한다. */
   @Transactional
   public Order issueVouchers(Order order) {
-    List<OrderProduct> orderProducts = persistenceService.findOrderProductsWithOrder(order);
+    List<OrderProduct> orderProducts = orderProductPersistenceService.findOrderProductsWithOrder(
+        order);
 
     List<OrderProductVoucher> allVouchers = new ArrayList<>();
     List<Voucher> vouchersToUpdate = new ArrayList<>();
@@ -38,9 +51,9 @@ public class OrderVoucherService {
       processVoucherIssue(orderProduct, allVouchers, vouchersToUpdate, productsToUpdate);
     }
 
-    persistenceService.saveOrderProductVouchersBatch(allVouchers);
-    persistenceService.updateVouchersBatch(vouchersToUpdate);
-    persistenceService.updateProductsBatch(productsToUpdate);
+    orderProductVoucherPersistenceService.saveOrderProductVouchersBatch(allVouchers);
+    inventoryPersistenceService.updateVouchersBatch(vouchersToUpdate);
+    catalogPersistenceService.updateProductsBatch(productsToUpdate);
 
     return order;
   }
@@ -78,7 +91,7 @@ public class OrderVoucherService {
     Product product = validateProductForVoucherIssue(orderProduct);
 
     List<Voucher> availableVouchers =
-        persistenceService.findAvailableVouchers(
+        inventoryPersistenceService.findAvailableVouchers(
             orderProduct.getCode(), orderProduct.getQuantity());
 
     validateVouchersAvailability(orderProduct, availableVouchers, product);
@@ -102,7 +115,8 @@ public class OrderVoucherService {
 
   /** 바우처 발행을 위한 상품 검증 */
   private Product validateProductForVoucherIssue(OrderProduct orderProduct) {
-    return persistenceService.findProductsByCartItems(List.of(CartItem.from(orderProduct))).stream()
+    return catalogPersistenceService.findProductsByCartItems(List.of(CartItem.from(orderProduct)))
+        .stream()
         .findFirst()
         .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다: " + orderProduct.getCode()));
   }
@@ -128,7 +142,7 @@ public class OrderVoucherService {
 
   /** 주문의 바우처 발행 상태를 조회한다. */
   public boolean hasIssuedVouchers(Long orderId) {
-    return !persistenceService.findOrderProductVouchers(orderId).isEmpty();
+    return !orderProductVoucherPersistenceService.findOrderProductVouchers(orderId).isEmpty();
   }
 
   /** 주문의 바우처가 모두 취소되었는지 확인한다. */
