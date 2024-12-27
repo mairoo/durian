@@ -115,6 +115,7 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
         product.created,
         product.modified,
         product.category.id,
+        product.category.slug,
         product.status,
         product.stock,
         product.listPrice,

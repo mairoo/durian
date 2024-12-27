@@ -49,8 +49,8 @@ public class ProductResponse {
   @JsonProperty("stock")
   private final ProductStock stock;
 
-  @JsonProperty("categoryId")
-  private final Long categoryId;
+  @JsonProperty("categorySlug")
+  private final String categorySlug;
 
   // 생성자 외부 접근 불허 / 자식 허용
   protected ProductResponse(Product product) {
@@ -66,7 +66,7 @@ public class ProductResponse {
     this.position = product.getPosition();
     this.status = product.getStatus();
     this.stock = product.getStock();
-    this.categoryId = product.getCategory().getId();
+    this.categorySlug = product.getCategory().getSlug();
   }
 
   protected ProductResponse(ProductDetached product) {
@@ -82,7 +82,7 @@ public class ProductResponse {
     this.position = product.getPosition();
     this.status = product.getStatus();
     this.stock = product.getStock();
-    this.categoryId = product.getCategoryId();
+    this.categorySlug = product.getCategorySlug();
   }
 
   // 도메인 모델 객체에서 응답 객체 초기화

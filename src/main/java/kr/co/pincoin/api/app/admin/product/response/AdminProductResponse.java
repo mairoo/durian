@@ -12,6 +12,9 @@ import lombok.Getter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AdminProductResponse extends ProductResponse {
 
+  @JsonProperty("categoryId")
+  private final Long categoryId;
+
   @JsonProperty("naverPartner")
   private final Boolean naverPartner;
 
@@ -52,6 +55,7 @@ public class AdminProductResponse extends ProductResponse {
   protected AdminProductResponse(Product product) {
     super(product);
 
+    this.categoryId = product.getCategory().getId();
     this.naverPartner = product.getNaverPartner();
     this.naverPartnerTitle = product.getNaverPartnerTitle();
     this.naverPartnerTitlePg = product.getNaverPartnerTitlePg();
@@ -69,6 +73,7 @@ public class AdminProductResponse extends ProductResponse {
   protected AdminProductResponse(ProductDetached product) {
     super(product);
 
+    this.categoryId = product.getCategoryId();
     this.naverPartner = product.getNaverPartner();
     this.naverPartnerTitle = product.getNaverPartnerTitle();
     this.naverPartnerTitlePg = product.getNaverPartnerTitlePg();
