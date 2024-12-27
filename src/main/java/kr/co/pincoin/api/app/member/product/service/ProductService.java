@@ -25,8 +25,8 @@ public class ProductService {
     return catalogService.getProductDetachedById(id, ProductStatus.ENABLED, ProductStock.IN_STOCK);
   }
 
-  public Product getProductByCode(String code) {
-    return catalogService.getProductByCode(code);
+  public ProductDetached getProductByCode(String code) {
+    return catalogService.getProductByCode(code, ProductStatus.ENABLED, ProductStock.IN_STOCK);
   }
 
   public List<ProductDetached> getProductsByCategory(Long categoryId) {

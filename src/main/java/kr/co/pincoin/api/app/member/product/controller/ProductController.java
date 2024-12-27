@@ -3,7 +3,6 @@ package kr.co.pincoin.api.app.member.product.controller;
 import java.util.List;
 import kr.co.pincoin.api.app.member.product.response.ProductResponse;
 import kr.co.pincoin.api.app.member.product.service.ProductService;
-import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.ProductDetached;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -51,15 +50,12 @@ public class ProductController {
     return ResponseEntity.ok(ApiResponse.of(responses));
   }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<ApiResponse<ProductResponse>> getProductById(@PathVariable Long id) {
-    ProductDetached product = productService.getProductDetachedById(id);
-    return ResponseEntity.ok(ApiResponse.of(ProductResponse.from(product)));
-  }
-
-  @GetMapping("/code/{code}")
-  public ResponseEntity<ApiResponse<ProductResponse>> getProductByCode(@PathVariable String code) {
-    Product product = productService.getProductByCode(code);
+  @GetMapping("/{identifier}")
+  public ResponseEntity<ApiResponse<ProductResponse>> getProductById(
+      @PathVariable String identifier) {
+    ProductDetached product = identifier.matches("\\d+")
+        ? productService.getProductDetachedById(Long.parseLong(identifier))
+        : productService.getProductByCode(identifier);
     return ResponseEntity.ok(ApiResponse.of(ProductResponse.from(product)));
   }
 }

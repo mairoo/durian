@@ -38,6 +38,20 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
   }
 
   @Override
+  public Optional<ProductDetached> findDetachedByCode(String code, ProductStatus status, ProductStock stock) {
+    return Optional.ofNullable(queryFactory
+        .select(getProductDetachedProjection())
+        .from(product)
+        .join(product.category)
+        .where(
+            codeEq(code),
+            statusEq(status),
+            stockEq(stock)
+        )
+        .fetchOne());
+  }
+
+  @Override
   public Optional<ProductDetached> findDetachedById(Long id, ProductStatus status,
       ProductStock stock) {
     return Optional.ofNullable(queryFactory
@@ -119,6 +133,10 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
 
   private BooleanExpression idEq(Long id) {
     return product.id.eq(id);
+  }
+
+  private BooleanExpression codeEq(String code) {
+    return product.code.eq(code);
   }
 
   private BooleanExpression categoryIdEq(Long categoryId) {

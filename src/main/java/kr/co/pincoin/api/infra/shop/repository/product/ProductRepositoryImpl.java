@@ -37,11 +37,6 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
-  public Optional<Product> findByCode(String code) {
-    return jpaRepository.findByCode(code).map(mapper::toModel);
-  }
-
-  @Override
   public List<Product> findAll() {
     return mapper.toModelList(jpaRepository.findAll());
   }
@@ -96,6 +91,12 @@ public class ProductRepositoryImpl implements ProductRepository {
   public Optional<ProductDetached> findDetachedById(Long id, ProductStatus status,
       ProductStock stock) {
     return queryRepository.findDetachedById(id, status, stock);
+  }
+
+  @Override
+  public Optional<ProductDetached> findDetachedByCode(String code, ProductStatus status,
+      ProductStock stock) {
+    return queryRepository.findDetachedByCode(code, status, stock);
   }
 
   @Override

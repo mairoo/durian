@@ -22,7 +22,7 @@ public interface ProductRepository {
 
   Optional<ProductDetached> findDetachedById(Long id, ProductStatus status, ProductStock stock);
 
-  Optional<Product> findByCode(String code);
+  Optional<ProductDetached> findDetachedByCode(String code, ProductStatus status, ProductStock stock);
 
   List<Product> findAll();
 

@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Slf4j
 public class CatalogPersistenceService {
+
   private final CategoryRepository categoryRepository;
 
   private final ProductRepository productRepository;
@@ -81,8 +82,9 @@ public class CatalogPersistenceService {
     return productRepository.findDetachedById(id, status, stock);
   }
 
-  public Optional<Product> findProductByCode(String code) {
-    return productRepository.findByCode(code);
+  public Optional<ProductDetached> findProductByCode(String code, ProductStatus status,
+      ProductStock stock) {
+    return productRepository.findDetachedByCode(code, status, stock);
   }
 
   public Optional<Product> findProductWithCategory(Long id) {

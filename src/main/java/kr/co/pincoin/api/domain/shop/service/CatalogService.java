@@ -93,7 +93,7 @@ public class CatalogService {
             .findCategoryById(request.getCategoryId())
             .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
-    if (catalogPersistence.findProductByCode(request.getCode()).isPresent()) {
+    if (catalogPersistence.findProductByCode(request.getCode(), null, null).isPresent()) {
       throw new BusinessException(ErrorCode.DUPLICATE_PRODUCT_CODE);
     }
 
@@ -176,9 +176,9 @@ public class CatalogService {
         .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
   }
 
-  public Product getProductByCode(String code) {
+  public ProductDetached getProductByCode(String code, ProductStatus status, ProductStock stock) {
     return catalogPersistence
-        .findProductByCode(code)
+        .findProductByCode(code, status, stock)
         .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
   }
 }
