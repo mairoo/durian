@@ -39,6 +39,15 @@ public class AdminProductController {
         AdminProductResponse.from(product), HttpStatus.CREATED, "Product created successfully"));
   }
 
+  @GetMapping("/{identifier}")
+  public ResponseEntity<ApiResponse<AdminProductResponse>> getProductByIdentifier(
+      @PathVariable String identifier) {
+    ProductDetached product = identifier.matches("\\d+")
+        ? adminProductService.getProductDetachedById(Long.parseLong(identifier))
+        : adminProductService.getProductByCode(identifier);
+    return ResponseEntity.ok(ApiResponse.of(AdminProductResponse.from(product)));
+  }
+
   @PutMapping("/{productId}/sold-out")
   public ResponseEntity<ApiResponse<AdminProductResponse>> markAsSoldOut(
       @PathVariable Long productId) {

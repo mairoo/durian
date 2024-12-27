@@ -26,6 +26,14 @@ public class AdminProductService {
     return catalogService.createProduct(request);
   }
 
+  public ProductDetached getProductDetachedById(Long id) {
+    return catalogService.getProductDetachedById(id, ProductStatus.ENABLED, ProductStock.IN_STOCK);
+  }
+
+  public ProductDetached getProductByCode(String code) {
+    return catalogService.getProductByCode(code, ProductStatus.ENABLED, ProductStock.IN_STOCK);
+  }
+
   @Transactional
   public Product markAsSoldOut(Long productId) {
     return catalogService.markProductAsSoldOut(productId);
