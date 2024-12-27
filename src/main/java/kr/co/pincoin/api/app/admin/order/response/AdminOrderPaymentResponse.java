@@ -19,10 +19,10 @@ public class AdminOrderPaymentResponse extends OrderPaymentResponse {
   private final LocalDateTime modified;
 
   @JsonProperty("balance")
-  private BigDecimal balance;
+  private final BigDecimal balance;
 
   @JsonProperty("isRemoved")
-  private Boolean isRemoved;
+  private final Boolean isRemoved;
 
   protected AdminOrderPaymentResponse(OrderPaymentDetached orderPayment) {
     super(orderPayment);

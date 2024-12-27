@@ -2,96 +2,93 @@ package kr.co.pincoin.api.app.admin.product.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import kr.co.pincoin.api.app.member.product.response.ProductResponse;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.ProductDetached;
-import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
-import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import lombok.Getter;
 
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AdminProductResponse {
+public class AdminProductResponse extends ProductResponse {
 
-    @JsonProperty("id")
-    private final Long id;
+  @JsonProperty("naverPartner")
+  private final Boolean naverPartner;
 
-    @JsonProperty("name")
-    private final String name;
+  @JsonProperty("naverPartnerTitle")
+  private final String naverPartnerTitle;
 
-    @JsonProperty("subtitle")
-    private final String subtitle;
+  @JsonProperty("naverPartnerTitlePg")
+  private final String naverPartnerTitlePg;
 
-    @JsonProperty("code")
-    private final String code;
+  @JsonProperty("naverAttribute")
+  private final String naverAttribute;
 
-    @JsonProperty("listPrice")
-    private final BigDecimal listPrice;
+  @JsonProperty("created")
+  private final LocalDateTime created;
 
-    @JsonProperty("sellingPrice")
-    private final BigDecimal sellingPrice;
+  @JsonProperty("modified")
+  private final LocalDateTime modified;
 
-    @JsonProperty("pg")
-    private final Boolean pg;
+  @JsonProperty("minimumStockLevel")
+  private final Integer minimumStockLevel;
 
-    @JsonProperty("pgSellingPrice")
-    private final BigDecimal pgSellingPrice;
+  @JsonProperty("maximumStockLevel")
+  private final Integer maximumStockLevel;
 
-    @JsonProperty("description")
-    private final String description;
+  @JsonProperty("stockQuantity")
+  private final Integer stockQuantity;
 
-    @JsonProperty("position")
-    private final Integer position;
+  @JsonProperty("reviewCount")
+  private final Integer reviewCount;
 
-    @JsonProperty("status")
-    private final ProductStatus status;
+  @JsonProperty("reviewCountPg")
+  private final Integer reviewCountPg;
 
-    @JsonProperty("stock")
-    private final ProductStock stock;
+  @JsonProperty("isRemoved")
+  private Boolean isRemoved;
 
-    @JsonProperty("categoryId")
-    private final Long categoryId;
+  // 생성자 외부 접근 불허 / 자식 허용
+  protected AdminProductResponse(Product product) {
+    super(product);
 
+    this.naverPartner = product.getNaverPartner();
+    this.naverPartnerTitle = product.getNaverPartnerTitle();
+    this.naverPartnerTitlePg = product.getNaverPartnerTitlePg();
+    this.naverAttribute = product.getNaverAttribute();
+    this.created = product.getCreated();
+    this.modified = product.getModified();
+    this.minimumStockLevel = product.getMinimumStockLevel();
+    this.maximumStockLevel = product.getMaximumStockLevel();
+    this.stockQuantity = product.getStockQuantity();
+    this.reviewCount = product.getReviewCount();
+    this.reviewCountPg = product.getReviewCountPg();
+    this.isRemoved = product.getIsRemoved();
+  }
 
-    // 생성자 외부 접근 불허 / 자식 허용
-    protected AdminProductResponse(Product product) {
-        this.id = product.getId();
-        this.name = product.getName();
-        this.subtitle = product.getSubtitle();
-        this.code = product.getCode();
-        this.listPrice = product.getListPrice();
-        this.sellingPrice = product.getSellingPrice();
-        this.pg = product.getPg();
-        this.pgSellingPrice = product.getPgSellingPrice();
-        this.description = product.getDescription();
-        this.position = product.getPosition();
-        this.status = product.getStatus();
-        this.stock = product.getStock();
-        this.categoryId = product.getCategory().getId();
-    }
+  protected AdminProductResponse(ProductDetached product) {
+    super(product);
 
-    protected AdminProductResponse(ProductDetached product) {
-        this.id = product.getId();
-        this.name = product.getName();
-        this.subtitle = product.getSubtitle();
-        this.code = product.getCode();
-        this.listPrice = product.getListPrice();
-        this.sellingPrice = product.getSellingPrice();
-        this.pg = product.getPg();
-        this.pgSellingPrice = product.getPgSellingPrice();
-        this.description = product.getDescription();
-        this.position = product.getPosition();
-        this.status = product.getStatus();
-        this.stock = product.getStock();
-        this.categoryId = product.getCategoryId();
-    }
+    this.naverPartner = product.getNaverPartner();
+    this.naverPartnerTitle = product.getNaverPartnerTitle();
+    this.naverPartnerTitlePg = product.getNaverPartnerTitlePg();
+    this.naverAttribute = product.getNaverAttribute();
+    this.created = product.getCreated();
+    this.modified = product.getModified();
+    this.minimumStockLevel = product.getMinimumStockLevel();
+    this.maximumStockLevel = product.getMaximumStockLevel();
+    this.stockQuantity = product.getStockQuantity();
+    this.reviewCount = product.getReviewCount();
+    this.reviewCountPg = product.getReviewCountPg();
+    this.isRemoved = product.getIsRemoved();
+  }
 
-    // 도메인 모델 객체에서 응답 객체 초기화
-    public static AdminProductResponse from(Product product) {
-        return new AdminProductResponse(product);
-    }
+  // 도메인 모델 객체에서 응답 객체 초기화
+  public static AdminProductResponse from(Product product) {
+    return new AdminProductResponse(product);
+  }
 
-    public static AdminProductResponse from(ProductDetached product) {
-        return new AdminProductResponse(product);
-    }
+  public static AdminProductResponse from(ProductDetached product) {
+    return new AdminProductResponse(product);
+  }
 }

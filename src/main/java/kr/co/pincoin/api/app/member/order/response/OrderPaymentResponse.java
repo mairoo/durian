@@ -25,7 +25,7 @@ public class OrderPaymentResponse {
   private final String orderNo;
 
   @JsonProperty("received")
-  private LocalDateTime received;
+  private final LocalDateTime received;
 
   protected OrderPaymentResponse(OrderPaymentDetached orderPayment) {
     this.id = orderPayment.getId();
