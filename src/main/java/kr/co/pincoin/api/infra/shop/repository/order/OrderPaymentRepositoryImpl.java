@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
+import kr.co.pincoin.api.domain.shop.model.order.OrderPaymentDetached;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderPaymentRepository;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderPaymentEntity;
 import kr.co.pincoin.api.infra.shop.mapper.order.OrderPaymentMapper;
@@ -43,6 +44,11 @@ public class OrderPaymentRepositoryImpl implements OrderPaymentRepository {
     List<OrderPaymentEntity> entries = jpaRepository.findByOrderId(orderId);
 
     return mapper.toModelList(entries);
+  }
+
+  @Override
+  public List<OrderPaymentDetached> findOrderPaymentDetachedByOrderId(Long orderId) {
+    return queryRepository.findOrderPaymentDetachedByOrderId(orderId);
   }
 
   @Override

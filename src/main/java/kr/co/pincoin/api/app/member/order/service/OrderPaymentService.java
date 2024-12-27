@@ -2,7 +2,7 @@ package kr.co.pincoin.api.app.member.order.service;
 
 import java.util.List;
 import kr.co.pincoin.api.domain.auth.model.user.User;
-import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
+import kr.co.pincoin.api.domain.shop.model.order.OrderPaymentDetached;
 import kr.co.pincoin.api.domain.shop.service.OrderPaymentProcessingService;
 import kr.co.pincoin.api.global.security.authorization.context.OrderRequestContext;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class OrderPaymentService {
    * @return 주문에 포함된 입금 내역
    */
   @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
-  public List<OrderPayment> getMyOrderPayments(User user, String orderNo) {
+  public List<OrderPaymentDetached> getMyOrderPayments(User user, String orderNo) {
     return orderPaymentProcessingService.getPayments(orderContext.getOrderId());
   }
 }

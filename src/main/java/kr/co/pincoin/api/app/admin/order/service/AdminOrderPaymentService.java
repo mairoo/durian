@@ -1,7 +1,7 @@
 package kr.co.pincoin.api.app.admin.order.service;
 
 import java.util.List;
-import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
+import kr.co.pincoin.api.domain.shop.model.order.OrderPaymentDetached;
 import kr.co.pincoin.api.domain.shop.service.OrderPaymentProcessingService;
 import kr.co.pincoin.api.global.security.annotation.SuperUser;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class AdminOrderPaymentService {
    * @return 주문에 포함된 입금 내역
    */
   @SuperUser
-  public List<OrderPayment> getOrderPayments(Long orderId) {
+  public List<OrderPaymentDetached> getOrderPayments(Long orderId) {
     return orderPaymentProcessingService.getPayments(orderId);
   }
 }

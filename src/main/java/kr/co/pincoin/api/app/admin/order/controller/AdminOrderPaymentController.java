@@ -1,8 +1,9 @@
 package kr.co.pincoin.api.app.admin.order.controller;
 
 import java.util.List;
+import kr.co.pincoin.api.app.admin.order.response.AdminOrderPaymentResponse;
 import kr.co.pincoin.api.app.admin.order.service.AdminOrderPaymentService;
-import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
+import kr.co.pincoin.api.domain.shop.model.order.OrderPaymentDetached;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +22,14 @@ public class AdminOrderPaymentController {
   private final AdminOrderPaymentService adminOrderPaymentService;
 
   @GetMapping("/{orderId}/payments")
-  public ResponseEntity<ApiResponse<List<OrderPayment>>> getOrderPayments(
+  public ResponseEntity<ApiResponse<List<AdminOrderPaymentResponse>>> getOrderPayments(
       @PathVariable Long orderId) {
-    List<OrderPayment> orderPayments = adminOrderPaymentService.getOrderPayments(orderId);
+    List<OrderPaymentDetached> orderPayments = adminOrderPaymentService.getOrderPayments(orderId);
 
-    return ResponseEntity.ok(ApiResponse.of(orderPayments));
+    List<AdminOrderPaymentResponse> responses = orderPayments.stream()
+        .map(AdminOrderPaymentResponse::from)
+        .toList();
+
+    return ResponseEntity.ok(ApiResponse.of(responses));
   }
 }

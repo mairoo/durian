@@ -14,6 +14,7 @@ import kr.co.pincoin.api.domain.auth.repository.profile.ProfileRepository;
 import kr.co.pincoin.api.domain.auth.repository.user.UserRepository;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
+import kr.co.pincoin.api.domain.shop.model.order.OrderPaymentDetached;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
@@ -238,8 +239,8 @@ public class OrderPersistenceService {
   /**
    * 주문 ID로 결제내역 조회
    */
-  public List<OrderPayment> findOrderPayments(Long orderId) {
-    return orderPaymentRepository.findByOrderId(orderId);
+  public List<OrderPaymentDetached> findOrderPayments(Long orderId) {
+    return orderPaymentRepository.findOrderPaymentDetachedByOrderId(orderId);
   }
 
   /**

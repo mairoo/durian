@@ -5,6 +5,7 @@ import java.util.List;
 import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
+import kr.co.pincoin.api.domain.shop.model.order.OrderPaymentDetached;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,7 @@ public class OrderPaymentProcessingService {
   /**
    * 주문에 대한 결제 내역을 조회한다.
    */
-  public List<OrderPayment> getPayments(Long orderId) {
+  public List<OrderPaymentDetached> getPayments(Long orderId) {
     return persistenceService.findOrderPayments(orderId);
   }
 

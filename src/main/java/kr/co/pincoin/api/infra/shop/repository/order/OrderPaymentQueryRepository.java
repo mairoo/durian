@@ -1,3 +1,9 @@
 package kr.co.pincoin.api.infra.shop.repository.order;
 
-public interface OrderPaymentQueryRepository {}
+import java.util.List;
+import kr.co.pincoin.api.domain.shop.model.order.OrderPaymentDetached;
+
+public interface OrderPaymentQueryRepository {
+
+  List<OrderPaymentDetached> findOrderPaymentDetachedByOrderId(Long orderId);
+}
