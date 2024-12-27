@@ -33,8 +33,9 @@ public class AdminVoucherController {
   public ResponseEntity<ApiResponse<VoucherResponse>> createVoucher(
       @RequestBody VoucherCreateRequest request) {
     Voucher voucher = adminVoucherService.createVoucher(request);
-    return ResponseEntity.ok(ApiResponse.of(
-        VoucherResponse.from(voucher), HttpStatus.CREATED, "Voucher created successfully"));
+    return ResponseEntity.ok(
+        ApiResponse.of(
+            VoucherResponse.from(voucher), HttpStatus.CREATED, "Voucher created successfully"));
   }
 
   @PostMapping("/bulk")

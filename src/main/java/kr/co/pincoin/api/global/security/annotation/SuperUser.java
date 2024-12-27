@@ -13,6 +13,4 @@ import org.springframework.security.access.prepost.PreAuthorize;
 @Inherited
 @Documented
 @PreAuthorize("@userSecurityRule.isSuperUser()")
-public @interface SuperUser {
-
-}
+public @interface SuperUser {}

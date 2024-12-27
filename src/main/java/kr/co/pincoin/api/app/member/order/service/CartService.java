@@ -14,19 +14,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class CartService {
 
-    private final CartRepository cartRepository;
+  private final CartRepository cartRepository;
 
-    public Cart getCart(User user) {
-        return cartRepository.findByUser(user)
-            .orElseGet(() -> Cart.createEmptyCart(user));
-    }
+  public Cart getCart(User user) {
+    return cartRepository.findByUser(user).orElseGet(() -> Cart.createEmptyCart(user));
+  }
 
-    @Transactional
-    public Cart syncCartData(User user, String cartData) {
-        Cart existingCart = cartRepository.findByUser(user)
-            .orElseGet(() -> Cart.createEmptyCart(user));
+  @Transactional
+  public Cart syncCartData(User user, String cartData) {
+    Cart existingCart = cartRepository.findByUser(user).orElseGet(() -> Cart.createEmptyCart(user));
 
-        existingCart.updateCartData(cartData);
-        return cartRepository.save(existingCart);
-    }
+    existingCart.updateCartData(cartData);
+    return cartRepository.save(existingCart);
+  }
 }

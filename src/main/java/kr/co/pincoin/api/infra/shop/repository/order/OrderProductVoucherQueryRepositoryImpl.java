@@ -20,12 +20,14 @@ public class OrderProductVoucherQueryRepositoryImpl implements OrderProductVouch
     QOrderProductEntity product = QOrderProductEntity.orderProductEntity;
 
     return queryFactory
-        .select(constructor(OrderProductVoucherProjection.class,
-            product.name,
-            product.subtitle,
-            voucher.code,
-            voucher.remarks,
-            voucher.revoked))
+        .select(
+            constructor(
+                OrderProductVoucherProjection.class,
+                product.name,
+                product.subtitle,
+                voucher.code,
+                voucher.remarks,
+                voucher.revoked))
         .from(voucher)
         .join(voucher.orderProduct, product)
         .where(product.order.id.eq(orderId))

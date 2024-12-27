@@ -16,8 +16,6 @@ public class CartResponse {
   private String cartData;
 
   public static CartResponse from(Cart cart) {
-    return CartResponse.builder()
-        .cartData(cart.getCartData())
-        .build();
+    return CartResponse.builder().cartData(cart.getCartData()).build();
   }
 }

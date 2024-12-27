@@ -13,46 +13,42 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CartMapper {
 
-    private final UserMapper userMapper;
+  private final UserMapper userMapper;
 
-    public Cart toModel(CartEntity entity) {
-        if (entity == null) {
-            return null;
-        }
-
-        return Cart.builder()
-            .id(entity.getId())
-            .user(userMapper.toModel(entity.getUser()))
-            .cartData(entity.getCartData())
-            .version(entity.getVersion())
-            .build();
+  public Cart toModel(CartEntity entity) {
+    if (entity == null) {
+      return null;
     }
 
-    public CartEntity toEntity(Cart model) {
-        if (model == null) {
-            return null;
-        }
+    return Cart.builder()
+        .id(entity.getId())
+        .user(userMapper.toModel(entity.getUser()))
+        .cartData(entity.getCartData())
+        .version(entity.getVersion())
+        .build();
+  }
 
-        return model.toEntity();
+  public CartEntity toEntity(Cart model) {
+    if (model == null) {
+      return null;
     }
 
-    public List<Cart> toModelList(List<CartEntity> entities) {
-        if (entities == null) {
-            return Collections.emptyList();
-        }
+    return model.toEntity();
+  }
 
-        return entities.stream()
-            .map(this::toModel)
-            .collect(Collectors.toList());
+  public List<Cart> toModelList(List<CartEntity> entities) {
+    if (entities == null) {
+      return Collections.emptyList();
     }
 
-    public List<CartEntity> toEntityList(List<Cart> models) {
-        if (models == null) {
-            return Collections.emptyList();
-        }
+    return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
 
-        return models.stream()
-            .map(this::toEntity)
-            .collect(Collectors.toList());
+  public List<CartEntity> toEntityList(List<Cart> models) {
+    if (models == null) {
+      return Collections.emptyList();
     }
+
+    return models.stream().map(this::toEntity).collect(Collectors.toList());
+  }
 }

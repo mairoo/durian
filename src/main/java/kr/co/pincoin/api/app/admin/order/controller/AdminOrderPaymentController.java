@@ -26,9 +26,8 @@ public class AdminOrderPaymentController {
       @PathVariable Long orderId) {
     List<OrderPaymentDetached> orderPayments = adminOrderPaymentService.getOrderPayments(orderId);
 
-    List<AdminOrderPaymentResponse> responses = orderPayments.stream()
-        .map(AdminOrderPaymentResponse::from)
-        .toList();
+    List<AdminOrderPaymentResponse> responses =
+        orderPayments.stream().map(AdminOrderPaymentResponse::from).toList();
 
     return ResponseEntity.ok(ApiResponse.of(responses));
   }

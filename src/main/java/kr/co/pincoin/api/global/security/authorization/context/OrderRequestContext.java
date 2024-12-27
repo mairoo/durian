@@ -15,12 +15,12 @@ import org.springframework.web.context.WebApplicationContext;
 @Setter
 public class OrderRequestContext {
 
-    private Long orderId;
+  private Long orderId;
 
-    public Long getOrderId() {
-        if (orderId == null) {
-            throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
-        }
-        return orderId;
+  public Long getOrderId() {
+    if (orderId == null) {
+      throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
     }
+    return orderId;
+  }
 }

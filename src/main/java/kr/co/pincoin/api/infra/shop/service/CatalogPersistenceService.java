@@ -77,13 +77,13 @@ public class CatalogPersistenceService {
     return productRepository.findById(id, status, stock);
   }
 
-  public Optional<ProductDetached> findProductDetachedById(Long id, ProductStatus status,
-      ProductStock stock) {
+  public Optional<ProductDetached> findProductDetachedById(
+      Long id, ProductStatus status, ProductStock stock) {
     return productRepository.findDetachedById(id, status, stock);
   }
 
-  public Optional<ProductDetached> findProductByCode(String code, ProductStatus status,
-      ProductStock stock) {
+  public Optional<ProductDetached> findProductByCode(
+      String code, ProductStatus status, ProductStock stock) {
     return productRepository.findDetachedByCode(code, status, stock);
   }
 
@@ -91,8 +91,8 @@ public class CatalogPersistenceService {
     return productRepository.findByIdWithCategory(id);
   }
 
-  public List<ProductDetached> findProductsByCategory(Long categoryId, String categorySlug,
-      ProductStatus status, ProductStock stock) {
+  public List<ProductDetached> findProductsByCategory(
+      Long categoryId, String categorySlug, ProductStatus status, ProductStock stock) {
     return productRepository.findAllByCategory(categoryId, categorySlug, status, stock);
   }
 }

@@ -21,12 +21,12 @@ public class ProductService {
   }
 
   public List<ProductDetached> getProductsByCategory(Long categoryId) {
-    return catalogService.getProductsByCategory(categoryId, null, ProductStatus.ENABLED,
-        ProductStock.IN_STOCK);
+    return catalogService.getProductsByCategory(
+        categoryId, null, ProductStatus.ENABLED, ProductStock.IN_STOCK);
   }
 
   public List<ProductDetached> getProductsByCategorySlug(String categorySlug) {
-    return catalogService.getProductsByCategory(null, categorySlug, ProductStatus.ENABLED,
-        ProductStock.IN_STOCK);
+    return catalogService.getProductsByCategory(
+        null, categorySlug, ProductStatus.ENABLED, ProductStock.IN_STOCK);
   }
 }

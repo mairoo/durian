@@ -47,8 +47,7 @@ public class OrderProductRepositoryImpl implements OrderProductRepository {
 
   @Override
   public List<OrderProduct> findAllWithOrderAndUser(String orderNo, Integer userId) {
-    List<OrderProductEntity> entries =
-        queryRepository.findAllWithOrderAndUser(orderNo, userId);
+    List<OrderProductEntity> entries = queryRepository.findAllWithOrderAndUser(orderNo, userId);
 
     return mapper.toModelList(entries);
   }

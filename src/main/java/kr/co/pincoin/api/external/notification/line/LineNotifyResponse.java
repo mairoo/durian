@@ -8,16 +8,16 @@ import lombok.Getter;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LineNotifyResponse {
 
-    private Integer status;
-    private String message;
+  private Integer status;
+  private String message;
 
-    @JsonProperty("status")
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
+  @JsonProperty("status")
+  public void setStatus(Integer status) {
+    this.status = status;
+  }
 
-    @JsonProperty("message")
-    public void setMessage(String message) {
-        this.message = message;
-    }
+  @JsonProperty("message")
+  public void setMessage(String message) {
+    this.message = message;
+  }
 }

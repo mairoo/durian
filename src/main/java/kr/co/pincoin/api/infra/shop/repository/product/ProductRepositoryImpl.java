@@ -56,8 +56,8 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
-  public List<ProductDetached> findAllDetachedByCodeIn(Collection<String> codes,
-      ProductStatus status, ProductStock stock) {
+  public List<ProductDetached> findAllDetachedByCodeIn(
+      Collection<String> codes, ProductStatus status, ProductStock stock) {
     return queryRepository.findAllDetachedByCodeIn(codes, status, stock);
   }
 
@@ -67,8 +67,8 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
-  public List<ProductDetached> findAllByCategory(Long categoryId, String categorySlug,
-      ProductStatus status, ProductStock stock) {
+  public List<ProductDetached> findAllByCategory(
+      Long categoryId, String categorySlug, ProductStatus status, ProductStock stock) {
     return queryRepository.findAllByCategory(categoryId, categorySlug, status, stock);
   }
 
@@ -88,14 +88,14 @@ public class ProductRepositoryImpl implements ProductRepository {
   }
 
   @Override
-  public Optional<ProductDetached> findDetachedById(Long id, ProductStatus status,
-      ProductStock stock) {
+  public Optional<ProductDetached> findDetachedById(
+      Long id, ProductStatus status, ProductStock stock) {
     return queryRepository.findDetachedById(id, status, stock);
   }
 
   @Override
-  public Optional<ProductDetached> findDetachedByCode(String code, ProductStatus status,
-      ProductStock stock) {
+  public Optional<ProductDetached> findDetachedByCode(
+      String code, ProductStatus status, ProductStock stock) {
     return queryRepository.findDetachedByCode(code, status, stock);
   }
 

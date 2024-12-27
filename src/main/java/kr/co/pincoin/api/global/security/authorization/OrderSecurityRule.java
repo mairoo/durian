@@ -13,25 +13,29 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OrderSecurityRule {
 
-    private final OrderRepository orderRepository;
+  private final OrderRepository orderRepository;
 
-    private final OrderRequestContext orderContext;
+  private final OrderRequestContext orderContext;
 
-    public boolean hasOrderAccess(User user, String orderNo) {
-        OrderDetached order = orderRepository.findByOrderDetachedNoAndUserId(orderNo, user.getId())
+  public boolean hasOrderAccess(User user, String orderNo) {
+    OrderDetached order =
+        orderRepository
+            .findByOrderDetachedNoAndUserId(orderNo, user.getId())
             .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
-        if (!order.getUserId().equals(user.getId())) {
-            throw new BusinessException(ErrorCode.FORBIDDEN);
-        }
-
-        orderContext.setOrderId(order.getId());
-        return true;
+    if (!order.getUserId().equals(user.getId())) {
+      throw new BusinessException(ErrorCode.FORBIDDEN);
     }
 
-    public boolean hasOrderAccess(User user, Long orderId) {
-        Integer userId = orderRepository.findUserIdById(orderId)
+    orderContext.setOrderId(order.getId());
+    return true;
+  }
+
+  public boolean hasOrderAccess(User user, Long orderId) {
+    Integer userId =
+        orderRepository
+            .findUserIdById(orderId)
             .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
-        return userId.equals(user.getId());
-    }
+    return userId.equals(user.getId());
+  }
 }

@@ -14,22 +14,19 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class LineNotifyApiClientTest {
 
-    @Autowired
-    private LineNotifyApiClient lineNotifyApiClient;
+  @Autowired private LineNotifyApiClient lineNotifyApiClient;
 
-    @Test
-    void sendNotification() {
-        // Given
-        LineNotifyRequest request = LineNotifyRequest.builder()
-            .message("Line Notify 발송 테스트")
-            .build();
+  @Test
+  void sendNotification() {
+    // Given
+    LineNotifyRequest request = LineNotifyRequest.builder().message("Line Notify 발송 테스트").build();
 
-        // When
-        LineNotifyResponse response = lineNotifyApiClient.sendNotification(request).block();
+    // When
+    LineNotifyResponse response = lineNotifyApiClient.sendNotification(request).block();
 
-        // Then
-        assertNotNull(response);
-        assertEquals(200, response.getStatus());
-        assertEquals("ok", response.getMessage());
-    }
+    // Then
+    assertNotNull(response);
+    assertEquals(200, response.getStatus());
+    assertEquals("ok", response.getMessage());
+  }
 }

@@ -8,11 +8,11 @@ import org.springframework.data.repository.query.Param;
 
 public interface CartRepository {
 
-    Cart save(Cart cart);
+  Cart save(Cart cart);
 
-    @Query("SELECT c FROM CartEntity c JOIN FETCH c.user WHERE c.user.id = :userId")
-    Optional<Cart> findByUserId(@Param("userId") Integer userId);
+  @Query("SELECT c FROM CartEntity c JOIN FETCH c.user WHERE c.user.id = :userId")
+  Optional<Cart> findByUserId(@Param("userId") Integer userId);
 
-    @Query("SELECT c FROM CartEntity c JOIN FETCH c.user WHERE c.user = :user")
-    Optional<Cart> findByUser(@Param("user") User user);
+  @Query("SELECT c FROM CartEntity c JOIN FETCH c.user WHERE c.user = :user")
+  Optional<Cart> findByUser(@Param("user") User user);
 }

@@ -34,36 +34,32 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
   // ID/OrderNo 기반 사용자 조회
   @Override
   public Optional<Integer> findUserIdByOrderId(Long id) {
-    Integer userId = queryFactory
-        .select(orderEntity.user.id)
-        .from(orderEntity)
-        .where(idEquals(id))
-        .fetchOne();
+    Integer userId =
+        queryFactory.select(orderEntity.user.id).from(orderEntity).where(idEquals(id)).fetchOne();
 
     return Optional.ofNullable(userId);
   }
 
   @Override
   public Optional<Integer> findUserIdByOrderNo(String orderNo) {
-    Integer userId = queryFactory
-        .select(orderEntity.user.id)
-        .from(orderEntity)
-        .where(orderNoEquals(orderNo))
-        .fetchOne();
+    Integer userId =
+        queryFactory
+            .select(orderEntity.user.id)
+            .from(orderEntity)
+            .where(orderNoEquals(orderNo))
+            .fetchOne();
 
     return Optional.ofNullable(userId);
   }
 
   @Override
   public Optional<OrderDetached> findByOrderDetachedNoAndUserId(String orderNo, Integer userId) {
-    return Optional.ofNullable(queryFactory
-        .select(getOrderDetachedProjection())
-        .from(orderEntity)
-        .where(
-            orderNoEquals(orderNo),
-            userIdEquals(userId)
-        )
-        .fetchOne());
+    return Optional.ofNullable(
+        queryFactory
+            .select(getOrderDetachedProjection())
+            .from(orderEntity)
+            .where(orderNoEquals(orderNo), userIdEquals(userId))
+            .fetchOne());
   }
 
   // 검색/페이징
@@ -78,7 +74,6 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         queryFactory
             .selectFrom(order)
             .leftJoin(order.user, user)
-            .fetchJoin()
             .leftJoin(profile)
             .on(profile.user.eq(user))
             .where(
@@ -121,7 +116,8 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
   }
 
   private Expression<OrderDetached> getOrderDetachedProjection() {
-    return Projections.constructor(OrderDetached.class,
+    return Projections.constructor(
+        OrderDetached.class,
         orderEntity.id,
         orderEntity.orderNo,
         orderEntity.fullname,
@@ -141,8 +137,7 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
         orderEntity.transactionId,
         orderEntity.message,
         orderEntity.suspicious,
-        orderEntity.isRemoved
-    );
+        orderEntity.isRemoved);
   }
 
   // 기본 조건절

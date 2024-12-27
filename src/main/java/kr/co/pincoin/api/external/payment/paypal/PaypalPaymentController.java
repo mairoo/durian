@@ -9,6 +9,4 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/payment/paypal")
 @RequiredArgsConstructor
 @Slf4j
-public class PaypalPaymentController {
-
-}
+public class PaypalPaymentController {}

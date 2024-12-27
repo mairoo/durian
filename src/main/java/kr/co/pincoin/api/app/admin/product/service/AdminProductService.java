@@ -40,8 +40,8 @@ public class AdminProductService {
     return catalogService.suspendProductSale(productId);
   }
 
-  public List<ProductDetached> getProductsByCategory(Long categoryId, String categorySlug,
-      ProductStatus status, ProductStock stock) {
+  public List<ProductDetached> getProductsByCategory(
+      Long categoryId, String categorySlug, ProductStatus status, ProductStock stock) {
     return catalogService.getProductsByCategory(categoryId, categorySlug, status, stock);
   }
 

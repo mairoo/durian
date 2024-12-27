@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CartJpaRepository extends JpaRepository<CartEntity, Long> {
 
-    Optional<CartEntity> findByUserId(Integer userId);
+  Optional<CartEntity> findByUserId(Integer userId);
 
-    Optional<CartEntity> findByUser(UserEntity userEntity);
+  Optional<CartEntity> findByUser(UserEntity userEntity);
 }

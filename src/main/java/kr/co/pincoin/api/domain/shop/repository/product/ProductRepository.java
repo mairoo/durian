@@ -22,7 +22,8 @@ public interface ProductRepository {
 
   Optional<ProductDetached> findDetachedById(Long id, ProductStatus status, ProductStock stock);
 
-  Optional<ProductDetached> findDetachedByCode(String code, ProductStatus status, ProductStock stock);
+  Optional<ProductDetached> findDetachedByCode(
+      String code, ProductStatus status, ProductStock stock);
 
   List<Product> findAll();
 
@@ -30,13 +31,13 @@ public interface ProductRepository {
 
   List<Product> findAllByCodeIn(Collection<String> codes);
 
-  List<ProductDetached> findAllDetachedByCodeIn(Collection<String> codes, ProductStatus status,
-      ProductStock stock);
+  List<ProductDetached> findAllDetachedByCodeIn(
+      Collection<String> codes, ProductStatus status, ProductStock stock);
 
   Optional<Product> findByIdWithCategory(Long id);
 
-  List<ProductDetached> findAllByCategory(Long categoryId, String categorySlug,
-      ProductStatus status, ProductStock stock);
+  List<ProductDetached> findAllByCategory(
+      Long categoryId, String categorySlug, ProductStatus status, ProductStock stock);
 
   void softDelete(Product product);
 

@@ -27,48 +27,42 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
 
   @Override
   public Optional<ProductEntity> findById(Long id, ProductStatus status, ProductStock stock) {
-    return Optional.ofNullable(queryFactory
-        .selectFrom(product)
-        .join(product.category).fetchJoin()
-        .where(
-            idEq(id),
-            statusEq(status),
-            stockEq(stock)
-        ).fetchOne());
+    return Optional.ofNullable(
+        queryFactory
+            .selectFrom(product)
+            .join(product.category)
+            .fetchJoin()
+            .where(idEq(id), statusEq(status), stockEq(stock))
+            .fetchOne());
   }
 
   @Override
-  public Optional<ProductDetached> findDetachedByCode(String code, ProductStatus status, ProductStock stock) {
-    return Optional.ofNullable(queryFactory
-        .select(getProductDetachedProjection())
-        .from(product)
-        .join(product.category)
-        .where(
-            codeEq(code),
-            statusEq(status),
-            stockEq(stock)
-        )
-        .fetchOne());
+  public Optional<ProductDetached> findDetachedByCode(
+      String code, ProductStatus status, ProductStock stock) {
+    return Optional.ofNullable(
+        queryFactory
+            .select(getProductDetachedProjection())
+            .from(product)
+            .join(product.category)
+            .where(codeEq(code), statusEq(status), stockEq(stock))
+            .fetchOne());
   }
 
   @Override
-  public Optional<ProductDetached> findDetachedById(Long id, ProductStatus status,
-      ProductStock stock) {
-    return Optional.ofNullable(queryFactory
-        .select(getProductDetachedProjection())
-        .from(product)
-        .join(product.category)
-        .where(
-            idEq(id),
-            statusEq(status),
-            stockEq(stock)
-        )
-        .fetchOne());
+  public Optional<ProductDetached> findDetachedById(
+      Long id, ProductStatus status, ProductStock stock) {
+    return Optional.ofNullable(
+        queryFactory
+            .select(getProductDetachedProjection())
+            .from(product)
+            .join(product.category)
+            .where(idEq(id), statusEq(status), stockEq(stock))
+            .fetchOne());
   }
 
   @Override
-  public List<ProductDetached> findAllByCategory(Long categoryId, String categorySlug,
-      ProductStatus status, ProductStock stock) {
+  public List<ProductDetached> findAllByCategory(
+      Long categoryId, String categorySlug, ProductStatus status, ProductStock stock) {
     return queryFactory
         .select(getProductDetachedProjection())
         .from(product)
@@ -77,14 +71,13 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
             categoryIdEq(categoryId),
             categorySlugEq(categorySlug),
             statusEq(status),
-            stockEq(stock)
-        )
+            stockEq(stock))
         .fetch();
   }
 
   @Override
-  public List<ProductDetached> findAllDetachedByCodeIn(Collection<String> codes,
-      ProductStatus status, ProductStock stock) {
+  public List<ProductDetached> findAllDetachedByCodeIn(
+      Collection<String> codes, ProductStatus status, ProductStock stock) {
     if (codes == null || codes.isEmpty()) {
       return List.of();
     }
@@ -93,16 +86,13 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
         .select(getProductDetachedProjection())
         .from(product)
         .join(product.category)
-        .where(
-            product.code.in(codes),
-            statusEq(status),
-            stockEq(stock)
-        )
+        .where(product.code.in(codes), statusEq(status), stockEq(stock))
         .fetch();
   }
 
   private Expression<ProductDetached> getProductDetachedProjection() {
-    return Projections.constructor(ProductDetached.class,
+    return Projections.constructor(
+        ProductDetached.class,
         product.id,
         product.code,
         product.name,
@@ -128,8 +118,7 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
         product.position,
         product.reviewCount,
         product.reviewCountPg,
-        product.isRemoved
-    );
+        product.isRemoved);
   }
 
   private BooleanExpression idEq(Long id) {

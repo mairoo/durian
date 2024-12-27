@@ -45,11 +45,9 @@ public class GlobalExceptionHandler {
       AuthorizationDeniedException e, HttpServletRequest request) {
     log.error("[Authorization Denied] {}", e.getMessage());
     return ResponseEntity.status(ErrorCode.FORBIDDEN.getStatus())
-        .body(ErrorResponse.of(
-            request,
-            ErrorCode.FORBIDDEN.getStatus(),
-            ErrorCode.FORBIDDEN.getMessage()
-        ));
+        .body(
+            ErrorResponse.of(
+                request, ErrorCode.FORBIDDEN.getStatus(), ErrorCode.FORBIDDEN.getMessage()));
   }
 
   /** null 예외 처리 인증/보안 예외처리 */
@@ -97,17 +95,17 @@ public class GlobalExceptionHandler {
                 validationErrors));
   }
 
-  /** 잘못된 요청 파라미터 예외 처리  */
+  /** 잘못된 요청 파라미터 예외 처리 */
   @ExceptionHandler(BadRequestException.class)
   protected ResponseEntity<ErrorResponse> handleBadRequestException(
       BadRequestException e, HttpServletRequest request) {
     log.error("[Bad Request] {}", e.getMessage());
     return ResponseEntity.status(ErrorCode.INVALID_REQUEST.getStatus())
-        .body(ErrorResponse.of(
-            request,
-            ErrorCode.INVALID_REQUEST.getStatus(),
-            e.getMessage() != null ? e.getMessage() : ErrorCode.INVALID_REQUEST.getMessage()
-        ));
+        .body(
+            ErrorResponse.of(
+                request,
+                ErrorCode.INVALID_REQUEST.getStatus(),
+                e.getMessage() != null ? e.getMessage() : ErrorCode.INVALID_REQUEST.getMessage()));
   }
 
   /** JSON 파싱 오류 처리 잘못된 JSON 형식이나 타입 불일치로 인한 파싱 실패 시 발생하는 예외 처리 */

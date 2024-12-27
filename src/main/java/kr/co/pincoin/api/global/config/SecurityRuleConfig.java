@@ -12,15 +12,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 @EnableMethodSecurity
 public class SecurityRuleConfig {
 
-    @Bean
-    public UserSecurityRule userSecurityRule() {
-        return new UserSecurityRule();
-    }
+  @Bean
+  public UserSecurityRule userSecurityRule() {
+    return new UserSecurityRule();
+  }
 
-    @Bean
-    public OrderSecurityRule orderSecurityRule(
-        OrderRepository orderRepository,
-        OrderRequestContext orderRequestContext) {
-        return new OrderSecurityRule(orderRepository, orderRequestContext);
-    }
+  @Bean
+  public OrderSecurityRule orderSecurityRule(
+      OrderRepository orderRepository, OrderRequestContext orderRequestContext) {
+    return new OrderSecurityRule(orderRepository, orderRequestContext);
+  }
 }

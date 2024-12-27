@@ -23,8 +23,7 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
 
   @Override
   public List<OrderProductEntity> findAll(OrderProductSearchCondition condition) {
-    var query = queryFactory
-        .selectFrom(orderProductEntity);
+    var query = queryFactory.selectFrom(orderProductEntity);
 
     if (condition.hasOrderId() || condition.hasOrderNo()) {
       query.innerJoin(orderProductEntity.order, orderEntity);
@@ -38,8 +37,7 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
         .where(
             orderIdEq(condition.getOrderId()),
             orderNoEq(condition.getOrderNo()),
-            userIdEq(condition.getUserId())
-        )
+            userIdEq(condition.getUserId()))
         .fetch();
   }
 
@@ -49,15 +47,13 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
         .select(getOrderProductDetachedProjection())
         .from(orderProductEntity)
         .innerJoin(orderProductEntity.order, orderEntity)
-        .where(
-            orderIdEq(condition.getOrderId()),
-            orderNoEq(condition.getOrderNo())
-        )
+        .where(orderIdEq(condition.getOrderId()), orderNoEq(condition.getOrderNo()))
         .fetch();
   }
 
   private Expression<OrderProductDetached> getOrderProductDetachedProjection() {
-    return Projections.constructor(OrderProductDetached.class,
+    return Projections.constructor(
+        OrderProductDetached.class,
         orderProductEntity.id,
         orderProductEntity.order.id,
         orderProductEntity.name,
@@ -68,19 +64,16 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
         orderProductEntity.quantity,
         orderProductEntity.created,
         orderProductEntity.modified,
-        orderProductEntity.isRemoved
-    );
+        orderProductEntity.isRemoved);
   }
 
   @Override
   public List<OrderProductEntity> findAllWithOrderAndUser(String orderNo, Integer userId) {
     return queryFactory
         .selectFrom(orderProductEntity)
-        .innerJoin(orderProductEntity.order, orderEntity).fetchJoin()
-        .where(
-            orderNoEq(orderNo),
-            userIdEq(userId)
-        )
+        .innerJoin(orderProductEntity.order, orderEntity)
+        .fetchJoin()
+        .where(orderNoEq(orderNo), userIdEq(userId))
         .fetch();
   }
 
@@ -88,7 +81,8 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
   public List<OrderProductEntity> findAllWithOrder(OrderEntity order) {
     return queryFactory
         .selectFrom(orderProductEntity)
-        .innerJoin(orderProductEntity.order, orderEntity).fetchJoin()
+        .innerJoin(orderProductEntity.order, orderEntity)
+        .fetchJoin()
         .where(orderEntity.eq(order))
         .fetch();
   }

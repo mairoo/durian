@@ -32,16 +32,17 @@ public class OrderService {
   /**
    * 현재 로그인한 사용자의 주문 목록을 페이징하여 조회한다.
    *
-   * @param user      현재 로그인한 사용자
+   * @param user 현재 로그인한 사용자
    * @param condition 주문 검색 조건
-   * @param pageable  페이징 정보
+   * @param pageable 페이징 정보
    * @return 사용자의 주문 목록
    */
   @PreAuthorize("isAuthenticated()")
   public Page<Order> getMyOrders(User user, OrderSearchCondition condition, Pageable pageable) {
-    OrderSearchCondition finalCondition = (condition != null)
-        ? condition.withUserId(user.getId())
-        : OrderSearchCondition.ofUserId(user.getId());
+    OrderSearchCondition finalCondition =
+        (condition != null)
+            ? condition.withUserId(user.getId())
+            : OrderSearchCondition.ofUserId(user.getId());
 
     return orderProcessingService.getOrders(finalCondition, pageable);
   }
@@ -49,7 +50,7 @@ public class OrderService {
   /**
    * 현재 로그인한 사용자의 특정 주문을 조회한다.
    *
-   * @param user    현재 로그인한 사용자
+   * @param user 현재 로그인한 사용자
    * @param orderNo 조회할 주문 번호
    * @return 사용자의 주문 정보
    */
@@ -61,7 +62,7 @@ public class OrderService {
   /**
    * 현재 로그인한 사용자의 특정 주문에 포함된 상품 목록을 조회한다.
    *
-   * @param user    현재 로그인한 사용자
+   * @param user 현재 로그인한 사용자
    * @param orderNo 조회할 주문 번호
    * @return 주문에 포함된 상품 목록
    */
@@ -73,8 +74,8 @@ public class OrderService {
   /**
    * 새로운 주문을 생성한다.
    *
-   * @param request    주문 생성 요청 정보
-   * @param user       주문하는 사용자
+   * @param request 주문 생성 요청 정보
+   * @param user 주문하는 사용자
    * @param clientInfo 클라이언트 정보
    * @return 생성된 주문 정보
    */
@@ -87,8 +88,8 @@ public class OrderService {
   /**
    * 기존 주문을 기반으로 재주문을 생성한다.
    *
-   * @param user       주문하는 사용자
-   * @param orderNo    원본 주문 번호
+   * @param user 주문하는 사용자
+   * @param orderNo 원본 주문 번호
    * @param clientInfo 클라이언트 정보
    * @return 생성된 재주문 정보
    */
@@ -100,7 +101,7 @@ public class OrderService {
   /**
    * 주문에 대한 환불을 요청한다.
    *
-   * @param user    환불 요청하는 사용자
+   * @param user 환불 요청하는 사용자
    * @param message 환불 요청 메시지
    * @param orderNo 환불 요청할 주문 번호
    * @return 환불 요청된 주문 정보
@@ -114,7 +115,7 @@ public class OrderService {
   /**
    * 주문을 논리적으로 삭제 처리한다.
    *
-   * @param user    삭제 요청하는 사용자
+   * @param user 삭제 요청하는 사용자
    * @param orderNo 삭제할 주문 번호
    */
   @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
@@ -125,7 +126,7 @@ public class OrderService {
   /**
    * 주문을 화면에서 숨김 처리한다.
    *
-   * @param user    숨김 처리를 요청하는 사용자
+   * @param user 숨김 처리를 요청하는 사용자
    * @param orderNo 숨길 주문 번호
    */
   @PreAuthorize("@orderSecurityRule.hasOrderAccess(#user, #orderNo)")
@@ -136,7 +137,7 @@ public class OrderService {
   /**
    * 현재 로그인한 사용자의 특정 주문에 포함된 상품권 목록을 조회한다.
    *
-   * @param user    현재 로그인한 사용자
+   * @param user 현재 로그인한 사용자
    * @param orderNo 조회할 주문 번호
    * @return 주문에 포함된 상품권 목록
    */

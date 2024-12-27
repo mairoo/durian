@@ -26,7 +26,8 @@ public class ProductController {
   @GetMapping("")
   public ResponseEntity<ApiResponse<List<ProductResponse>>> getProducts(
       @RequestParam(required = false) Long categoryId,
-      @RequestParam(required = false) String categorySlug) throws BadRequestException {
+      @RequestParam(required = false) String categorySlug)
+      throws BadRequestException {
     if (categoryId != null && categorySlug != null) {
       throw new BadRequestException("카테고리 ID와 이름을 동시에 사용할 수 없습니다");
     }
@@ -43,16 +44,13 @@ public class ProductController {
       products = productService.getProductsByCategorySlug(categorySlug);
     }
 
-    List<ProductResponse> responses = products.stream()
-        .map(ProductResponse::from)
-        .toList();
+    List<ProductResponse> responses = products.stream().map(ProductResponse::from).toList();
 
     return ResponseEntity.ok(ApiResponse.of(responses));
   }
 
   @GetMapping("/{code}")
-  public ResponseEntity<ApiResponse<ProductResponse>> getProductByCode(
-      @PathVariable String code) {
+  public ResponseEntity<ApiResponse<ProductResponse>> getProductByCode(@PathVariable String code) {
     ProductDetached product = productService.getProductByCode(code);
     return ResponseEntity.ok(ApiResponse.of(ProductResponse.from(product)));
   }

@@ -22,7 +22,7 @@ public class OrderPaymentService {
   /**
    * 현재 로그인한 사용자의 특정 주문에 포함된 입금 내역을 조회한다.
    *
-   * @param user    현재 로그인한 사용자
+   * @param user 현재 로그인한 사용자
    * @param orderNo 조회할 주문 번호
    * @return 주문에 포함된 입금 내역
    */

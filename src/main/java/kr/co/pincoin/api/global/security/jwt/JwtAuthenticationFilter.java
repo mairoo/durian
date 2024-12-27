@@ -72,12 +72,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             new AntPathRequestMatcher("/api/**"),
             new AntPathRequestMatcher("/payment/billgate/callback"),
             new AntPathRequestMatcher("/payment/paypal/callback"),
-            new AntPathRequestMatcher("/payment/danal/callback")
-        );
+            new AntPathRequestMatcher("/payment/danal/callback"));
 
     // 명시적으로 공개된 엔드포인트가 아니면 모두 필터링
-    return publicMatchers.stream()
-        .anyMatch(matcher -> matcher.matches(request));
+    return publicMatchers.stream().anyMatch(matcher -> matcher.matches(request));
   }
 
   @Override
@@ -118,9 +116,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private void processBearerToken(String token) {
     // JWT 토큰 유효성 확인 및 username 추출 후 인증 처리
-    Optional.of(token)
-        .flatMap(jwtTokenProvider::validateToken)
-        .ifPresent(this::authenticateUser);
+    Optional.of(token).flatMap(jwtTokenProvider::validateToken).ifPresent(this::authenticateUser);
   }
 
   private void processApiToken(String token) {
@@ -139,8 +135,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
       // 2. 인증 객체 생성
       Authentication auth =
-          new UsernamePasswordAuthenticationToken(
-              userDetails, null, userDetails.getAuthorities());
+          new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
       // 3. WebAuthenticationDetails, WebAuthenticationDetailsSource 저장
       // WebAuthenticationDetails 객체는 인증 요청과 관련된 웹 관련 정보

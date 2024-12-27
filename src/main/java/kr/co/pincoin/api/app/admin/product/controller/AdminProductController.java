@@ -35,8 +35,11 @@ public class AdminProductController {
   public ResponseEntity<ApiResponse<AdminProductResponse>> createProduct(
       @RequestBody ProductCreateRequest request) {
     Product product = adminProductService.createProduct(request);
-    return ResponseEntity.ok(ApiResponse.of(
-        AdminProductResponse.from(product), HttpStatus.CREATED, "Product created successfully"));
+    return ResponseEntity.ok(
+        ApiResponse.of(
+            AdminProductResponse.from(product),
+            HttpStatus.CREATED,
+            "Product created successfully"));
   }
 
   @GetMapping("/{id}")
@@ -65,10 +68,11 @@ public class AdminProductController {
   @GetMapping("/category/{categoryId}")
   public ResponseEntity<ApiResponse<List<AdminProductResponse>>> getProductsByCategory(
       @PathVariable Long categoryId) {
-    List<ProductDetached> products = adminProductService.getProductsByCategory(categoryId, null,
-        ProductStatus.ENABLED, ProductStock.IN_STOCK);
-    List<AdminProductResponse> responses = products.stream().map(AdminProductResponse::from)
-        .toList();
+    List<ProductDetached> products =
+        adminProductService.getProductsByCategory(
+            categoryId, null, ProductStatus.ENABLED, ProductStock.IN_STOCK);
+    List<AdminProductResponse> responses =
+        products.stream().map(AdminProductResponse::from).toList();
     return ResponseEntity.ok(ApiResponse.of(responses));
   }
 
@@ -86,15 +90,17 @@ public class AdminProductController {
   public ResponseEntity<ApiResponse<AdminProductResponse>> updateStockQuantity(
       @PathVariable Long productId, @RequestParam Integer stockQuantity) {
     Product product = adminProductService.updateStockQuantity(productId, stockQuantity);
-    return ResponseEntity.ok(ApiResponse.of(
-        AdminProductResponse.from(product), "Product stock quantity updated successfully"));
+    return ResponseEntity.ok(
+        ApiResponse.of(
+            AdminProductResponse.from(product), "Product stock quantity updated successfully"));
   }
 
   @PutMapping("/{productId}/category")
   public ResponseEntity<ApiResponse<AdminProductResponse>> updateCategory(
       @PathVariable Long productId, @RequestParam Long newCategoryId) {
     Product product = adminProductService.updateCategory(productId, newCategoryId);
-    return ResponseEntity.ok(ApiResponse.of(AdminProductResponse.from(product),
-        "Product category updated successfully"));
+    return ResponseEntity.ok(
+        ApiResponse.of(
+            AdminProductResponse.from(product), "Product category updated successfully"));
   }
 }

@@ -21,9 +21,9 @@ public class OrderVoucherService {
 
   private final OrderPersistenceService persistenceService;
 
-//  public List<OrderProductVoucher> getOrderProductVouchers(Order order) {
-//    return persistenceService.findOrderProductVouchers(order.getId());
-//  }
+  //  public List<OrderProductVoucher> getOrderProductVouchers(Order order) {
+  //    return persistenceService.findOrderProductVouchers(order.getId());
+  //  }
 
   /** 주문에 대한 바우처를 발행한다. */
   @Transactional
@@ -46,26 +46,27 @@ public class OrderVoucherService {
   }
 
   /** 발행된 바우처를 취소한다. */
-//  @Transactional
-//  public void revokeVouchers(Long orderId) {
-//    List<OrderProductVoucher> vouchers = persistenceService.findOrderProductVouchers(orderId);
-//
-//    vouchers.forEach(
-//        voucher -> {
-//          voucher.revoke();
-//
-//          Voucher originalVoucher =
-//              persistenceService
-//                  .findVoucherByCode(voucher.getCode())
-//                  .orElseThrow(
-//                      () -> new EntityNotFoundException("상품권을 찾을 수 없습니다: " + voucher.getCode()));
-//
-//          originalVoucher.markAsPurchased();
-//          persistenceService.updateVoucher(originalVoucher);
-//        });
-//
-//    persistenceService.saveOrderProductVouchers(vouchers);
-//  }
+  //  @Transactional
+  //  public void revokeVouchers(Long orderId) {
+  //    List<OrderProductVoucher> vouchers = persistenceService.findOrderProductVouchers(orderId);
+  //
+  //    vouchers.forEach(
+  //        voucher -> {
+  //          voucher.revoke();
+  //
+  //          Voucher originalVoucher =
+  //              persistenceService
+  //                  .findVoucherByCode(voucher.getCode())
+  //                  .orElseThrow(
+  //                      () -> new EntityNotFoundException("상품권을 찾을 수 없습니다: " +
+  // voucher.getCode()));
+  //
+  //          originalVoucher.markAsPurchased();
+  //          persistenceService.updateVoucher(originalVoucher);
+  //        });
+  //
+  //    persistenceService.saveOrderProductVouchers(vouchers);
+  //  }
 
   /** 주문 상품별 바우처 발행을 처리한다. */
   private void processVoucherIssue(
@@ -101,9 +102,7 @@ public class OrderVoucherService {
 
   /** 바우처 발행을 위한 상품 검증 */
   private Product validateProductForVoucherIssue(OrderProduct orderProduct) {
-    return persistenceService
-        .findProductsByCartItems(List.of(CartItem.from(orderProduct)))
-        .stream()
+    return persistenceService.findProductsByCartItems(List.of(CartItem.from(orderProduct))).stream()
         .findFirst()
         .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다: " + orderProduct.getCode()));
   }
@@ -133,14 +132,14 @@ public class OrderVoucherService {
   }
 
   /** 주문의 바우처가 모두 취소되었는지 확인한다. */
-//  public boolean allVouchersRevoked(Long orderId) {
-//    List<OrderProductVoucher> vouchers = persistenceService.findOrderProductVouchers(orderId);
-//    return !vouchers.isEmpty() && vouchers.stream().allMatch(OrderProductVoucher::getRevoked);
-//  }
+  //  public boolean allVouchersRevoked(Long orderId) {
+  //    List<OrderProductVoucher> vouchers = persistenceService.findOrderProductVouchers(orderId);
+  //    return !vouchers.isEmpty() && vouchers.stream().allMatch(OrderProductVoucher::getRevoked);
+  //  }
 
   /** 특정 바우처 코드가 주문에 속해있는지 확인한다. */
-//  public boolean isVoucherBelongToOrder(String voucherCode, Long orderId) {
-//    return persistenceService.findOrderProductVouchers(orderId).stream()
-//        .anyMatch(v -> v.getCode().equals(voucherCode));
-//  }
+  //  public boolean isVoucherBelongToOrder(String voucherCode, Long orderId) {
+  //    return persistenceService.findOrderProductVouchers(orderId).stream()
+  //        .anyMatch(v -> v.getCode().equals(voucherCode));
+  //  }
 }

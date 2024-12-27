@@ -18,45 +18,45 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class LineNotifyApiClient {
 
-    private final WebClient lineNotifyWebClient;
-    private final ObjectMapper objectMapper;
+  private final WebClient lineNotifyWebClient;
+  private final ObjectMapper objectMapper;
 
-    @Value("${line-notify.token}")
-    private String token;
+  @Value("${line-notify.token}")
+  private String token;
 
-    public LineNotifyApiClient(WebClient lineNotifyWebClient, ObjectMapper objectMapper) {
-        this.lineNotifyWebClient = lineNotifyWebClient;
-        this.objectMapper = objectMapper;
-    }
+  public LineNotifyApiClient(WebClient lineNotifyWebClient, ObjectMapper objectMapper) {
+    this.lineNotifyWebClient = lineNotifyWebClient;
+    this.objectMapper = objectMapper;
+  }
 
-    public Mono<LineNotifyResponse> sendNotification(LineNotifyRequest request) {
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("message", request.getMessage());
+  public Mono<LineNotifyResponse> sendNotification(LineNotifyRequest request) {
+    MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+    formData.add("message", request.getMessage());
 
-        return lineNotifyWebClient
-            .post()
-            .uri("/api/notify")
-            .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-            .header("Authorization", "Bearer " + token)
-            .body(BodyInserters.fromFormData(formData))
-            .retrieve()
-            .bodyToMono(String.class)
-            .flatMap(response -> {
-                try {
-                    LineNotifyResponse lineNotifyResponse =
-                        objectMapper.readValue(response, LineNotifyResponse.class);
-                    return Mono.just(lineNotifyResponse);
-                } catch (JsonProcessingException e) {
-                    return Mono.error(
-                        new BusinessException(ErrorCode.LINE_NOTIFY_API_PARSE_ERROR, e));
-                }
+    return lineNotifyWebClient
+        .post()
+        .uri("/api/notify")
+        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+        .header("Authorization", "Bearer " + token)
+        .body(BodyInserters.fromFormData(formData))
+        .retrieve()
+        .bodyToMono(String.class)
+        .flatMap(
+            response -> {
+              try {
+                LineNotifyResponse lineNotifyResponse =
+                    objectMapper.readValue(response, LineNotifyResponse.class);
+                return Mono.just(lineNotifyResponse);
+              } catch (JsonProcessingException e) {
+                return Mono.error(new BusinessException(ErrorCode.LINE_NOTIFY_API_PARSE_ERROR, e));
+              }
             })
-            .onErrorMap(e -> {
-                if (e instanceof BusinessException) {
-                    return e;
-                }
-                return new BusinessException(ErrorCode.LINE_NOTIFY_API_SEND_ERROR, e);
+        .onErrorMap(
+            e -> {
+              if (e instanceof BusinessException) {
+                return e;
+              }
+              return new BusinessException(ErrorCode.LINE_NOTIFY_API_SEND_ERROR, e);
             });
-    }
+  }
 }
-

@@ -65,8 +65,8 @@ public class OrderProcessingService {
   }
 
   @Transactional
-  public Order createOrderFromCart(User user, CartOrderCreateRequest request,
-      ClientUtils.ClientInfo clientInfo) {
+  public Order createOrderFromCart(
+      User user, CartOrderCreateRequest request, ClientUtils.ClientInfo clientInfo) {
     List<ProductDetached> products = validateProductsForCartOrder(request.getItems());
 
     validateCartPrices(products, request.getItems());
@@ -74,25 +74,26 @@ public class OrderProcessingService {
     BigDecimal totalListPrice = calculateTotalListPrice(request.getItems());
     BigDecimal totalSellingPrice = calculateTotalSellingPrice(request.getItems());
 
-    Order order = Order.builder()
-        .orderNo(generateOrderNumber())
-        .fullname(user.getLastName() + user.getFirstName())
-        .userAgent(clientInfo.getUserAgent())
-        .acceptLanguage(clientInfo.getAcceptLanguage())
-        .ipAddress(clientInfo.getIpAddress())
-        .totalListPrice(totalListPrice)
-        .totalSellingPrice(totalSellingPrice)
-        .currency(OrderCurrency.KRW)
-        .parent(null)
-        .user(user)
-        .paymentMethod(request.getPaymentMethod())
-        .status(OrderStatus.PAYMENT_PENDING)
-        .visibility(OrderVisibility.VISIBLE)
-        .transactionId("")
-        .message("")
-        .suspicious(false)
-        .removed(false)
-        .build();
+    Order order =
+        Order.builder()
+            .orderNo(generateOrderNumber())
+            .fullname(user.getLastName() + user.getFirstName())
+            .userAgent(clientInfo.getUserAgent())
+            .acceptLanguage(clientInfo.getAcceptLanguage())
+            .ipAddress(clientInfo.getIpAddress())
+            .totalListPrice(totalListPrice)
+            .totalSellingPrice(totalSellingPrice)
+            .currency(OrderCurrency.KRW)
+            .parent(null)
+            .user(user)
+            .paymentMethod(request.getPaymentMethod())
+            .status(OrderStatus.PAYMENT_PENDING)
+            .visibility(OrderVisibility.VISIBLE)
+            .transactionId("")
+            .message("")
+            .suspicious(false)
+            .removed(false)
+            .build();
 
     Order savedOrder = persistenceService.saveAndFlush(order);
 
@@ -235,19 +236,15 @@ public class OrderProcessingService {
 
   private List<ProductDetached> validateProductsForCartOrder(List<CartItem> items) {
     // 장바구니에 담긴 상품권 권종 목록 가져오기
-    List<String> codes = items.stream()
-        .map(CartItem::getCode)
-        .distinct()
-        .toList();
+    List<String> codes = items.stream().map(CartItem::getCode).distinct().toList();
 
     // 실제 데이터베이스에 존재하는 상품권 권종 목록 가져오기
-    List<ProductDetached> products = new ArrayList<>(
-        persistenceService.findProductsDetachedByCodeIn(codes).values());
+    List<ProductDetached> products =
+        new ArrayList<>(persistenceService.findProductsDetachedByCodeIn(codes).values());
 
     Set<String> requestedCodes = new HashSet<>(codes);
-    Set<String> foundCodes = products.stream()
-        .map(ProductDetached::getCode)
-        .collect(Collectors.toSet());
+    Set<String> foundCodes =
+        products.stream().map(ProductDetached::getCode).collect(Collectors.toSet());
 
     for (String foundCode : foundCodes) {
       log.warn(foundCode);
@@ -259,11 +256,11 @@ public class OrderProcessingService {
       throw new BusinessException(ErrorCode.PRODUCT_NOT_FOUND, String.join(", ", notFoundCodes));
     }
 
-    Map<String, Integer> quantityByCode = items.stream()
-        .collect(Collectors.groupingBy(
-            CartItem::getCode,
-            Collectors.summingInt(CartItem::getQuantity)
-        ));
+    Map<String, Integer> quantityByCode =
+        items.stream()
+            .collect(
+                Collectors.groupingBy(
+                    CartItem::getCode, Collectors.summingInt(CartItem::getQuantity)));
 
     List<String> errors = new ArrayList<>();
     for (ProductDetached product : products) {
@@ -272,10 +269,10 @@ public class OrderProcessingService {
           || product.getStock() == ProductStock.SOLD_OUT) {
         errors.add("판매 중인 상품이 아닙니다: " + product.getCode());
       } else if (product.getStockQuantity() < requestedQuantity) {
-        errors.add(String.format(
-            "상품 '%s'의 재고가 부족합니다. 요청: %d, 재고: %d",
-            product.getName(), requestedQuantity, product.getStockQuantity()
-        ));
+        errors.add(
+            String.format(
+                "상품 '%s'의 재고가 부족합니다. 요청: %d, 재고: %d",
+                product.getName(), requestedQuantity, product.getStockQuantity()));
       }
     }
 
@@ -287,8 +284,8 @@ public class OrderProcessingService {
   }
 
   private void validateCartPrices(List<ProductDetached> products, List<CartItem> items) {
-    Map<Long, ProductDetached> productMap = products.stream()
-        .collect(Collectors.toMap(ProductDetached::getId, Function.identity()));
+    Map<Long, ProductDetached> productMap =
+        products.stream().collect(Collectors.toMap(ProductDetached::getId, Function.identity()));
 
     List<String> priceErrors = new ArrayList<>();
 
@@ -296,12 +293,10 @@ public class OrderProcessingService {
       ProductDetached product = productMap.get(item.getProductId());
 
       if (product.getSellingPrice().compareTo(item.getSellingPrice()) != 0) {
-        priceErrors.add(String.format(
-            "상품 '%s'의 가격이 변경되었습니다. 장바구니: %s, 실제: %s",
-            product.getName(),
-            item.getSellingPrice(),
-            product.getSellingPrice()
-        ));
+        priceErrors.add(
+            String.format(
+                "상품 '%s'의 가격이 변경되었습니다. 장바구니: %s, 실제: %s",
+                product.getName(), item.getSellingPrice(), product.getSellingPrice()));
       }
     }
 
@@ -312,15 +307,16 @@ public class OrderProcessingService {
 
   private List<OrderProduct> createOrderProductsFromCart(List<CartItem> items, Order order) {
     return items.stream()
-        .map(item -> OrderProduct.of(
-            item.getName(),
-            item.getSubtitle(),
-            item.getCode(),
-            item.getSellingPrice(),
-            item.getSellingPrice(),
-            item.getQuantity(),
-            order
-        ))
+        .map(
+            item ->
+                OrderProduct.of(
+                    item.getName(),
+                    item.getSubtitle(),
+                    item.getCode(),
+                    item.getSellingPrice(),
+                    item.getSellingPrice(),
+                    item.getQuantity(),
+                    order))
         .collect(Collectors.toList());
   }
 

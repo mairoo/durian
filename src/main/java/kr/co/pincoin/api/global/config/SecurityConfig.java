@@ -30,19 +30,19 @@ public class SecurityConfig {
 
   private final ApiAccessDeniedHandler accessDeniedHandler;
 
-    @Value("${web-config.cors.allowed-origins:*}")
-    private String allowedOrigins;
+  @Value("${web-config.cors.allowed-origins:*}")
+  private String allowedOrigins;
 
-    @Value("${web-config.cors.allowed-methods:GET,POST,PUT,DELETE,OPTIONS}")
-    private String allowedMethods;
+  @Value("${web-config.cors.allowed-methods:GET,POST,PUT,DELETE,OPTIONS}")
+  private String allowedMethods;
 
-    @Value("${web-config.cors.allowed-headers:*}")
-    private String allowedHeaders;
+  @Value("${web-config.cors.allowed-headers:*}")
+  private String allowedHeaders;
 
-    @Value("${web-config.cors.max-age:3600}")
-    private long maxAge;
+  @Value("${web-config.cors.max-age:3600}")
+  private long maxAge;
 
-    @Bean
+  @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http
         // CORS 설정 추가 (WebConfig에서 하지 않고 시큐리티 설정에서 처리)
@@ -101,8 +101,8 @@ public class SecurityConfig {
         // - /users, /products 같은 엔드포인트는 인증/미인증 요청을 모두 처리해야하는 경우가 많음
         .authorizeHttpRequests(
             auth ->
-                auth
-                    .requestMatchers("/actuator/**").denyAll()
+                auth.requestMatchers("/actuator/**")
+                    .denyAll()
                     .requestMatchers(
                         "/auth/**",
                         "/oauth2/**",
@@ -113,10 +113,11 @@ public class SecurityConfig {
                         "/payment/bank-transfer/callback", // 실제로는 토큰 검증 수행 JwtAuthenticationFilter
                         "/payment/billgate/callback",
                         "/payment/paypal/callback",
-                        "/payment/danal/callback"
-                    ).permitAll()
-                    .anyRequest().authenticated() // 나머지는 모두 인증 필요 (블랙리스트 패턴)
-        )
+                        "/payment/danal/callback")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated() // 나머지는 모두 인증 필요 (블랙리스트 패턴)
+            )
 
         // 5. 커스텀 필터 추가 (JWT 인증)
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -134,20 +135,20 @@ public class SecurityConfig {
     return http.build();
   }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of(allowedOrigins.split(",")));
-        configuration.setAllowedMethods(List.of(allowedMethods.split(",")));
-        configuration.setAllowedHeaders(List.of(allowedHeaders.split(",")));
-        configuration.setAllowCredentials(true);
-        configuration.setExposedHeaders(List.of("Set-Cookie"));
-        configuration.setMaxAge(maxAge);
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOriginPatterns(List.of(allowedOrigins.split(",")));
+    configuration.setAllowedMethods(List.of(allowedMethods.split(",")));
+    configuration.setAllowedHeaders(List.of(allowedHeaders.split(",")));
+    configuration.setAllowCredentials(true);
+    configuration.setExposedHeaders(List.of("Set-Cookie"));
+    configuration.setMaxAge(maxAge);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
 
   @Bean
   public PasswordEncoder passwordEncoder() {

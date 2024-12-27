@@ -21,21 +21,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class OrderVoucherController {
 
-    private final OrderService orderService;
+  private final OrderService orderService;
 
-    /**
-     * 내 주문 상품권 목록
-     */
-    @GetMapping("/{orderNo}/vouchers")
-    public ResponseEntity<ApiResponse<List<OrderVoucherResponse>>> getOrderVouchers(
-        @CurrentUser User user,
-        @PathVariable String orderNo) {
-        List<OrderProductVoucherProjection> orderVouchers = orderService.getMyOrderVouchers(user,
-            orderNo);
-        List<OrderVoucherResponse> orderVoucherResponses = orderVouchers.stream()
-            .map(OrderVoucherResponse::from)
-            .toList();
+  /** 내 주문 상품권 목록 */
+  @GetMapping("/{orderNo}/vouchers")
+  public ResponseEntity<ApiResponse<List<OrderVoucherResponse>>> getOrderVouchers(
+      @CurrentUser User user, @PathVariable String orderNo) {
+    List<OrderProductVoucherProjection> orderVouchers =
+        orderService.getMyOrderVouchers(user, orderNo);
+    List<OrderVoucherResponse> orderVoucherResponses =
+        orderVouchers.stream().map(OrderVoucherResponse::from).toList();
 
-        return ResponseEntity.ok(ApiResponse.of(orderVoucherResponses));
-    }
+    return ResponseEntity.ok(ApiResponse.of(orderVoucherResponses));
+  }
 }

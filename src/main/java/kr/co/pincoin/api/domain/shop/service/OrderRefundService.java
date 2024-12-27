@@ -26,9 +26,7 @@ public class OrderRefundService {
           OrderStatus.REFUNDED1,
           OrderStatus.REFUNDED2);
 
-  /**
-   * 환불 요청을 생성한다.
-   */
+  /** 환불 요청을 생성한다. */
   @Transactional
   public Order requestRefund(User user, Order order, String message) {
     validateRefundRequest(order);
@@ -44,14 +42,12 @@ public class OrderRefundService {
     persistenceService.saveOrders(order, refundOrder);
 
     // 발행된 바우처 취소 처리
-    //orderVoucherService.revokeVouchers(order.getId());
+    // orderVoucherService.revokeVouchers(order.getId());
 
     return refundOrder;
   }
 
-  /**
-   * 환불을 완료 처리한다.
-   */
+  /** 환불을 완료 처리한다. */
   @Transactional
   public Order completeRefund(Order refundOrder) {
     validateRefundCompletion(refundOrder);
@@ -66,9 +62,7 @@ public class OrderRefundService {
     return refundOrder;
   }
 
-  /**
-   * 환불 가능 여부를 확인한다.
-   */
+  /** 환불 가능 여부를 확인한다. */
   public boolean isRefundable(Order order) {
     return !NON_REFUNDABLE_STATUSES.contains(order.getStatus())
         && !Boolean.TRUE.equals(order.getRemoved());
@@ -125,16 +119,12 @@ public class OrderRefundService {
     return UUID.randomUUID().toString().replace("-", "");
   }
 
-  /**
-   * 환불 처리 상태를 확인한다.
-   */
+  /** 환불 처리 상태를 확인한다. */
   public boolean isRefundCompleted(Order order) {
     return order.getStatus() == OrderStatus.REFUNDED1 || order.getStatus() == OrderStatus.REFUNDED2;
   }
 
-  /**
-   * 부분 환불이 가능한지 확인한다. (향후 부분 환불 기능 구현시 사용)
-   */
+  /** 부분 환불이 가능한지 확인한다. (향후 부분 환불 기능 구현시 사용) */
   public boolean isPartialRefundable(Order order) {
     // 현재는 부분 환불을 지원하지 않으므로 항상 false 반환
     return false;

@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class LineNotifyRequest {
 
-    @NotBlank(message = "메시지는 필수입니다")
-    @Size(max = 1000, message = "메시지는 1000자를 초과할 수 없습니다")
-    private String message;
+  @NotBlank(message = "메시지는 필수입니다")
+  @Size(max = 1000, message = "메시지는 1000자를 초과할 수 없습니다")
+  private String message;
 }

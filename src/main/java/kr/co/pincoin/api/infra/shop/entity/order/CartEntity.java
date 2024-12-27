@@ -26,19 +26,19 @@ import lombok.NoArgsConstructor;
 @Getter
 public class CartEntity extends BaseDateTime {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id")
+  private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private UserEntity user;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id")
+  private UserEntity user;
 
-    @Column(name = "cart_data", columnDefinition = "json") // MariaDB, PostgreSQL = jsonb
-    private String cartData;
+  @Column(name = "cart_data", columnDefinition = "json") // MariaDB, PostgreSQL = jsonb
+  private String cartData;
 
-    @Column(name = "version")
-    @Version
-    private Long version;
+  @Column(name = "version")
+  @Version
+  private Long version;
 }

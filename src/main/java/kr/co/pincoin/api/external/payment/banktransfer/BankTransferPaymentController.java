@@ -16,21 +16,21 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class BankTransferPaymentController {
 
-    private OrderPaymentProcessingService orderPaymentProcessingService;
+  private OrderPaymentProcessingService orderPaymentProcessingService;
 
-    @PostMapping("/callback")
-    public ResponseEntity<Void> handleBankTransferCallback(
-        @Valid @ModelAttribute BankTransferRequest request) {
+  @PostMapping("/callback")
+  public ResponseEntity<Void> handleBankTransferCallback(
+      @Valid @ModelAttribute BankTransferRequest request) {
 
-        log.debug(
-            "Bank transfer webhook received: account={}, received={}, name={}, method={}, amount={}, balance={}",
-            request.getAccount(),
-            request.getReceived(),
-            request.getName(),
-            request.getMethod(),
-            request.getAmount(),
-            request.getBalance());
+    log.debug(
+        "Bank transfer webhook received: account={}, received={}, name={}, method={}, amount={}, balance={}",
+        request.getAccount(),
+        request.getReceived(),
+        request.getName(),
+        request.getMethod(),
+        request.getAmount(),
+        request.getBalance());
 
-        return ResponseEntity.ok().build();
-    }
+    return ResponseEntity.ok().build();
+  }
 }

@@ -18,18 +18,19 @@ public class OrderPaymentQueryRepositoryImpl implements OrderPaymentQueryReposit
   @Override
   public List<OrderPaymentDetached> findOrderPaymentDetachedByOrderId(Long orderId) {
     return queryFactory
-        .select(Projections.constructor(OrderPaymentDetached.class,
-            orderPaymentEntity.id,
-            orderPaymentEntity.account,
-            orderPaymentEntity.amount,
-            orderPaymentEntity.balance,
-            orderPaymentEntity.received,
-            orderPaymentEntity.order.id,
-            orderPaymentEntity.order.orderNo,
-            orderPaymentEntity.created,
-            orderPaymentEntity.modified,
-            orderPaymentEntity.isRemoved
-        ))
+        .select(
+            Projections.constructor(
+                OrderPaymentDetached.class,
+                orderPaymentEntity.id,
+                orderPaymentEntity.account,
+                orderPaymentEntity.amount,
+                orderPaymentEntity.balance,
+                orderPaymentEntity.received,
+                orderPaymentEntity.order.id,
+                orderPaymentEntity.order.orderNo,
+                orderPaymentEntity.created,
+                orderPaymentEntity.modified,
+                orderPaymentEntity.isRemoved))
         .from(orderPaymentEntity)
         .join(orderPaymentEntity.order)
         .where(orderPaymentEntity.order.id.eq(orderId))

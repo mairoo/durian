@@ -8,11 +8,11 @@ import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
 
 public interface OrderProductQueryRepository {
 
-    List<OrderProductEntity> findAll(OrderProductSearchCondition condition);
+  List<OrderProductEntity> findAll(OrderProductSearchCondition condition);
 
-    List<OrderProductDetached> findAllDetached(OrderProductSearchCondition condition);
+  List<OrderProductDetached> findAllDetached(OrderProductSearchCondition condition);
 
-    List<OrderProductEntity> findAllWithOrderAndUser(String orderNo, Integer userId);
+  List<OrderProductEntity> findAllWithOrderAndUser(String orderNo, Integer userId);
 
-    List<OrderProductEntity> findAllWithOrder(OrderEntity order);
+  List<OrderProductEntity> findAllWithOrder(OrderEntity order);
 }

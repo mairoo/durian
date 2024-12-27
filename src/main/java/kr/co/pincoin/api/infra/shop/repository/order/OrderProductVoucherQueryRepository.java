@@ -5,5 +5,5 @@ import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVouc
 
 public interface OrderProductVoucherQueryRepository {
 
-    List<OrderProductVoucherProjection> findAllByOrderProductOrderId(Long orderId);
+  List<OrderProductVoucherProjection> findAllByOrderProductOrderId(Long orderId);
 }

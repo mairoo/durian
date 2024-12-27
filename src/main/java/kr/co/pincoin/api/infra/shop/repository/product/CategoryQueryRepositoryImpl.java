@@ -19,24 +19,27 @@ public class CategoryQueryRepositoryImpl implements CategoryQueryRepository {
 
   @Override
   public Optional<CategoryDetached> findDetachedBySlug(String slug) {
-    return Optional.ofNullable(queryFactory
-        .select(getCategoryDetachedProjection())
-        .from(category)
-        .where(slugEq(slug))
-        .fetchOne());
+    return Optional.ofNullable(
+        queryFactory
+            .select(getCategoryDetachedProjection())
+            .from(category)
+            .where(slugEq(slug))
+            .fetchOne());
   }
 
   @Override
   public Optional<CategoryDetached> findDetachedById(Long id) {
-    return Optional.ofNullable(queryFactory
-        .select(getCategoryDetachedProjection())
-        .from(category)
-        .where(idEq(id))
-        .fetchOne());
+    return Optional.ofNullable(
+        queryFactory
+            .select(getCategoryDetachedProjection())
+            .from(category)
+            .where(idEq(id))
+            .fetchOne());
   }
 
   private Expression<CategoryDetached> getCategoryDetachedProjection() {
-    return Projections.constructor(CategoryDetached.class,
+    return Projections.constructor(
+        CategoryDetached.class,
         category.id,
         category.title,
         category.slug,
@@ -56,8 +59,7 @@ public class CategoryQueryRepositoryImpl implements CategoryQueryRepository {
         category.lft,
         category.rght,
         category.treeId,
-        category.level
-    );
+        category.level);
   }
 
   private BooleanExpression slugEq(String slug) {

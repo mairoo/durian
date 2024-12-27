@@ -12,22 +12,22 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class CartRepositoryImpl implements CartRepository {
 
-    private final CartJpaRepository jpaRepository;
+  private final CartJpaRepository jpaRepository;
 
-    private final CartMapper mapper;
+  private final CartMapper mapper;
 
-    @Override
-    public Cart save(Cart cart) {
-        return mapper.toModel(jpaRepository.save(mapper.toEntity(cart)));
-    }
+  @Override
+  public Cart save(Cart cart) {
+    return mapper.toModel(jpaRepository.save(mapper.toEntity(cart)));
+  }
 
-    @Override
-    public Optional<Cart> findByUserId(Integer userId) {
-        return jpaRepository.findByUserId(userId).map(mapper::toModel);
-    }
+  @Override
+  public Optional<Cart> findByUserId(Integer userId) {
+    return jpaRepository.findByUserId(userId).map(mapper::toModel);
+  }
 
-    @Override
-    public Optional<Cart> findByUser(User user) {
-        return jpaRepository.findByUser(user.toEntity()).map(mapper::toModel);
-    }
+  @Override
+  public Optional<Cart> findByUser(User user) {
+    return jpaRepository.findByUser(user.toEntity()).map(mapper::toModel);
+  }
 }

@@ -128,8 +128,8 @@ public class CatalogService {
     return catalogPersistence.saveProduct(product);
   }
 
-  public List<ProductDetached> getProductsByCategory(Long categoryId, String categorySlug,
-      ProductStatus status, ProductStock stock) {
+  public List<ProductDetached> getProductsByCategory(
+      Long categoryId, String categorySlug, ProductStatus status, ProductStock stock) {
     return catalogPersistence.findProductsByCategory(categoryId, categorySlug, status, stock);
   }
 
@@ -169,8 +169,8 @@ public class CatalogService {
         .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
   }
 
-  public ProductDetached getProductDetachedById(Long productId, ProductStatus status,
-      ProductStock stock) {
+  public ProductDetached getProductDetachedById(
+      Long productId, ProductStatus status, ProductStock stock) {
     return catalogPersistence
         .findProductDetachedById(productId, status, stock)
         .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
