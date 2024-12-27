@@ -9,6 +9,7 @@ import kr.co.pincoin.api.global.response.success.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +25,7 @@ public class ProductController {
   private final ProductService productService;
 
   @GetMapping("")
-  public ApiResponse<List<ProductResponse>> getProducts(
+  public ResponseEntity<ApiResponse<List<ProductResponse>>> getProducts(
       @RequestParam(required = false) Long categoryId,
       @RequestParam(required = false) String categorySlug) throws BadRequestException {
     if (categoryId != null && categorySlug != null) {
@@ -47,18 +48,18 @@ public class ProductController {
         .map(ProductResponse::from)
         .toList();
 
-    return ApiResponse.of(responses);
+    return ResponseEntity.ok(ApiResponse.of(responses));
   }
 
   @GetMapping("/{id}")
-  public ApiResponse<ProductResponse> getProductById(@PathVariable Long id) {
+  public ResponseEntity<ApiResponse<ProductResponse>> getProductById(@PathVariable Long id) {
     ProductDetached product = productService.getProductDetachedById(id);
-    return ApiResponse.of(ProductResponse.from(product));
+    return ResponseEntity.ok(ApiResponse.of(ProductResponse.from(product)));
   }
 
   @GetMapping("/code/{code}")
-  public ApiResponse<ProductResponse> getProductByCode(@PathVariable String code) {
+  public ResponseEntity<ApiResponse<ProductResponse>> getProductByCode(@PathVariable String code) {
     Product product = productService.getProductByCode(code);
-    return ApiResponse.of(ProductResponse.from(product));
+    return ResponseEntity.ok(ApiResponse.of(ProductResponse.from(product)));
   }
 }
