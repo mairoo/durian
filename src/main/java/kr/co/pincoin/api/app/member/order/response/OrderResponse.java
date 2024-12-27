@@ -10,15 +10,14 @@ import kr.co.pincoin.api.domain.shop.model.order.enums.OrderCurrency;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderPaymentMethod;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OrderResponse {
+
   @JsonProperty("id")
   private final Long id;
 
@@ -72,7 +71,7 @@ public class OrderResponse {
         .isRemoved(order.getRemoved())
         .build();
   }
-  
+
   // OrderDetached 객체에서 응답 객체 초기화
   public static OrderResponse from(OrderDetached order) {
     return OrderResponse.builder()

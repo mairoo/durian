@@ -14,6 +14,7 @@ import lombok.Getter;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MyUserResponse extends UserResponse {
+
   // User 정보 - 개인정보
   @JsonProperty("email")
   private final String email;
