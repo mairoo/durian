@@ -1,7 +1,6 @@
 package kr.co.pincoin.api.app.member.product.service;
 
 import java.util.List;
-import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.ProductDetached;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
@@ -16,14 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
 
   private final CatalogService catalogService;
-
-  public Product getProductById(Long id) {
-    return catalogService.getProductById(id, ProductStatus.ENABLED, ProductStock.IN_STOCK);
-  }
-
-  public ProductDetached getProductDetachedById(Long id) {
-    return catalogService.getProductDetachedById(id, ProductStatus.ENABLED, ProductStock.IN_STOCK);
-  }
 
   public ProductDetached getProductByCode(String code) {
     return catalogService.getProductByCode(code, ProductStatus.ENABLED, ProductStock.IN_STOCK);

@@ -50,12 +50,10 @@ public class ProductController {
     return ResponseEntity.ok(ApiResponse.of(responses));
   }
 
-  @GetMapping("/{identifier}")
-  public ResponseEntity<ApiResponse<ProductResponse>> getProductById(
-      @PathVariable String identifier) {
-    ProductDetached product = identifier.matches("\\d+")
-        ? productService.getProductDetachedById(Long.parseLong(identifier))
-        : productService.getProductByCode(identifier);
+  @GetMapping("/{code}")
+  public ResponseEntity<ApiResponse<ProductResponse>> getProductByCode(
+      @PathVariable String code) {
+    ProductDetached product = productService.getProductByCode(code);
     return ResponseEntity.ok(ApiResponse.of(ProductResponse.from(product)));
   }
 }

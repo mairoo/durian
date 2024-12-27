@@ -15,10 +15,6 @@ public class CategoryService {
 
   private final CatalogService catalogService;
 
-  public CategoryDetached getCategoryById(Long id) {
-    return catalogService.getCategoryDetachedById(id);
-  }
-
   public CategoryDetached getCategoryBySlug(String slug) {
     return catalogService.getCategoryDetachedBySlug(slug);
   }

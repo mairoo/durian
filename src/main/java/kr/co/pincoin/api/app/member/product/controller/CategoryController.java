@@ -22,12 +22,10 @@ public class CategoryController {
 
   private final CategoryService categoryService;
 
-  @GetMapping("/{identifier}")
-  public ResponseEntity<ApiResponse<CategoryResponse>> getCategory(
-      @PathVariable String identifier) {
-    CategoryDetached category = identifier.matches("\\d+")
-        ? categoryService.getCategoryById(Long.parseLong(identifier))
-        : categoryService.getCategoryBySlug(identifier);
+  @GetMapping("/{slug}")
+  public ResponseEntity<ApiResponse<CategoryResponse>> getCategoryBySlug(
+      @PathVariable String slug) {
+    CategoryDetached category = categoryService.getCategoryBySlug(slug);
     return ResponseEntity.ok(ApiResponse.of(CategoryResponse.from(category)));
   }
 

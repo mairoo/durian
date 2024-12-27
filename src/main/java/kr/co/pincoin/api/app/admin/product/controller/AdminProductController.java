@@ -39,12 +39,10 @@ public class AdminProductController {
         AdminProductResponse.from(product), HttpStatus.CREATED, "Product created successfully"));
   }
 
-  @GetMapping("/{identifier}")
+  @GetMapping("/{id}")
   public ResponseEntity<ApiResponse<AdminProductResponse>> getProductByIdentifier(
-      @PathVariable String identifier) {
-    ProductDetached product = identifier.matches("\\d+")
-        ? adminProductService.getProductDetachedById(Long.parseLong(identifier))
-        : adminProductService.getProductByCode(identifier);
+      @PathVariable Long id) {
+    ProductDetached product = adminProductService.getProductDetachedById(id);
     return ResponseEntity.ok(ApiResponse.of(AdminProductResponse.from(product)));
   }
 
