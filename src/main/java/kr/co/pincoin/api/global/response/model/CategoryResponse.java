@@ -6,15 +6,14 @@ import java.math.BigDecimal;
 import kr.co.pincoin.api.domain.shop.model.product.Category;
 import kr.co.pincoin.api.domain.shop.model.product.CategoryDetached;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder(access = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CategoryResponse {
+
   @JsonProperty("id")
   private final Long id;
 
