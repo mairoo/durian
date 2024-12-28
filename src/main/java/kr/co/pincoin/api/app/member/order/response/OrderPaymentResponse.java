@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
 import kr.co.pincoin.api.domain.shop.model.order.OrderPaymentDetached;
 import kr.co.pincoin.api.domain.shop.model.order.enums.PaymentAccount;
 import lombok.Getter;
@@ -26,6 +27,14 @@ public class OrderPaymentResponse {
 
   @JsonProperty("received")
   private final LocalDateTime received;
+
+  protected OrderPaymentResponse(OrderPayment orderPayment) {
+    this.id = orderPayment.getId();
+    this.account = orderPayment.getAccount();
+    this.amount = orderPayment.getAmount();
+    this.orderNo = orderPayment.getOrder().getOrderNo();
+    this.received = orderPayment.getReceived();
+  }
 
   protected OrderPaymentResponse(OrderPaymentDetached orderPayment) {
     this.id = orderPayment.getId();

@@ -10,11 +10,17 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCondition;
+import kr.co.pincoin.api.infra.auth.mapper.profile.ProfileMapper;
+import kr.co.pincoin.api.infra.auth.mapper.user.UserMapper;
+import kr.co.pincoin.api.infra.shop.dto.OrderProductProjection;
 import kr.co.pincoin.api.infra.shop.dto.OrderProductWithDetails;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderEntity;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
+import kr.co.pincoin.api.infra.shop.mapper.order.OrderMapper;
+import kr.co.pincoin.api.infra.shop.mapper.order.OrderProductMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -22,6 +28,14 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class OrderProductQueryRepositoryImpl implements OrderProductQueryRepository {
   private final JPAQueryFactory queryFactory;
+
+  private final OrderProductMapper orderProductMapper;
+
+  private final OrderMapper orderMapper;
+
+  private final UserMapper userMapper;
+
+  private final ProfileMapper profileMapper;
 
   @Override
   public List<OrderProductEntity> findAll(OrderProductSearchCondition condition) {
@@ -92,13 +106,11 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
   @Override
   public List<OrderProductWithDetails> findAllWithOrderUserProfileByOrderId(Long orderId) {
     return queryFactory
-        .select(
-            Projections.constructor(
-                OrderProductWithDetails.class,
-                orderProductEntity,
-                orderEntity,
-                userEntity,
-                profileEntity))
+        .select(Projections.fields(OrderProductProjection.class,
+            orderProductEntity.as("orderProduct"),
+            orderEntity.as("order"),
+            userEntity.as("user"),
+            profileEntity.as("profile")))
         .from(orderProductEntity)
         .innerJoin(orderProductEntity.order, orderEntity)
         .fetchJoin()
@@ -108,7 +120,15 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
         .on(profileEntity.user.eq(userEntity))
         .fetchJoin()
         .where(orderEntity.id.eq(orderId))
-        .fetch();
+        .fetch()
+        .stream()
+        .map(projection -> new OrderProductWithDetails(
+            projection,
+            orderProductMapper,
+            orderMapper,
+            userMapper,
+            profileMapper))
+        .collect(Collectors.toList());
   }
 
   private BooleanExpression orderIdEq(Long orderId) {
