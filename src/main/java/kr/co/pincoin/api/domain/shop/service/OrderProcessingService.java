@@ -117,7 +117,7 @@ public class OrderProcessingService {
     List<OrderProduct> orderProducts = createOrderProductsFromCart(request.getItems(), savedOrder);
     orderProductPersistenceService.saveOrderProducts(orderProducts);
 
-    eventPublisher.publishEvent(new OrderCreatedEvent(savedOrder));
+    eventPublisher.publishEvent(new OrderCreatedEvent(savedOrder, orderProducts));
 
     return savedOrder;
   }

@@ -21,19 +21,19 @@ public class OrderEventHandler {
     @EventListener
     public void handleOrderCreated(OrderCreatedEvent event) {
         // 주문 완료 메일 발송 처리
-        log.info("Order created: {} {}", event.getOrder().getOrderNo(), event.getOrder().getUser().getEmail());
+        log.info("입금확인중: {} {}", event.getOrder().getOrderNo(), event.getOrder().getUser().getEmail());
     }
 
     @EventListener
     public void handleOrderPaymentCompletedEvent(OrderPaymentCompletedEvent event) {
-        log.info("Order payment completed: {}", event.getOrder());
+        log.info("입금완료: {}", event.getOrder());
     }
 
     @Async
     @EventListener
     public void handleOrderUnderReviewEvent(OrderUnderReviewEvent event) {
         // 추가 인증 요청 sms 발송
-        log.info("Order under review: {}", event.getOrder());
+        log.info("인증심사중: {}", event.getOrder());
     }
 
     @Async
@@ -42,28 +42,28 @@ public class OrderEventHandler {
         // 관리자에게 알림 발송
 
         // 고객에게 대기 요청
-        log.info("Order payment verified: {}", event.getOrder());
+        log.info("입금인증완료: {}", event.getOrder());
     }
 
     @Async
     @EventListener
     public void handleOrderShippedEvent(OrderShippedEvent event) {
         // 상품권 발송 완료 안내 메일 발송 처리
-        log.info("Order shipped: {}", event.getOrder());
+        log.info("발송완료: {}", event.getOrder());
     }
 
     @EventListener
     public void handleOrderVoidedEvent(OrderVoidedEvent event) {
-        log.info("Order voided: {}", event.getOrder());
+        log.info("주문무효: {}", event.getOrder());
     }
 
     @EventListener
     public void handleOrderRefundRequestedEvent(OrderRefundRequestedEvent event) {
-        log.info("Order refund requested: {}", event.getOrder());
+        log.info("환불요청: {}", event.getOrder());
     }
 
     @EventListener
     public void handleOrderRefundedEvent(OrderRefundedEvent event) {
-        log.info("Order refunded: {}", event.getOrder());
+        log.info("환불완료: {}", event.getOrder());
     }
 }
