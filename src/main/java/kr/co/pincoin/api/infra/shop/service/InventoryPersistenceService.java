@@ -54,25 +54,19 @@ public class InventoryPersistenceService {
     return voucherRepository.saveAll(vouchers).stream().toList();
   }
 
-  /**
-   * 상품 코드와 수량으로 사용 가능한 바우처 목록 조회
-   */
+  /** 상품 코드와 수량으로 사용 가능한 바우처 목록 조회 */
   public List<Voucher> findAvailableVouchers(String productCode, int quantity) {
     return voucherRepository.findTopNByProductCodeAndStatusOrderByIdAsc(
         productCode, VoucherStatus.PURCHASED, quantity);
   }
 
-  /**
-   * 바우처 업데이트
-   */
+  /** 바우처 업데이트 */
   @Transactional
   public void updateVoucher(Voucher voucher) {
     voucherRepository.save(voucher);
   }
 
-  /**
-   * 바우처 목록 일괄 업데이트
-   */
+  /** 바우처 목록 일괄 업데이트 */
   @Transactional
   public void updateVouchersBatch(List<Voucher> vouchers) {
     int batchSize = 100;

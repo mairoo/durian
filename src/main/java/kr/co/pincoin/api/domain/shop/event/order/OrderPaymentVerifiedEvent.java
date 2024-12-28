@@ -4,7 +4,7 @@ import kr.co.pincoin.api.domain.shop.model.order.Order;
 
 public class OrderPaymentVerifiedEvent extends OrderEvent {
 
-    public OrderPaymentVerifiedEvent(Order order) {
-        super(order);
-    }
+  public OrderPaymentVerifiedEvent(Order order) {
+    super(order);
+  }
 }

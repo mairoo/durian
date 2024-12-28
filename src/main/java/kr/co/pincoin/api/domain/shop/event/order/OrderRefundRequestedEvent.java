@@ -4,7 +4,7 @@ import kr.co.pincoin.api.domain.shop.model.order.Order;
 
 public class OrderRefundRequestedEvent extends OrderEvent {
 
-    public OrderRefundRequestedEvent(Order order) {
-        super(order);
-    }
+  public OrderRefundRequestedEvent(Order order) {
+    super(order);
+  }
 }

@@ -7,10 +7,10 @@ import lombok.Getter;
 @Getter
 public class OrderPaymentCompletedEvent extends OrderEvent {
 
-    private final OrderPayment payment;
+  private final OrderPayment payment;
 
-    public OrderPaymentCompletedEvent(Order order, OrderPayment payment) {
-        super(order);
-        this.payment = payment;
-    }
+  public OrderPaymentCompletedEvent(Order order, OrderPayment payment) {
+    super(order);
+    this.payment = payment;
+  }
 }

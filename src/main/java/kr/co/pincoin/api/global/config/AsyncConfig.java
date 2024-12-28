@@ -13,24 +13,24 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 public class AsyncConfig implements AsyncConfigurer {
 
-    @Override
-    public Executor getAsyncExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+  @Override
+  public Executor getAsyncExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 
-        executor.setCorePoolSize(5); // 기본 스레드 풀 크기
-        executor.setMaxPoolSize(10); // 최대 스레드 풀 크기
-        executor.setQueueCapacity(25); // 대기 큐 크기
-        executor.setThreadNamePrefix("PincoinAsync-"); // 스레드 이름 접두사
+    executor.setCorePoolSize(5); // 기본 스레드 풀 크기
+    executor.setMaxPoolSize(10); // 최대 스레드 풀 크기
+    executor.setQueueCapacity(25); // 대기 큐 크기
+    executor.setThreadNamePrefix("PincoinAsync-"); // 스레드 이름 접두사
 
-        // 초과 요청에 대한 정책 설정
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+    // 초과 요청에 대한 정책 설정
+    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
 
-        executor.initialize();
-        return executor;
-    }
+    executor.initialize();
+    return executor;
+  }
 
-    @Override
-    public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
-        return new SimpleAsyncUncaughtExceptionHandler();
-    }
+  @Override
+  public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+    return new SimpleAsyncUncaughtExceptionHandler();
+  }
 }

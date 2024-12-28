@@ -40,8 +40,8 @@ public class OrderVoucherService {
   /** 주문에 대한 바우처를 발행한다. */
   @Transactional
   public Order issueVouchers(Order order) {
-    List<OrderProduct> orderProducts = orderProductPersistenceService.findOrderProductsWithOrder(
-        order);
+    List<OrderProduct> orderProducts =
+        orderProductPersistenceService.findOrderProductsWithOrder(order);
 
     List<OrderProductVoucher> allVouchers = new ArrayList<>();
     List<Voucher> vouchersToUpdate = new ArrayList<>();
@@ -115,7 +115,8 @@ public class OrderVoucherService {
 
   /** 바우처 발행을 위한 상품 검증 */
   private Product validateProductForVoucherIssue(OrderProduct orderProduct) {
-    return catalogPersistenceService.findProductsByCartItems(List.of(CartItem.from(orderProduct)))
+    return catalogPersistenceService
+        .findProductsByCartItems(List.of(CartItem.from(orderProduct)))
         .stream()
         .findFirst()
         .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다: " + orderProduct.getCode()));

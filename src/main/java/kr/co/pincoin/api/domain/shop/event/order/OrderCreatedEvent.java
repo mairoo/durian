@@ -9,13 +9,13 @@ import lombok.Getter;
 @Getter
 public class OrderCreatedEvent extends OrderEvent {
 
-    private final OrderStatus status = OrderStatus.PAYMENT_PENDING;
+  private final OrderStatus status = OrderStatus.PAYMENT_PENDING;
 
-    private final List<OrderProduct> orderProducts;
+  private final List<OrderProduct> orderProducts;
 
-    public OrderCreatedEvent(Order order, List<OrderProduct> orderProducts) {
-        super(order);
+  public OrderCreatedEvent(Order order, List<OrderProduct> orderProducts) {
+    super(order);
 
-        this.orderProducts = orderProducts;
-    }
+    this.orderProducts = orderProducts;
+  }
 }

@@ -7,12 +7,12 @@ import lombok.Getter;
 @Getter
 public abstract class OrderEvent {
 
-    private final Order order;
+  private final Order order;
 
-    private final LocalDateTime occurredAt;
+  private final LocalDateTime occurredAt;
 
-    protected OrderEvent(Order order) {
-        this.order = order;
-        this.occurredAt = LocalDateTime.now();
-    }
+  protected OrderEvent(Order order) {
+    this.order = order;
+    this.occurredAt = LocalDateTime.now();
+  }
 }

@@ -22,7 +22,6 @@ public class AdminOrderPaymentService {
    * @param orderId 조회할 주문 번호
    * @return 주문에 포함된 입금 내역
    */
-
   public List<OrderPaymentDetached> getOrderPayments(Long orderId) {
     return orderPaymentProcessingService.getPayments(orderId);
   }

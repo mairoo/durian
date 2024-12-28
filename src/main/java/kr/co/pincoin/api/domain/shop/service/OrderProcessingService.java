@@ -73,8 +73,8 @@ public class OrderProcessingService {
   }
 
   public List<OrderProductDetached> getUserOrderProductsDetached(User user, String orderNo) {
-    return orderProductPersistenceService.findOrderProductsDetachedByUserIdAndOrderNo(user.getId(),
-        orderNo);
+    return orderProductPersistenceService.findOrderProductsDetachedByUserIdAndOrderNo(
+        user.getId(), orderNo);
   }
 
   public User getUser(Integer userId) {
