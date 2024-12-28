@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import kr.co.pincoin.api.app.member.order.request.CartItem;
 import kr.co.pincoin.api.app.member.order.request.CartOrderCreateRequest;
 import kr.co.pincoin.api.domain.auth.model.user.User;
+import kr.co.pincoin.api.domain.shop.event.order.OrderCreatedEvent;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
@@ -34,6 +35,7 @@ import kr.co.pincoin.api.infra.shop.service.OrderProductPersistenceService;
 import kr.co.pincoin.api.infra.shop.service.OrderProductVoucherPersistenceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -54,6 +56,8 @@ public class OrderProcessingService {
   private final OrderProductVoucherPersistenceService orderProductVoucherPersistenceService;
 
   private final CatalogPersistenceService catalogPersistenceService;
+
+  private final ApplicationEventPublisher eventPublisher;
 
   // 주문 조회
   public Page<Order> getOrders(OrderSearchCondition condition, Pageable pageable) {
@@ -112,6 +116,8 @@ public class OrderProcessingService {
 
     List<OrderProduct> orderProducts = createOrderProductsFromCart(request.getItems(), savedOrder);
     orderProductPersistenceService.saveOrderProducts(orderProducts);
+
+    eventPublisher.publishEvent(new OrderCreatedEvent(savedOrder));
 
     return savedOrder;
   }
