@@ -202,7 +202,7 @@ public class OrderPaymentProcessingService {
           return OrderStatus.PAYMENT_VERIFIED;
         }
         // 30만원 미만이면서 안전한 상품권인 경우
-        if (totalListPrice.compareTo(new BigDecimal("300000")) < 0 && hasSafeVouchers) {
+        if (totalListPrice.compareTo(AMOUNT_300K) < 0 && hasSafeVouchers) {
           return OrderStatus.PAYMENT_VERIFIED;
         }
       }
@@ -210,20 +210,17 @@ public class OrderPaymentProcessingService {
 
     // 주문 이력이 있는 경우의 처리
     else if (totalOrderCount > 0) {
-      // VIP 고객 (5회 초과 주문) 처리
-      if (totalOrderCount > 5) {
-        if (isOrderHistoryValid(order, profile)
-            && order.getTotalSellingPrice().compareTo(profile.getMaxPrice()) <= 0) {
-
-          // 모든 인증이 완료된 경우
-          if (isPhoneVerified && isDocumentVerified) {
-            return OrderStatus.PAYMENT_VERIFIED;
-          }
-
-          // 하나의 인증이라도 있고 안전한 상품권인 경우
-          if ((isPhoneVerified || isDocumentVerified) && hasSafeVouchers) {
-            return OrderStatus.PAYMENT_VERIFIED;
-          }
+      if (totalOrderCount > 5 // 구매 횟수 5회 초과 시
+          && isOrderHistoryValid(order, profile) // 첫 구매 14일 경과 && 마지막 구매 30일 이내
+          && order.getTotalSellingPrice().compareTo(profile.getMaxPrice()) <= 0 // 고액구매 아닌 경우
+      ) {
+        // 모든 인증이 완료된 경우
+        if (isPhoneVerified && isDocumentVerified) {
+          return OrderStatus.PAYMENT_VERIFIED;
+        }
+        // 하나의 인증이라도 있고 안전한 상품권인 경우
+        if ((isPhoneVerified || isDocumentVerified) && hasSafeVouchers) {
+          return OrderStatus.PAYMENT_VERIFIED;
         }
       }
 
