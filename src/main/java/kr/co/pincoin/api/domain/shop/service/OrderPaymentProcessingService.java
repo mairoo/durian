@@ -209,7 +209,7 @@ public class OrderPaymentProcessingService {
     }
 
     // 주문 이력이 있는 경우의 처리
-    if (totalOrderCount > 0) {
+    else if (totalOrderCount > 0) {
       // VIP 고객 (5회 초과 주문) 처리
       if (totalOrderCount > 5) {
         if (isOrderHistoryValid(order, profile)
