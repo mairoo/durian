@@ -1,9 +1,11 @@
 package kr.co.pincoin.api.domain.shop.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.auth.model.profile.Profile;
 import kr.co.pincoin.api.domain.shop.event.order.OrderPaymentCompletedEvent;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
@@ -12,6 +14,7 @@ import kr.co.pincoin.api.domain.shop.model.order.OrderPaymentDetached;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.infra.auth.service.UserProfilePersistenceService;
+import kr.co.pincoin.api.infra.shop.dto.OrderProductWithDetails;
 import kr.co.pincoin.api.infra.shop.service.OrderPaymentPersistenceService;
 import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
 import kr.co.pincoin.api.infra.shop.service.OrderProductPersistenceService;
@@ -54,7 +57,8 @@ public class OrderPaymentProcessingService {
   private final ApplicationEventPublisher eventPublisher;
 
   /**
-   * 주문에 새로운 결제를 추가하고, 결제 완료 여부에 따라 주문 상태를 업데이트한다. 결제가 완료되면 OrderPaymentCompletedEvent를 발행한다.
+   * 주문에 새로운 결제를 추가하고, 결제 완료 여부에 따라 주문 상태를 업데이트한다. (총 쿼리 4회) 결제가 완료되면 OrderPaymentCompletedEvent를
+   * 발행한다.
    *
    * @param orderId 결제를 추가할 주문 ID
    * @param payment 추가할 결제 정보
@@ -62,22 +66,34 @@ public class OrderPaymentProcessingService {
    */
   @Transactional
   public OrderPayment addPayment(Long orderId, OrderPayment payment) {
-    // 주문 정보와 사용자 정보를 함께 조회
-    Order order = orderPersistenceService.findOrderWithUser(orderId);
+    // 1. 주문 정보, 사용자, 프로필 모두 함께 조회
+    List<OrderProductWithDetails> details =
+        orderProductPersistenceService.findAllWithOrderUserProfileByOrderId(orderId);
 
-    // 결제 정보 저장
+    if (details.isEmpty()) {
+      throw new EntityNotFoundException("Order not found with id: " + orderId);
+    }
+
+    OrderProductWithDetails firstDetail = details.getFirst();
+
+    Order order = firstDetail.getOrder();
+
+    Profile profile = firstDetail.getProfile();
+
+    List<OrderProduct> orderProducts =
+        details.stream().map(OrderProductWithDetails::getOrderProduct).collect(Collectors.toList());
+
+    // 2. 결제 정보 저장
     OrderPayment savedPayment = orderPaymentPersistenceService.savePayment(payment);
 
-    // 총 결제 금액 계산
+    // 3. 총 결제 금액 계산
     BigDecimal totalPayments = orderPaymentPersistenceService.getTotalAmountByOrder(order);
 
-    // 결제 완료 여부 확인 후 처리
+    // 4. 결제 완료 여부 확인 후 처리
     if (isPaymentCompleted(totalPayments, order.getTotalSellingPrice())) {
-      // 사용자 프로필 조회
-      Profile profile = userProfilePersistenceService.findProfile(order.getUser().getId());
 
-      // 주문 상태 결정 및 업데이트
-      OrderStatus newStatus = determineOrderStatus(order, profile);
+      // 주문 상태 결정
+      OrderStatus newStatus = determineOrderStatus(order, profile, orderProducts, totalPayments);
       order.updateStatus(newStatus);
 
       // 결제 완료 이벤트 발행
@@ -173,16 +189,20 @@ public class OrderPaymentProcessingService {
    * @param profile 사용자 프로필 정보
    * @return 결정된 주문 상태
    */
-  private OrderStatus determineOrderStatus(Order order, Profile profile) {
-    // 자주 사용되는 값들을 미리 계산하여 성능 최적화
-    boolean hasSafeVouchers = hasSafeVouchers(order);
+  private OrderStatus determineOrderStatus(
+      Order order, Profile profile, List<OrderProduct> orderProducts, BigDecimal totalPayments) {
+
+    if (totalPayments.compareTo(order.getTotalSellingPrice()) < 0) {
+      return OrderStatus.PAYMENT_PENDING;
+    }
+
+    boolean hasSafeVouchers = hasSafeVouchers(orderProducts); // 이미 조회된 orderProducts 사용
     boolean isPhoneVerified = profile.isPhoneVerified();
     boolean isDocumentVerified = profile.isDocumentVerified();
     BigDecimal totalListPrice = order.getTotalListPrice();
     int totalOrderCount = profile.getTotalOrderCount();
 
     // 입금액 부족 입금확인중 상태 유지
-    BigDecimal totalPayments = getTotalPaymentAmount(order);
     if (totalPayments.compareTo(order.getTotalSellingPrice()) < 0) {
       return OrderStatus.PAYMENT_PENDING;
     }
@@ -194,7 +214,7 @@ public class OrderPaymentProcessingService {
       }
     }
 
-    // 첫 주문자 처리 로직
+    // 신규 고객 처리 로직
     if (totalOrderCount == 0) {
       if (isPhoneVerified) {
         // 20만원 미만은 휴대폰 인증만으로 가능
@@ -208,9 +228,9 @@ public class OrderPaymentProcessingService {
       }
     }
 
-    // 주문 이력이 있는 경우의 처리
+    // 기존 고객 처리 로직
     else if (totalOrderCount > 0) {
-      if (totalOrderCount > 5 // 구매 횟수 5회 초과 시
+      if (totalOrderCount > 5 // 구매 횟수 5회 초과
           && isOrderHistoryValid(order, profile) // 첫 구매 14일 경과 && 마지막 구매 30일 이내
           && order.getTotalSellingPrice().compareTo(profile.getMaxPrice()) <= 0 // 고액구매 아닌 경우
       ) {
@@ -261,13 +281,10 @@ public class OrderPaymentProcessingService {
   /**
    * 주문에 안전한 상품권이 포함되어 있는지 확인한다. 문화상품권, 해피머니, 도서문화상품권을 제외한 상품권이 있으면 안전한 것으로 간주한다.
    *
-   * @param order 확인할 주문
+   * @param orderProducts 확인할 주문
    * @return 안전한 상품권 포함 여부
    */
-  private boolean hasSafeVouchers(Order order) {
-    List<OrderProduct> orderProducts =
-        orderProductPersistenceService.findOrderProductsWithOrder(order);
-
+  private boolean hasSafeVouchers(List<OrderProduct> orderProducts) {
     return orderProducts.stream().anyMatch(product -> !UNSAFE_VOUCHERS.contains(product.getName()));
   }
 

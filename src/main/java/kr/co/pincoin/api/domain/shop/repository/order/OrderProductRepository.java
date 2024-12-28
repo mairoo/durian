@@ -5,6 +5,7 @@ import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCondition;
+import kr.co.pincoin.api.infra.shop.dto.OrderProductWithDetails;
 
 public interface OrderProductRepository {
   List<OrderProduct> saveAll(List<OrderProduct> orderProducts);
@@ -16,4 +17,6 @@ public interface OrderProductRepository {
   List<OrderProduct> findAllWithOrderAndUser(String orderNo, Integer userId);
 
   List<OrderProduct> findAllWithOrder(Order order);
+
+  List<OrderProductWithDetails> findAllWithOrderUserProfileByOrderId(Long orderId);
 }

@@ -6,6 +6,7 @@ import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCondition;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
+import kr.co.pincoin.api.infra.shop.dto.OrderProductWithDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,10 @@ public class OrderProductPersistenceService {
   public List<OrderProduct> findOrderProductsByUserIdAndOrderNo(Integer userId, String orderNo) {
     return orderProductRepository.findAll(
         OrderProductSearchCondition.ofOrderNo(orderNo).withUserId(userId));
+  }
+
+  public List<OrderProductWithDetails> findAllWithOrderUserProfileByOrderId(Long orderId) {
+    return orderProductRepository.findAllWithOrderUserProfileByOrderId(orderId);
   }
 
   /** 사용자 ID와 주문번호로 분리된 주문상품 목록 조회 */

@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.infra.shop.repository.order;
 
+import static kr.co.pincoin.api.infra.auth.entity.profile.QProfileEntity.profileEntity;
 import static kr.co.pincoin.api.infra.auth.entity.user.QUserEntity.userEntity;
 import static kr.co.pincoin.api.infra.shop.entity.order.QOrderEntity.orderEntity;
 import static kr.co.pincoin.api.infra.shop.entity.order.QOrderProductEntity.orderProductEntity;
@@ -11,6 +12,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCondition;
+import kr.co.pincoin.api.infra.shop.dto.OrderProductWithDetails;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderEntity;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
 import lombok.RequiredArgsConstructor;
@@ -84,6 +86,28 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
         .innerJoin(orderProductEntity.order, orderEntity)
         .fetchJoin()
         .where(orderEntity.eq(order))
+        .fetch();
+  }
+
+  @Override
+  public List<OrderProductWithDetails> findAllWithOrderUserProfileByOrderId(Long orderId) {
+    return queryFactory
+        .select(
+            Projections.constructor(
+                OrderProductWithDetails.class,
+                orderProductEntity,
+                orderEntity,
+                userEntity,
+                profileEntity))
+        .from(orderProductEntity)
+        .innerJoin(orderProductEntity.order, orderEntity)
+        .fetchJoin()
+        .innerJoin(orderEntity.user, userEntity)
+        .fetchJoin()
+        .innerJoin(profileEntity)
+        .on(profileEntity.user.eq(userEntity))
+        .fetchJoin()
+        .where(orderEntity.id.eq(orderId))
         .fetch();
   }
 
