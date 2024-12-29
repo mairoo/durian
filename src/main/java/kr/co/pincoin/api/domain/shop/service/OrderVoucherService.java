@@ -15,12 +15,14 @@ import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
 import kr.co.pincoin.api.infra.shop.service.OrderProductPersistenceService;
 import kr.co.pincoin.api.infra.shop.service.OrderProductVoucherPersistenceService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class OrderVoucherService {
 
   private final OrderPersistenceService orderPersistenceService;
@@ -43,11 +45,17 @@ public class OrderVoucherService {
     List<OrderProduct> orderProducts =
         orderProductPersistenceService.findOrderProductsWithOrder(order);
 
+    return issueVouchers(order, orderProducts);
+  }
+
+  @Transactional
+  public Order issueVouchers(Order order, List<OrderProduct> orderProducts) {
     List<OrderProductVoucher> allVouchers = new ArrayList<>();
     List<Voucher> vouchersToUpdate = new ArrayList<>();
     List<Product> productsToUpdate = new ArrayList<>();
 
     for (OrderProduct orderProduct : orderProducts) {
+      log.info("상품권 발행: {} x {}", orderProduct.getCode(), orderProduct.getQuantity());
       processVoucherIssue(orderProduct, allVouchers, vouchersToUpdate, productsToUpdate);
     }
 
@@ -103,6 +111,7 @@ public class OrderVoucherService {
       allVouchers.add(
           OrderProductVoucher.builder()
               .orderProduct(orderProduct)
+              .voucher(voucher)
               .code(voucher.getCode())
               .remarks(voucher.getRemarks())
               .revoked(false)

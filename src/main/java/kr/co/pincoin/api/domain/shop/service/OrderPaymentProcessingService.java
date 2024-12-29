@@ -14,7 +14,6 @@ import kr.co.pincoin.api.domain.shop.model.order.OrderPaymentDetached;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.infra.auth.mapper.profile.ProfileMapper;
-import kr.co.pincoin.api.infra.auth.service.UserProfilePersistenceService;
 import kr.co.pincoin.api.infra.shop.mapper.order.OrderMapper;
 import kr.co.pincoin.api.infra.shop.mapper.order.OrderProductMapper;
 import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductProjection;
@@ -48,8 +47,6 @@ public class OrderPaymentProcessingService {
   private static final long FIRST_PURCHASE_MIN_DAYS = 14;
 
   private static final long LAST_PURCHASE_MAX_DAYS = 30;
-
-  private final UserProfilePersistenceService userProfilePersistenceService;
 
   private final OrderPersistenceService orderPersistenceService;
 
@@ -122,7 +119,8 @@ public class OrderPaymentProcessingService {
       order.updateStatus(newStatus);
 
       // 5.2. 결제 완료 이벤트 발행
-      eventPublisher.publishEvent(new OrderPaymentCompletedEvent(order, savedPayment));
+      eventPublisher.publishEvent(
+          new OrderPaymentCompletedEvent(order, savedPayment, orderProducts));
 
       // 5.3. 변경된 주문 상태 저장
       orderPersistenceService.save(order);

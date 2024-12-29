@@ -6,6 +6,7 @@ import kr.co.pincoin.api.domain.shop.model.store.Store;
 import kr.co.pincoin.api.global.exception.BusinessException;
 import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.infra.shop.entity.product.CategoryEntity;
+import kr.co.pincoin.api.infra.shop.entity.store.StoreEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -140,7 +141,7 @@ public class Category {
         .treeId(this.getTreeId())
         .level(this.getLevel())
         .parent(parentEntity)
-        .store(this.getStore().toEntity())
+        .store(StoreEntity.builder().id(1L).build())
         .build();
   }
 

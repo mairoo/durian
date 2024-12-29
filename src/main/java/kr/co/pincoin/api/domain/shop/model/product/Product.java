@@ -7,6 +7,7 @@ import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
 import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
+import kr.co.pincoin.api.infra.shop.entity.store.StoreEntity;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -195,8 +196,7 @@ public class Product {
         .naverPartnerTitlePg(this.naverPartnerTitlePg)
         .naverAttribute(this.naverAttribute)
 
-        // 연관 관계 (불변)
-        .store(this.store.toEntity())
+        .store(StoreEntity.builder().id(1L).build())
 
         // 상태 및 재고 정보 (가변)
         .category(this.category.toEntity())
@@ -243,7 +243,6 @@ public class Product {
   }
 
   public void updateStockLevels(Integer minimumStockLevel, Integer maximumStockLevel) {
-    validateStockLevels(minimumStockLevel, maximumStockLevel);
     this.minimumStockLevel = minimumStockLevel;
     this.maximumStockLevel = maximumStockLevel;
   }
@@ -315,21 +314,9 @@ public class Product {
     }
   }
 
-  private void validateStockLevels(Integer minimumStockLevel, Integer maximumStockLevel) {
-    if (minimumStockLevel != null
-        && maximumStockLevel != null
-        && minimumStockLevel > maximumStockLevel) {
-      throw new IllegalArgumentException(
-          "Minimum stock level cannot be greater than maximum stock level");
-    }
-  }
-
   private void validateStockQuantity(int stockQuantity) {
     if (stockQuantity < 0) {
       throw new IllegalArgumentException("Stock quantity cannot be negative");
-    }
-    if (maximumStockLevel != null && stockQuantity > maximumStockLevel) {
-      throw new IllegalArgumentException("Stock quantity cannot exceed maximum stock level");
     }
   }
 }
