@@ -18,4 +18,6 @@ public interface OrderProductQueryRepository {
   List<OrderProductEntity> findAllWithOrder(OrderEntity order);
 
   List<OrderProductProjection> findAllWithOrderUserProfileByOrderId(Long orderId);
+
+  List<OrderProductProjection> findAllWithOrderByOrderId(Long orderId);
 }

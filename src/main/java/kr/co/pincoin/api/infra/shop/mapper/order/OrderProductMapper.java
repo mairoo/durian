@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
+import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -55,5 +56,35 @@ public class OrderProductMapper {
     }
 
     return models.stream().map(this::toEntity).collect(Collectors.toList());
+  }
+
+  public OrderProduct mapToDomain(OrderProductProjection projection) {
+    if (projection == null) {
+      return null;
+    }
+
+    return OrderProduct.builder()
+        .id(projection.getOrderProduct().getId())
+        .name(projection.getOrderProduct().getName())
+        .subtitle(projection.getOrderProduct().getSubtitle())
+        .code(projection.getOrderProduct().getCode())
+        .listPrice(projection.getOrderProduct().getListPrice())
+        .sellingPrice(projection.getOrderProduct().getSellingPrice())
+        .quantity(projection.getOrderProduct().getQuantity())
+        .order(orderMapper.toModel(projection.getOrder()))
+        .created(projection.getOrderProduct().getCreated())
+        .modified(projection.getOrderProduct().getModified())
+        .isRemoved(projection.getOrderProduct().isRemoved())
+        .build();
+  }
+
+  public List<OrderProduct> mapToDomainList(List<OrderProductProjection> projections) {
+    if (projections == null) {
+      return Collections.emptyList();
+    }
+
+    return projections.stream()
+        .map(this::mapToDomain)
+        .collect(Collectors.toList());
   }
 }

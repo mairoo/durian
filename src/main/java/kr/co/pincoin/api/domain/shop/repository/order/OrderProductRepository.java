@@ -1,7 +1,6 @@
 package kr.co.pincoin.api.domain.shop.repository.order;
 
 import java.util.List;
-import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCondition;
@@ -16,7 +15,7 @@ public interface OrderProductRepository {
 
   List<OrderProduct> findAllWithOrderAndUser(String orderNo, Integer userId);
 
-  List<OrderProduct> findAllWithOrder(Order order);
-
   List<OrderProductProjection> findAllWithOrderUserProfileByOrderId(Long orderId);
+
+  List<OrderProductProjection> findAllWithOrderByOrderId(Long orderId);
 }

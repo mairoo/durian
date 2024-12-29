@@ -1,7 +1,6 @@
 package kr.co.pincoin.api.infra.shop.repository.order;
 
 import java.util.List;
-import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCondition;
@@ -54,14 +53,12 @@ public class OrderProductRepositoryImpl implements OrderProductRepository {
   }
 
   @Override
-  public List<OrderProduct> findAllWithOrder(Order order) {
-    List<OrderProductEntity> entries = queryRepository.findAllWithOrder(order.toEntity());
-
-    return mapper.toModelList(entries);
+  public List<OrderProductProjection> findAllWithOrderUserProfileByOrderId(Long orderId) {
+    return queryRepository.findAllWithOrderUserProfileByOrderId(orderId);
   }
 
   @Override
-  public List<OrderProductProjection> findAllWithOrderUserProfileByOrderId(Long orderId) {
-    return queryRepository.findAllWithOrderUserProfileByOrderId(orderId);
+  public List<OrderProductProjection> findAllWithOrderByOrderId(Long orderId) {
+    return queryRepository.findAllWithOrderByOrderId(orderId);
   }
 }

@@ -123,6 +123,21 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
         .fetch();
   }
 
+  @Override
+  public List<OrderProductProjection> findAllWithOrderByOrderId(Long orderId) {
+    return queryFactory
+        .select(
+            Projections.fields(
+                OrderProductProjection.class,
+                orderProductEntity.as("orderProduct"),
+                orderEntity.as("order")))
+        .from(orderProductEntity)
+        .innerJoin(orderProductEntity.order, orderEntity)
+        .fetchJoin()
+        .where(orderEntity.id.eq(orderId))
+        .fetch();
+  }
+
   private BooleanExpression orderIdEq(Long orderId) {
     return orderId != null ? orderProductEntity.order.id.eq(orderId) : null;
   }

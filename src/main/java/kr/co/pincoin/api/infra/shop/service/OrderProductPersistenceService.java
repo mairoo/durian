@@ -1,11 +1,13 @@
 package kr.co.pincoin.api.infra.shop.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCondition;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
+import kr.co.pincoin.api.infra.shop.mapper.order.OrderProductMapper;
 import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderProductPersistenceService {
 
   private final OrderProductRepository orderProductRepository;
+
+  private final OrderProductMapper orderProductMapper;
 
   /** 주문 ID로 주문상품 목록 조회 */
   public List<OrderProduct> findOrderProductsByOrderId(Long orderId) {
@@ -42,7 +46,12 @@ public class OrderProductPersistenceService {
 
   /** 주문에 속한 주문상품 목록 조회 */
   public List<OrderProduct> findOrderProductsWithOrder(Order order) {
-    return orderProductRepository.findAllWithOrder(order);
+    List<OrderProductProjection> projections = orderProductRepository.findAllWithOrderByOrderId(
+        order.getId());
+
+    return projections.stream()
+        .map(orderProductMapper::mapToDomain)
+        .collect(Collectors.toList());
   }
 
   /** 원본 주문상품 목록 조회 (사용자 정보 포함) */
