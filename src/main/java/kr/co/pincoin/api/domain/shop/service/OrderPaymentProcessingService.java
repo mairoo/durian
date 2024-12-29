@@ -94,24 +94,37 @@ public class OrderPaymentProcessingService {
             .map(projection -> orderProductMapper.toModel(projection.getOrderProduct()))
             .collect(Collectors.toList());
 
-    // 2. 결제 정보 저장
-    payment.updateOrder(order);
-    OrderPayment savedPayment = orderPaymentPersistenceService.savePayment(payment);
+    // 2. 새로운 OrderPayment 객체 생성 (불변 객체)
+    OrderPayment newPayment =
+        OrderPayment.builder()
+            .id(payment.getId())
+            .account(payment.getAccount())
+            .amount(payment.getAmount())
+            .balance(payment.getBalance())
+            .received(payment.getReceived())
+            .order(order) // 생성 시점에 order 연관
+            .created(payment.getCreated())
+            .modified(payment.getModified())
+            .isRemoved(payment.getIsRemoved())
+            .build();
 
-    // 3. 총 결제 금액 계산
+    // 3. 결제 정보 저장
+    OrderPayment savedPayment = orderPaymentPersistenceService.savePayment(newPayment);
+
+    // 4. 총 결제 금액 계산
     BigDecimal totalPayments = orderPaymentPersistenceService.getTotalAmountByOrder(order);
 
-    // 4. 결제 완료 여부 확인 후 처리
+    // 5. 결제 완료 여부 확인 후 처리
     if (isPaymentCompleted(totalPayments, order.getTotalSellingPrice())) {
 
-      // 주문 상태 결정
+      // 5.1. 주문 상태 결정
       OrderStatus newStatus = determineOrderStatus(order, profile, orderProducts, totalPayments);
       order.updateStatus(newStatus);
 
-      // 결제 완료 이벤트 발행
+      // 5.2. 결제 완료 이벤트 발행
       eventPublisher.publishEvent(new OrderPaymentCompletedEvent(order, savedPayment));
 
-      // 변경된 주문 상태 저장
+      // 5.3. 변경된 주문 상태 저장
       orderPersistenceService.save(order);
     }
 

@@ -1,6 +1,5 @@
 package kr.co.pincoin.api.app.admin.order.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,9 +17,7 @@ public class AdminOrderPaymentRequest {
 
   @NotNull private BigDecimal amount;
 
-  @NotNull
-  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-  private LocalDateTime received;
+  @NotNull private LocalDateTime received;
 
   public OrderPayment toEntity() {
     return OrderPayment.builder()

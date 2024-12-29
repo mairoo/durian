@@ -40,37 +40,4 @@ public class OrderPaymentDetached {
     this.modified = modified;
     this.isRemoved = isRemoved;
   }
-
-  // 필요한 비즈니스 로직 메소드들
-  public boolean isReceived() {
-    return this.received != null;
-  }
-
-  public boolean isPending() {
-    return this.received == null;
-  }
-
-  public boolean isFullPayment() {
-    if (this.balance == null) {
-      return false;
-    }
-    return this.amount.compareTo(this.balance) == 0;
-  }
-
-  public BigDecimal getUnpaidAmount() {
-    if (this.balance == null) {
-      return this.amount;
-    }
-    return this.amount.subtract(this.balance);
-  }
-
-  public double getPaymentRate() {
-    if (this.balance == null || this.amount.compareTo(BigDecimal.ZERO) == 0) {
-      return 0.0;
-    }
-    return this.balance
-        .divide(this.amount, 4, java.math.RoundingMode.HALF_UP)
-        .multiply(BigDecimal.valueOf(100))
-        .doubleValue();
-  }
 }
