@@ -17,11 +17,11 @@ public class OrderPayment {
 
   private final BigDecimal amount;
 
-  private final Order order;
-
   private final LocalDateTime created;
 
   private final LocalDateTime modified;
+
+  private Order order;
 
   private BigDecimal balance;
 
@@ -64,6 +64,10 @@ public class OrderPayment {
         .received(this.getReceived())
         .order(this.getOrder().toEntity())
         .build();
+  }
+
+  public void updateOrder(Order order) {
+    this.order = order;
   }
 
   public void receive(BigDecimal balance) {

@@ -6,9 +6,9 @@ import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCondition;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
-import kr.co.pincoin.api.infra.shop.dto.OrderProductWithDetails;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
 import kr.co.pincoin.api.infra.shop.mapper.order.OrderProductMapper;
+import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -61,7 +61,7 @@ public class OrderProductRepositoryImpl implements OrderProductRepository {
   }
 
   @Override
-  public List<OrderProductWithDetails> findAllWithOrderUserProfileByOrderId(Long orderId) {
+  public List<OrderProductProjection> findAllWithOrderUserProfileByOrderId(Long orderId) {
     return queryRepository.findAllWithOrderUserProfileByOrderId(orderId);
   }
 }

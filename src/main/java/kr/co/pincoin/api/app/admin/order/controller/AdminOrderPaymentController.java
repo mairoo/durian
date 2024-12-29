@@ -41,7 +41,6 @@ public class AdminOrderPaymentController {
   public ResponseEntity<ApiResponse<AdminOrderPaymentResponse>> addOrderPayment(
       @PathVariable Long orderId, @Valid @RequestBody AdminOrderPaymentRequest request) {
 
-    // OrderPayment 엔티티 생성
     OrderPayment payment = request.toEntity();
 
     // 결제 추가 및 상태 업데이트

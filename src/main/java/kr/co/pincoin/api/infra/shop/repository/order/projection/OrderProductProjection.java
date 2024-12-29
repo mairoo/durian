@@ -1,4 +1,4 @@
-package kr.co.pincoin.api.infra.shop.dto;
+package kr.co.pincoin.api.infra.shop.repository.order.projection;
 
 import kr.co.pincoin.api.infra.auth.entity.profile.ProfileEntity;
 import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
@@ -11,9 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OrderProductProjection {
 
-    private OrderProductEntity orderProduct;
-    private OrderEntity order;
-    private UserEntity user;
-    private ProfileEntity profile;
+  private OrderProductEntity orderProduct;
+  private OrderEntity order;
+  private UserEntity user;
+  private ProfileEntity profile;
 }
-

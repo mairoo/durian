@@ -16,7 +16,7 @@ public class OrderPaymentQueryRepositoryImpl implements OrderPaymentQueryReposit
   private final JPAQueryFactory queryFactory;
 
   @Override
-  public List<OrderPaymentDetached> findOrderPaymentDetachedByOrderId(Long orderId) {
+  public List<OrderPaymentDetached> findOrderPaymentsDetachedByOrderId(Long orderId) {
     return queryFactory
         .select(
             Projections.constructor(

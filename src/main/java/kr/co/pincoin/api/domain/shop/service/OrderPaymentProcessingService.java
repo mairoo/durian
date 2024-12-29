@@ -13,8 +13,11 @@ import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
 import kr.co.pincoin.api.domain.shop.model.order.OrderPaymentDetached;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
+import kr.co.pincoin.api.infra.auth.mapper.profile.ProfileMapper;
 import kr.co.pincoin.api.infra.auth.service.UserProfilePersistenceService;
-import kr.co.pincoin.api.infra.shop.dto.OrderProductWithDetails;
+import kr.co.pincoin.api.infra.shop.mapper.order.OrderMapper;
+import kr.co.pincoin.api.infra.shop.mapper.order.OrderProductMapper;
+import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductProjection;
 import kr.co.pincoin.api.infra.shop.service.OrderPaymentPersistenceService;
 import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
 import kr.co.pincoin.api.infra.shop.service.OrderProductPersistenceService;
@@ -54,6 +57,12 @@ public class OrderPaymentProcessingService {
 
   private final OrderProductPersistenceService orderProductPersistenceService;
 
+  private final OrderMapper orderMapper;
+
+  private final OrderProductMapper orderProductMapper;
+
+  private final ProfileMapper profileMapper;
+
   private final ApplicationEventPublisher eventPublisher;
 
   /**
@@ -67,23 +76,26 @@ public class OrderPaymentProcessingService {
   @Transactional
   public OrderPayment addPayment(Long orderId, OrderPayment payment) {
     // 1. 주문 정보, 사용자, 프로필 모두 함께 조회
-    List<OrderProductWithDetails> details =
+    List<OrderProductProjection> projections =
         orderProductPersistenceService.findAllWithOrderUserProfileByOrderId(orderId);
 
-    if (details.isEmpty()) {
-      throw new EntityNotFoundException("Order not found with id: " + orderId);
+    if (projections.isEmpty()) {
+      throw new EntityNotFoundException("주문 없음: " + orderId);
     }
 
-    OrderProductWithDetails firstDetail = details.getFirst();
+    OrderProductProjection firstProjection = projections.getFirst();
 
-    Order order = firstDetail.getOrder();
+    Order order = orderMapper.toModel(firstProjection.getOrder());
 
-    Profile profile = firstDetail.getProfile();
+    Profile profile = profileMapper.toModel(firstProjection.getProfile());
 
     List<OrderProduct> orderProducts =
-        details.stream().map(OrderProductWithDetails::getOrderProduct).collect(Collectors.toList());
+        projections.stream()
+            .map(projection -> orderProductMapper.toModel(projection.getOrderProduct()))
+            .collect(Collectors.toList());
 
     // 2. 결제 정보 저장
+    payment.updateOrder(order);
     OrderPayment savedPayment = orderPaymentPersistenceService.savePayment(payment);
 
     // 3. 총 결제 금액 계산

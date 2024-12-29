@@ -47,8 +47,8 @@ public class OrderPaymentRepositoryImpl implements OrderPaymentRepository {
   }
 
   @Override
-  public List<OrderPaymentDetached> findOrderPaymentDetachedByOrderId(Long orderId) {
-    return queryRepository.findOrderPaymentDetachedByOrderId(orderId);
+  public List<OrderPaymentDetached> findOrderPaymentsDetachedByOrderId(Long orderId) {
+    return queryRepository.findOrderPaymentsDetachedByOrderId(orderId);
   }
 
   @Override

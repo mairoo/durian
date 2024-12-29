@@ -23,6 +23,11 @@ public class AdminOrderPaymentRequest {
   private LocalDateTime received;
 
   public OrderPayment toEntity() {
-    return OrderPayment.builder().account(account).amount(amount).received(received).build();
+    return OrderPayment.builder()
+        .account(account)
+        .amount(amount)
+        .received(received)
+        .balance(BigDecimal.ZERO)
+        .build();
   }
 }

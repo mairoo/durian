@@ -16,7 +16,7 @@ public interface OrderPaymentRepository {
 
   List<OrderPayment> findByOrderId(Long orderId);
 
-  List<OrderPaymentDetached> findOrderPaymentDetachedByOrderId(Long orderId);
+  List<OrderPaymentDetached> findOrderPaymentsDetachedByOrderId(Long orderId);
 
   BigDecimal getTotalAmountByOrder(Order order);
 }

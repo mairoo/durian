@@ -24,7 +24,7 @@ public class OrderPaymentPersistenceService {
 
   /** 주문 ID로 결제내역 조회 */
   public List<OrderPaymentDetached> findOrderPayments(Long orderId) {
-    return orderPaymentRepository.findOrderPaymentDetachedByOrderId(orderId);
+    return orderPaymentRepository.findOrderPaymentsDetachedByOrderId(orderId);
   }
 
   /** 주문의 총 결제금액 조회 */

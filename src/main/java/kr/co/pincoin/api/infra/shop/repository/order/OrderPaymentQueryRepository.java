@@ -5,5 +5,5 @@ import kr.co.pincoin.api.domain.shop.model.order.OrderPaymentDetached;
 
 public interface OrderPaymentQueryRepository {
 
-  List<OrderPaymentDetached> findOrderPaymentDetachedByOrderId(Long orderId);
+  List<OrderPaymentDetached> findOrderPaymentsDetachedByOrderId(Long orderId);
 }
