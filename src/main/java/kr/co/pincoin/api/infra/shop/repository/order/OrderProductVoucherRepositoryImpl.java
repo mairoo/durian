@@ -12,26 +12,30 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class OrderProductVoucherRepositoryImpl implements OrderProductVoucherRepository {
-
   private final OrderProductVoucherJpaRepository jpaRepository;
-
   private final OrderProductVoucherQueryRepository queryRepository;
-
   private final OrderProductVoucherMapper mapper;
 
+  /**
+   * 주문 상품 바우처 목록을 일괄 저장합니다
+   *
+   * @param orderProductsVouchers 저장할 주문 상품 바우처 목록
+   * @return 저장된 주문 상품 바우처 목록
+   */
   @Override
   public List<OrderProductVoucher> saveAll(List<OrderProductVoucher> orderProductsVouchers) {
-    // 1. Domain Model -> JPA Entity 변환
     List<OrderProductVoucherEntity> orderProductEntities =
         mapper.toEntityList(orderProductsVouchers);
-
-    // 2. JPA Repository 일괄 저장
     List<OrderProductVoucherEntity> savedEntities = jpaRepository.saveAll(orderProductEntities);
-
-    // 3. 저장된 Entity -> Domain Model 변환 후 반환
     return mapper.toModelList(savedEntities);
   }
 
+  /**
+   * 주문 ID로 주문 상품 바우처 목록을 조회합니다
+   *
+   * @param orderId 주문 ID
+   * @return 조회된 주문 상품 바우처 프로젝션 목록
+   */
   @Override
   public List<OrderProductVoucherProjection> findAllByOrderProductOrderId(Long orderId) {
     return queryRepository.findAllByOrderProductOrderId(orderId);
