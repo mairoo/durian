@@ -7,6 +7,7 @@ import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCon
 import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductProjection;
 
 public interface OrderProductRepository {
+
   List<OrderProduct> saveAll(List<OrderProduct> orderProducts);
 
   List<OrderProduct> findAll(OrderProductSearchCondition condition);

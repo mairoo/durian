@@ -14,49 +14,76 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class OrderProductRepositoryImpl implements OrderProductRepository {
-
   private final OrderProductJpaRepository jpaRepository;
-
   private final OrderProductQueryRepository queryRepository;
-
   private final OrderProductMapper mapper;
 
+  /**
+   * 주문 상품 목록을 일괄 저장합니다
+   *
+   * @param orderProducts 저장할 주문 상품 목록
+   * @return 저장된 주문 상품 목록
+   */
   @Override
   public List<OrderProduct> saveAll(List<OrderProduct> orderProducts) {
-    // 1. Domain Model -> JPA Entity 변환
     List<OrderProductEntity> orderProductEntities = mapper.toEntityList(orderProducts);
-
-    // 2. JPA Repository 일괄 저장
     List<OrderProductEntity> savedEntities = jpaRepository.saveAll(orderProductEntities);
-
-    // 3. 저장된 Entity -> Domain Model 변환 후 반환
     return mapper.toModelList(savedEntities);
   }
 
+  /**
+   * 조건에 맞는 주문 상품 목록을 조회합니다
+   *
+   * @param condition 검색 조건
+   * @return 조회된 주문 상품 목록
+   */
   @Override
   public List<OrderProduct> findAll(OrderProductSearchCondition condition) {
     List<OrderProductEntity> entries = queryRepository.findAll(condition);
-
     return mapper.toModelList(entries);
   }
 
+  /**
+   * 조건에 맞는 분리된 주문 상품 목록을 조회합니다
+   *
+   * @param condition 검색 조건
+   * @return 조회된 분리된 주문 상품 목록
+   */
   @Override
   public List<OrderProductDetached> findAllDetached(OrderProductSearchCondition condition) {
     return queryRepository.findAllDetached(condition);
   }
 
+  /**
+   * 주문 번호와 사용자 ID로 주문 상품 목록을 주문 및 사용자 정보와 함께 조회합니다
+   *
+   * @param orderNo 주문 번호
+   * @param userId 사용자 ID
+   * @return 조회된 주문 상품 목록
+   */
   @Override
   public List<OrderProduct> findAllWithOrderAndUser(String orderNo, Integer userId) {
     List<OrderProductEntity> entries = queryRepository.findAllWithOrderAndUser(orderNo, userId);
-
     return mapper.toModelList(entries);
   }
 
+  /**
+   * 주문 ID로 주문 상품 목록을 주문, 사용자, 프로필 정보와 함께 조회합니다
+   *
+   * @param orderId 주문 ID
+   * @return 조회된 주문 상품 프로젝션 목록
+   */
   @Override
   public List<OrderProductProjection> findAllWithOrderUserProfileByOrderId(Long orderId) {
     return queryRepository.findAllWithOrderUserProfileByOrderId(orderId);
   }
 
+  /**
+   * 주문 ID로 주문 상품 목록을 주문 정보와 함께 조회합니다
+   *
+   * @param orderId 주문 ID
+   * @return 조회된 주문 상품 프로젝션 목록
+   */
   @Override
   public List<OrderProductProjection> findAllWithOrderByOrderId(Long orderId) {
     return queryRepository.findAllWithOrderByOrderId(orderId);
