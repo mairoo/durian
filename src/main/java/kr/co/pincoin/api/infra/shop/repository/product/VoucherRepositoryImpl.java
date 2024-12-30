@@ -17,34 +17,61 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class VoucherRepositoryImpl implements VoucherRepository {
-
   private final VoucherJpaRepository jpaRepository;
-
   private final VoucherQueryRepository queryRepository;
-
   private final VoucherMapper mapper;
 
+  /**
+   * 바우처를 생성하거나 수정합니다
+   *
+   * @param voucher 저장할 바우처
+   * @return 저장된 바우처
+   */
   @Override
   public Voucher save(Voucher voucher) {
     return mapper.toModel(jpaRepository.save(mapper.toEntity(voucher)));
   }
 
+  /**
+   * 여러 바우처를 일괄 저장합니다
+   *
+   * @param vouchers 저장할 바우처 목록
+   * @return 저장된 바우처 목록
+   */
   @Override
   public List<Voucher> saveAll(Collection<Voucher> vouchers) {
     return mapper.toModelList(
         jpaRepository.saveAll(mapper.toEntityList(vouchers.stream().toList())));
   }
 
+  /**
+   * ID로 바우처를 조회합니다
+   *
+   * @param id 바우처 ID
+   * @return 조회된 바우처 (없을 경우 Optional.empty)
+   */
   @Override
   public Optional<Voucher> findById(Long id) {
     return jpaRepository.findById(id).map(mapper::toModel);
   }
 
+  /**
+   * 코드로 바우처를 조회합니다
+   *
+   * @param code 바우처 코드
+   * @return 조회된 바우처 (없을 경우 Optional.empty)
+   */
   @Override
   public Optional<Voucher> findByCode(String code) {
     return jpaRepository.findByCode(code).map(mapper::toModel);
   }
 
+  /**
+   * ID 목록으로 여러 바우처를 조회합니다
+   *
+   * @param ids 바우처 ID 목록
+   * @return 조회된 바우처 목록
+   */
   @Override
   public List<Voucher> findAllByIdIn(Collection<Long> ids) {
     return jpaRepository.findAllByIdIn(ids).stream()
@@ -52,6 +79,12 @@ public class VoucherRepositoryImpl implements VoucherRepository {
         .collect(Collectors.toList());
   }
 
+  /**
+   * 코드 목록으로 여러 바우처를 조회합니다
+   *
+   * @param codes 바우처 코드 목록
+   * @return 조회된 바우처 목록
+   */
   @Override
   public List<Voucher> findAllByCodeIn(Collection<String> codes) {
     return jpaRepository.findAllByCodeIn(codes).stream()
@@ -59,6 +92,14 @@ public class VoucherRepositoryImpl implements VoucherRepository {
         .collect(Collectors.toList());
   }
 
+  /**
+   * 특정 상품의 상위 N개 바우처를 상태별로 조회합니다
+   *
+   * @param productCode 상품 코드
+   * @param status 바우처 상태
+   * @param limit 조회할 개수
+   * @return 조회된 바우처 목록
+   */
   @Override
   public List<Voucher> findTopNByProductCodeAndStatusOrderByIdAsc(
       String productCode, VoucherStatus status, int limit) {
@@ -68,6 +109,13 @@ public class VoucherRepositoryImpl implements VoucherRepository {
     return mapper.toModelList(savedEntities);
   }
 
+  /**
+   * 여러 상품의 바우처들을 상태별로 조회합니다
+   *
+   * @param productCodes 상품 코드 목록
+   * @param status 바우처 상태
+   * @return 조회된 바우처 목록
+   */
   @Override
   public List<Voucher> findAllByProductCodesAndStatus(
       Collection<String> productCodes, VoucherStatus status) {
@@ -77,16 +125,31 @@ public class VoucherRepositoryImpl implements VoucherRepository {
     return mapper.toModelList(savedEntities);
   }
 
+  /**
+   * 바우처를 삭제합니다
+   *
+   * @param voucher 삭제할 바우처
+   */
   @Override
   public void delete(Voucher voucher) {
     jpaRepository.delete(mapper.toEntity(voucher));
   }
 
+  /**
+   * ID로 바우처를 삭제합니다
+   *
+   * @param id 삭제할 바우처의 ID
+   */
   @Override
   public void deleteById(Long id) {
     jpaRepository.deleteById(id);
   }
 
+  /**
+   * 바우처를 소프트 삭제합니다
+   *
+   * @param voucher 소프트 삭제할 바우처
+   */
   @Override
   public void softDelete(Voucher voucher) {
     Voucher deletedVoucher =
@@ -100,6 +163,11 @@ public class VoucherRepositoryImpl implements VoucherRepository {
     save(deletedVoucher);
   }
 
+  /**
+   * ID로 바우처를 소프트 삭제합니다
+   *
+   * @param id 소프트 삭제할 바우처의 ID
+   */
   @Override
   public void softDeleteById(Long id) {
     findById(id)
@@ -111,6 +179,11 @@ public class VoucherRepositoryImpl implements VoucherRepository {
         .orElseThrow(() -> new BusinessException(ErrorCode.VOUCHER_NOT_FOUND));
   }
 
+  /**
+   * 소프트 삭제된 바우처를 복원합니다
+   *
+   * @param voucher 복원할 바우처
+   */
   @Override
   public void restore(Voucher voucher) {
     Voucher restoredVoucher =
@@ -124,6 +197,11 @@ public class VoucherRepositoryImpl implements VoucherRepository {
     save(restoredVoucher);
   }
 
+  /**
+   * ID로 소프트 삭제된 바우처를 복원합니다
+   *
+   * @param id 복원할 바우처의 ID
+   */
   @Override
   public void restoreById(Long id) {
     findById(id)

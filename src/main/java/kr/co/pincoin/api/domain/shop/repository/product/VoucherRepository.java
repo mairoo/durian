@@ -12,10 +12,6 @@ public interface VoucherRepository {
 
   List<Voucher> saveAll(Collection<Voucher> vouchers);
 
-  void delete(Voucher voucher);
-
-  void deleteById(Long id);
-
   Optional<Voucher> findById(Long id);
 
   Optional<Voucher> findByCode(String code);
@@ -29,6 +25,10 @@ public interface VoucherRepository {
 
   List<Voucher> findAllByProductCodesAndStatus(
       Collection<String> productCodes, VoucherStatus status);
+
+  void delete(Voucher voucher);
+
+  void deleteById(Long id);
 
   void softDelete(Voucher voucher);
 
