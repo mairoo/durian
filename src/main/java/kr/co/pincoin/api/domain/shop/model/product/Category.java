@@ -9,6 +9,7 @@ import kr.co.pincoin.api.infra.shop.entity.product.CategoryEntity;
 import kr.co.pincoin.api.infra.shop.entity.store.StoreEntity;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.lang.Nullable;
 
 @Getter
 public class Category {
@@ -46,7 +47,7 @@ public class Category {
   private Integer lft;
   private Integer rght;
   private Integer treeId;
-  private Integer level;
+  private final Integer level;
 
   @Builder
   private Category(
@@ -66,7 +67,7 @@ public class Category {
       Integer rght,
       Integer treeId,
       Integer level,
-      Category parent,
+      @Nullable Category parent,
       Store store,
       LocalDateTime created,
       LocalDateTime modified) {
@@ -117,13 +118,7 @@ public class Category {
 
   // 엔티티 변환 메소드
   public CategoryEntity toEntity() {
-    CategoryEntity parentEntity = null;
-
-    if (this.parent != null) {
-      parentEntity = this.parent.toEntity();
-    }
-
-    return CategoryEntity.builder()
+    CategoryEntity.CategoryEntityBuilder builder = CategoryEntity.builder()
         .id(this.getId())
         .title(this.getTitle())
         .slug(this.getSlug())
@@ -140,9 +135,13 @@ public class Category {
         .rght(this.getRght())
         .treeId(this.getTreeId())
         .level(this.getLevel())
-        .parent(parentEntity)
-        .store(StoreEntity.builder().id(1L).build())
-        .build();
+        .store(StoreEntity.builder().id(1L).build());
+
+    if (this.parent != null) {
+      builder.parent(this.parent.toEntity());
+    }
+
+    return builder.build();
   }
 
   // 트리 구조 관련 메소드

@@ -10,6 +10,7 @@ import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
 import kr.co.pincoin.api.infra.shop.entity.store.StoreEntity;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.lang.Nullable;
 
 @Getter
 public class Product {
@@ -73,7 +74,7 @@ public class Product {
       String naverAttribute,
 
       // 불변 필드 (연관 관계)
-      Category category,
+      @Nullable Category category,
       Store store,
 
       // 불변 필드 (생성/수정 시간)
@@ -142,7 +143,7 @@ public class Product {
       Store store,
 
       // 상태 및 재고 정보 (가변)
-      Category category,
+      @Nullable Category category,
       BigDecimal listPrice,
       BigDecimal sellingPrice,
       BigDecimal pgSellingPrice,
@@ -180,7 +181,7 @@ public class Product {
 
   // 엔티티 변환 메소드도 동일한 순서로
   public ProductEntity toEntity() {
-    return ProductEntity.builder()
+    ProductEntity.ProductEntityBuilder builder = ProductEntity.builder()
         // 핵심 식별 정보 (불변)
         .id(this.id)
         .code(this.code)
@@ -198,7 +199,6 @@ public class Product {
         .store(StoreEntity.builder().id(1L).build())
 
         // 상태 및 재고 정보 (가변)
-        .category(this.category.toEntity())
         .status(this.status)
         .stock(this.stock)
         .listPrice(this.listPrice)
@@ -212,15 +212,17 @@ public class Product {
 
         // 리뷰 카운트 (가변)
         .reviewCount(this.reviewCount)
-        .reviewCountPg(this.reviewCountPg)
-        .build();
+        .reviewCountPg(this.reviewCountPg);
+
+    if (this.category != null) {
+      builder.category(this.category.toEntity());
+    }
+
+    return builder.build();
   }
 
   // 상태 및 재고 정보 (가변)
-  public void updateCategory(Category category) {
-    if (category == null) {
-      throw new IllegalArgumentException("Category cannot be null");
-    }
+  public void updateCategory(@Nullable Category category) {
     this.category = category;
   }
 

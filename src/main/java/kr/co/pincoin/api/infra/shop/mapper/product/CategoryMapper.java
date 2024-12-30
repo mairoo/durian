@@ -17,7 +17,7 @@ public class CategoryMapper {
       return null;
     }
 
-    return Category.builder()
+    Category.CategoryBuilder builder = Category.builder()
         .id(entity.getId())
         .title(entity.getTitle())
         .slug(entity.getSlug())
@@ -34,10 +34,14 @@ public class CategoryMapper {
         .rght(entity.getRght())
         .treeId(entity.getTreeId())
         .level(entity.getLevel())
-        .parent(toModel(entity.getParent())) // 재귀적 변환
         .created(entity.getCreated())
-        .modified(entity.getModified())
-        .build();
+        .modified(entity.getModified());
+
+    if (entity.getParent() != null) {
+      builder.parent(toModel(entity.getParent()));
+    }
+
+    return builder.build();
   }
 
   public CategoryEntity toEntity(Category model) {

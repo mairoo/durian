@@ -18,7 +18,7 @@ public class ProductMapper {
       return null;
     }
 
-    return Product.builder()
+    Product.ProductBuilder builder = Product.builder()
         .id(entity.getId())
         .name(entity.getName())
         .subtitle(entity.getSubtitle())
@@ -40,11 +40,16 @@ public class ProductMapper {
         .naverPartnerTitle(entity.getNaverPartnerTitle())
         .naverPartnerTitlePg(entity.getNaverPartnerTitlePg())
         .naverAttribute(entity.getNaverAttribute())
-        .category(categoryMapper.toModel(entity.getCategory()))
         .created(entity.getCreated())
         .modified(entity.getModified())
-        .isRemoved(entity.isRemoved())
-        .build();
+        .isRemoved(entity.isRemoved());
+
+    // lazy loading 발생하지 않도록 대비
+    if (entity.getCategory() != null) {
+      builder.category(categoryMapper.toModel(entity.getCategory()));
+    }
+
+    return builder.build();
   }
 
   public ProductEntity toEntity(Product model) {
