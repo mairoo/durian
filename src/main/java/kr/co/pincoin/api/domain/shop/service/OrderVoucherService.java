@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import kr.co.pincoin.api.app.member.order.request.CartItem;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
+import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.Voucher;
 import kr.co.pincoin.api.infra.shop.service.CatalogPersistenceService;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/** 주문에 대한 바우처 발행과 관리를 담당하는 서비스 - 바우처 발행, 검증, 상태 조회 등의 기능을 제공 - 트랜잭션 관리와 영속성 계층과의 상호작용을 처리 */
+/** 주문에 대한 상품권 발행과 관리를 담당하는 서비스 - 상품권 발행, 검증, 상태 조회 등의 기능을 제공 - 트랜잭션 관리와 영속성 계층과의 상호작용을 처리 */
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -40,10 +40,10 @@ public class OrderVoucherService {
   private final CatalogPersistenceService catalogPersistenceService;
 
   /**
-   * 주문에 대한 바우처를 발행한다.
+   * 주문에 대한 상품권을 발행한다.
    *
-   * @param order 바우처를 발행할 주문
-   * @return 바우처가 발행된 주문
+   * @param order 상품권을 발행할 주문
+   * @return 상품권이 발행된 주문
    */
   @Transactional(propagation = Propagation.REQUIRED, timeout = 30)
   public Order issueVouchers(Order order) {
@@ -55,11 +55,11 @@ public class OrderVoucherService {
   }
 
   /**
-   * 주문과 주문 상품 목록을 기반으로 바우처를 발행한다.
+   * 주문과 주문 상품 목록을 기반으로 상품권을 발행한다.
    *
-   * @param order 바우처를 발행할 주문
-   * @param orderProducts 바우처를 발행할 주문 상품 목록
-   * @return 바우처가 발행된 주문
+   * @param order 상품권을 발행할 주문
+   * @param orderProducts 상품권을 발행할 주문 상품 목록
+   * @return 상품권이 발행된 주문
    */
   @Transactional(propagation = Propagation.REQUIRED, timeout = 30)
   public Order issueVouchers(Order order, List<OrderProduct> orderProducts) {
@@ -68,7 +68,7 @@ public class OrderVoucherService {
         orderProducts.stream()
             .collect(Collectors.toMap(OrderProduct::getCode, OrderProduct::getQuantity));
 
-    // 모든 상품의 바우처를 한 번에 조회
+    // 모든 상품의 상품권을 한 번에 조회
     Map<String, List<Voucher>> vouchersByProduct =
         inventoryPersistenceService.findAvailableVouchersByProductCodes(
             quantityByCode.keySet(), quantityByCode);
@@ -105,6 +105,9 @@ public class OrderVoucherService {
     inventoryPersistenceService.updateVouchersBatch(vouchersToUpdate);
     catalogPersistenceService.updateProductsBatch(productsToUpdate);
 
+    order.updateStatus(OrderStatus.SHIPPED);
+    orderPersistenceService.save(order);
+
     return order;
   }
 
@@ -131,10 +134,10 @@ public class OrderVoucherService {
       throw new EntityNotFoundException("상품을 찾을 수 없습니다: " + orderProduct.getCode());
     }
 
-    // 이미 조회된 바우처 목록 사용
+    // 이미 조회된 상품권 목록 사용
     List<Voucher> availableVouchers = vouchersByProduct.get(orderProduct.getCode());
 
-    // 각 바우처에 대한 처리
+    // 각 상품권에 대한 처리
     for (Voucher voucher : availableVouchers) {
       voucher.markAsSold();
       vouchersToUpdate.add(voucher);
@@ -151,21 +154,6 @@ public class OrderVoucherService {
 
     product.updateStockQuantity(product.getStockQuantity() - orderProduct.getQuantity());
     productsToUpdate.add(product);
-  }
-
-  /**
-   * 상품권 발행을 위한 상품 검증을 수행한다.
-   *
-   * @param orderProduct 검증할 주문 상품
-   * @return 검증된 상품 정보
-   * @throws EntityNotFoundException 상품을 찾을 수 없는 경우
-   */
-  private Product validateProductForVoucherIssue(OrderProduct orderProduct) {
-    return catalogPersistenceService
-        .findProductsByCartItems(List.of(CartItem.from(orderProduct)))
-        .stream()
-        .findFirst()
-        .orElseThrow(() -> new EntityNotFoundException("상품을 찾을 수 없습니다: " + orderProduct.getCode()));
   }
 
   /**
