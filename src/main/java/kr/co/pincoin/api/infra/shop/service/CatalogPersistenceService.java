@@ -107,8 +107,8 @@ public class CatalogPersistenceService {
   }
 
   /** 상품 코드 목록으로 상품 Map 조회 */
-  public Map<String, Product> findProductsByCodeIn(List<String> codes) {
-    return productRepository.findAllByCodeIn(codes).stream()
+  public Map<String, Product> findProductsByCodeInWithCategory(List<String> codes) {
+    return productRepository.findAllByCodeInWithCategory(codes).stream()
         .collect(Collectors.toMap(Product::getCode, Function.identity()));
   }
 

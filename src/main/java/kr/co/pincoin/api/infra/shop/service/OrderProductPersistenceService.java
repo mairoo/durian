@@ -46,12 +46,10 @@ public class OrderProductPersistenceService {
 
   /** 주문에 속한 주문상품 목록 조회 */
   public List<OrderProduct> findOrderProductsWithOrder(Order order) {
-    List<OrderProductProjection> projections = orderProductRepository.findAllWithOrderByOrderId(
-        order.getId());
+    List<OrderProductProjection> projections =
+        orderProductRepository.findAllWithOrderByOrderId(order.getId());
 
-    return projections.stream()
-        .map(orderProductMapper::mapToDomain)
-        .collect(Collectors.toList());
+    return projections.stream().map(orderProductMapper::mapToDomain).collect(Collectors.toList());
   }
 
   /** 원본 주문상품 목록 조회 (사용자 정보 포함) */

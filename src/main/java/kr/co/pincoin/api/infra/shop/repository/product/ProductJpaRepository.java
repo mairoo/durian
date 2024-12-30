@@ -17,6 +17,9 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
 
   List<ProductEntity> findAllByCodeIn(Collection<String> codes);
 
+  @Query("SELECT p FROM ProductEntity p LEFT JOIN FETCH p.category WHERE p.code IN :codes")
+  List<ProductEntity> findAllByCodeInWithCategory(@Param("codes") List<String> codes);
+
   @Query("SELECT p FROM ProductEntity p JOIN FETCH p.category WHERE p.id = :id")
   Optional<ProductEntity> findByIdWithCategory(@Param("id") Long id);
 

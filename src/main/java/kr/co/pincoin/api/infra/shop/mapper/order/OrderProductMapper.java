@@ -83,8 +83,6 @@ public class OrderProductMapper {
       return Collections.emptyList();
     }
 
-    return projections.stream()
-        .map(this::mapToDomain)
-        .collect(Collectors.toList());
+    return projections.stream().map(this::mapToDomain).collect(Collectors.toList());
   }
 }

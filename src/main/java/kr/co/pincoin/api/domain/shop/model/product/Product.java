@@ -195,7 +195,6 @@ public class Product {
         .naverPartnerTitle(this.naverPartnerTitle)
         .naverPartnerTitlePg(this.naverPartnerTitlePg)
         .naverAttribute(this.naverAttribute)
-
         .store(StoreEntity.builder().id(1L).build())
 
         // 상태 및 재고 정보 (가변)

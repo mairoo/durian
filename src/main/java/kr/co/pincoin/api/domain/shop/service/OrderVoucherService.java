@@ -3,6 +3,8 @@ package kr.co.pincoin.api.domain.shop.service;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import kr.co.pincoin.api.app.member.order.request.CartItem;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
@@ -50,15 +52,28 @@ public class OrderVoucherService {
 
   @Transactional
   public Order issueVouchers(Order order, List<OrderProduct> orderProducts) {
+    // 모든 상품 코드를 추출하여 한 번에 상품 정보 조회
+    List<String> productCodes =
+        orderProducts.stream().map(OrderProduct::getCode).distinct().collect(Collectors.toList());
+
+    Map<String, Product> productMap =
+        catalogPersistenceService.findProductsByCodeInWithCategory(productCodes);
+
     List<OrderProductVoucher> allVouchers = new ArrayList<>();
     List<Voucher> vouchersToUpdate = new ArrayList<>();
     List<Product> productsToUpdate = new ArrayList<>();
 
     for (OrderProduct orderProduct : orderProducts) {
       log.info("상품권 발행: {} x {}", orderProduct.getCode(), orderProduct.getQuantity());
-      processVoucherIssue(orderProduct, allVouchers, vouchersToUpdate, productsToUpdate);
+      processVoucherIssue(
+          orderProduct,
+          productMap.get(orderProduct.getCode()),
+          allVouchers,
+          vouchersToUpdate,
+          productsToUpdate);
     }
 
+    // 8. 일괄 저장 처리
     orderProductVoucherPersistenceService.saveOrderProductVouchersBatch(allVouchers);
     inventoryPersistenceService.updateVouchersBatch(vouchersToUpdate);
     catalogPersistenceService.updateProductsBatch(productsToUpdate);
@@ -92,11 +107,14 @@ public class OrderVoucherService {
   /** 주문 상품별 바우처 발행을 처리한다. */
   private void processVoucherIssue(
       OrderProduct orderProduct,
+      Product product,
       List<OrderProductVoucher> allVouchers,
       List<Voucher> vouchersToUpdate,
       List<Product> productsToUpdate) {
 
-    Product product = validateProductForVoucherIssue(orderProduct);
+    if (product == null) {
+      throw new EntityNotFoundException("상품을 찾을 수 없습니다: " + orderProduct.getCode());
+    }
 
     List<Voucher> availableVouchers =
         inventoryPersistenceService.findAvailableVouchers(

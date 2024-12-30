@@ -31,6 +31,8 @@ public interface ProductRepository {
 
   List<Product> findAllByCodeIn(Collection<String> codes);
 
+  List<Product> findAllByCodeInWithCategory(List<String> codes);
+
   List<ProductDetached> findAllDetachedByCodeIn(
       Collection<String> codes, ProductStatus status, ProductStock stock);
 
