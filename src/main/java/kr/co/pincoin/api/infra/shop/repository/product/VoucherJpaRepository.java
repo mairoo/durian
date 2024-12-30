@@ -30,6 +30,7 @@ public interface VoucherJpaRepository extends JpaRepository<VoucherEntity, Long>
   @Query(
       "SELECT v FROM VoucherEntity v "
           + "JOIN FETCH v.product p "
+          + "JOIN FETCH p.category c "
           + "WHERE p.code IN :productCodes "
           + "AND v.status = :status "
           + "ORDER BY p.code, v.id")
