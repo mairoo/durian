@@ -2,7 +2,9 @@ package kr.co.pincoin.api.infra.shop.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.Voucher;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
@@ -58,6 +60,28 @@ public class InventoryPersistenceService {
   public List<Voucher> findAvailableVouchers(String productCode, int quantity) {
     return voucherRepository.findTopNByProductCodeAndStatusOrderByIdAsc(
         productCode, VoucherStatus.PURCHASED, quantity);
+  }
+
+  public Map<String, List<Voucher>> findAvailableVouchersByProductCodes(
+      Collection<String> productCodes, Map<String, Integer> quantityByCode) {
+
+    List<Voucher> allVouchers =
+        voucherRepository.findAllByProductCodesAndStatus(productCodes, VoucherStatus.PURCHASED);
+
+    return allVouchers.stream()
+        .collect(
+            Collectors.groupingBy(
+                voucher -> voucher.getProduct().getCode(),
+                Collectors.collectingAndThen(
+                    Collectors.toList(),
+                    vouchers -> {
+                      if (vouchers.isEmpty()) {
+                        return vouchers;
+                      }
+                      String productCode = vouchers.getFirst().getProduct().getCode();
+                      int requiredQuantity = quantityByCode.get(productCode);
+                      return vouchers.subList(0, Math.min(vouchers.size(), requiredQuantity));
+                    })));
   }
 
   /** 바우처 업데이트 */

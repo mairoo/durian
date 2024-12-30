@@ -27,6 +27,9 @@ public interface VoucherRepository {
   List<Voucher> findTopNByProductCodeAndStatusOrderByIdAsc(
       String productCode, VoucherStatus status, int limit);
 
+  List<Voucher> findAllByProductCodesAndStatus(
+      Collection<String> productCodes, VoucherStatus status);
+
   void softDelete(Voucher voucher);
 
   void softDeleteById(Long id);

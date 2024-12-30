@@ -69,6 +69,15 @@ public class VoucherRepositoryImpl implements VoucherRepository {
   }
 
   @Override
+  public List<Voucher> findAllByProductCodesAndStatus(
+      Collection<String> productCodes, VoucherStatus status) {
+    List<VoucherEntity> savedEntities =
+        jpaRepository.findAllByProductCodesAndStatus(productCodes, status);
+
+    return mapper.toModelList(savedEntities);
+  }
+
+  @Override
   public void delete(Voucher voucher) {
     jpaRepository.delete(mapper.toEntity(voucher));
   }

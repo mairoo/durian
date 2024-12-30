@@ -19,6 +19,7 @@ import kr.co.pincoin.api.infra.shop.service.OrderProductVoucherPersistenceServic
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /** 주문에 대한 바우처 발행과 관리를 담당하는 서비스 - 바우처 발행, 검증, 상태 조회 등의 기능을 제공 - 트랜잭션 관리와 영속성 계층과의 상호작용을 처리 */
@@ -44,7 +45,7 @@ public class OrderVoucherService {
    * @param order 바우처를 발행할 주문
    * @return 바우처가 발행된 주문
    */
-  @Transactional
+  @Transactional(propagation = Propagation.REQUIRED, timeout = 30)
   public Order issueVouchers(Order order) {
     // 주문에 속한 모든 상품을 조회
     List<OrderProduct> orderProducts =
@@ -60,32 +61,46 @@ public class OrderVoucherService {
    * @param orderProducts 바우처를 발행할 주문 상품 목록
    * @return 바우처가 발행된 주문
    */
-  @Transactional
+  @Transactional(propagation = Propagation.REQUIRED, timeout = 30)
   public Order issueVouchers(Order order, List<OrderProduct> orderProducts) {
-    // 모든 상품 코드를 추출하여 한 번에 상품 정보 조회 (성능 최적화)
-    List<String> productCodes =
-        orderProducts.stream().map(OrderProduct::getCode).distinct().collect(Collectors.toList());
+    // 상품 코드와 필요 수량 맵 생성
+    Map<String, Integer> quantityByCode =
+        orderProducts.stream()
+            .collect(Collectors.toMap(OrderProduct::getCode, OrderProduct::getQuantity));
 
-    // 상품 코드를 키로 하는 상품 정보 맵 생성
-    Map<String, Product> productMap =
-        catalogPersistenceService.findProductsByCodeInWithCategory(productCodes);
+    // 모든 상품의 바우처를 한 번에 조회
+    Map<String, List<Voucher>> vouchersByProduct =
+        inventoryPersistenceService.findAvailableVouchersByProductCodes(
+            quantityByCode.keySet(), quantityByCode);
 
-    // 발행할 상품권과 업데이트할 엔티티들을 담을 리스트
     List<OrderProductVoucher> allVouchers = new ArrayList<>();
     List<Voucher> vouchersToUpdate = new ArrayList<>();
     List<Product> productsToUpdate = new ArrayList<>();
 
-    // 각 주문 상품에 대해 바우처 발행 처리
+    // 각 주문 상품에 대한 처리
     for (OrderProduct orderProduct : orderProducts) {
+      List<Voucher> availableVouchers = vouchersByProduct.get(orderProduct.getCode());
+      if (availableVouchers == null || availableVouchers.size() < orderProduct.getQuantity()) {
+        throw new IllegalStateException(
+            String.format(
+                "상품 '%s'의 사용 가능한 상품권이 부족합니다. 필요: %d, 가용: %d",
+                orderProduct.getName(),
+                orderProduct.getQuantity(),
+                availableVouchers == null ? 0 : availableVouchers.size()));
+      }
+
+      Product product = availableVouchers.getFirst().getProduct();
+      validateVouchersAvailability(orderProduct, availableVouchers, product);
+
       processVoucherIssue(
           orderProduct,
-          productMap.get(orderProduct.getCode()),
+          product,
           allVouchers,
           vouchersToUpdate,
-          productsToUpdate);
+          productsToUpdate,
+          vouchersByProduct);
     }
 
-    // 발행된 상품권과 업데이트된 엔티티들을 일괄 저장
     orderProductVoucherPersistenceService.saveOrderProductVouchersBatch(allVouchers);
     inventoryPersistenceService.updateVouchersBatch(vouchersToUpdate);
     catalogPersistenceService.updateProductsBatch(productsToUpdate);
@@ -109,27 +124,21 @@ public class OrderVoucherService {
       Product product,
       List<OrderProductVoucher> allVouchers,
       List<Voucher> vouchersToUpdate,
-      List<Product> productsToUpdate) {
+      List<Product> productsToUpdate,
+      Map<String, List<Voucher>> vouchersByProduct) {
 
     if (product == null) {
       throw new EntityNotFoundException("상품을 찾을 수 없습니다: " + orderProduct.getCode());
     }
 
-    // 발행 가능한 상품권 조회
-    List<Voucher> availableVouchers =
-        inventoryPersistenceService.findAvailableVouchers(
-            orderProduct.getCode(), orderProduct.getQuantity());
+    // 이미 조회된 바우처 목록 사용
+    List<Voucher> availableVouchers = vouchersByProduct.get(orderProduct.getCode());
 
-    // 상품권 발행 가능 여부 검증
-    validateVouchersAvailability(orderProduct, availableVouchers, product);
-
-    // 각 상품권에 대한 처리
+    // 각 바우처에 대한 처리
     for (Voucher voucher : availableVouchers) {
-      // 상품권 상태를 판매됨으로 변경
       voucher.markAsSold();
       vouchersToUpdate.add(voucher);
 
-      // 주문 상품 상품권 생성
       allVouchers.add(
           OrderProductVoucher.builder()
               .orderProduct(orderProduct)
@@ -140,7 +149,6 @@ public class OrderVoucherService {
               .build());
     }
 
-    // 상품 재고 수량 업데이트
     product.updateStockQuantity(product.getStockQuantity() - orderProduct.getQuantity());
     productsToUpdate.add(product);
   }

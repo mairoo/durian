@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VoucherJpaRepository extends JpaRepository<VoucherEntity, Long> {
+
   Optional<VoucherEntity> findByCode(String code);
 
   List<VoucherEntity> findAllByIdIn(Collection<Long> ids);
@@ -25,4 +26,13 @@ public interface VoucherJpaRepository extends JpaRepository<VoucherEntity, Long>
           + "LIMIT :limit")
   List<VoucherEntity> findTopNByProductCodeAndStatusOrderByIdAsc(
       String productCode, VoucherStatus status, int limit);
+
+  @Query(
+      "SELECT v FROM VoucherEntity v "
+          + "JOIN FETCH v.product p "
+          + "WHERE p.code IN :productCodes "
+          + "AND v.status = :status "
+          + "ORDER BY p.code, v.id")
+  List<VoucherEntity> findAllByProductCodesAndStatus(
+      Collection<String> productCodes, VoucherStatus status);
 }
