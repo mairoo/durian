@@ -17,25 +17,26 @@ public class CategoryMapper {
       return null;
     }
 
-    Category.CategoryBuilder builder = Category.builder()
-        .id(entity.getId())
-        .title(entity.getTitle())
-        .slug(entity.getSlug())
-        .thumbnail(entity.getThumbnail())
-        .description(entity.getDescription())
-        .description1(entity.getDescription1())
-        .discountRate(entity.getDiscountRate())
-        .pg(entity.getPg())
-        .pgDiscountRate(entity.getPgDiscountRate())
-        .naverSearchTag(entity.getNaverSearchTag())
-        .naverBrandName(entity.getNaverBrandName())
-        .naverMakerName(entity.getNaverMakerName())
-        .lft(entity.getLft())
-        .rght(entity.getRght())
-        .treeId(entity.getTreeId())
-        .level(entity.getLevel())
-        .created(entity.getCreated())
-        .modified(entity.getModified());
+    Category.CategoryBuilder builder =
+        Category.builder()
+            .id(entity.getId())
+            .title(entity.getTitle())
+            .slug(entity.getSlug())
+            .thumbnail(entity.getThumbnail())
+            .description(entity.getDescription())
+            .description1(entity.getDescription1())
+            .discountRate(entity.getDiscountRate())
+            .pg(entity.getPg())
+            .pgDiscountRate(entity.getPgDiscountRate())
+            .naverSearchTag(entity.getNaverSearchTag())
+            .naverBrandName(entity.getNaverBrandName())
+            .naverMakerName(entity.getNaverMakerName())
+            .lft(entity.getLft())
+            .rght(entity.getRght())
+            .treeId(entity.getTreeId())
+            .level(entity.getLevel())
+            .created(entity.getCreated())
+            .modified(entity.getModified());
 
     if (entity.getParent() != null) {
       builder.parent(toModel(entity.getParent()));

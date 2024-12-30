@@ -118,27 +118,31 @@ public class Category {
 
   // 엔티티 변환 메소드
   public CategoryEntity toEntity() {
-    CategoryEntity.CategoryEntityBuilder builder = CategoryEntity.builder()
-        .id(this.getId())
-        .title(this.getTitle())
-        .slug(this.getSlug())
-        .thumbnail(this.getThumbnail())
-        .description(this.getDescription())
-        .description1(this.getDescription1())
-        .discountRate(this.getDiscountRate())
-        .pg(this.getPg())
-        .pgDiscountRate(this.getPgDiscountRate())
-        .naverSearchTag(this.getNaverSearchTag())
-        .naverBrandName(this.getNaverBrandName())
-        .naverMakerName(this.getNaverMakerName())
-        .lft(this.getLft())
-        .rght(this.getRght())
-        .treeId(this.getTreeId())
-        .level(this.getLevel())
-        .store(StoreEntity.builder().id(1L).build());
+    CategoryEntity.CategoryEntityBuilder builder =
+        CategoryEntity.builder()
+            .id(this.getId())
+            .title(this.getTitle())
+            .slug(this.getSlug())
+            .thumbnail(this.getThumbnail())
+            .description(this.getDescription())
+            .description1(this.getDescription1())
+            .discountRate(this.getDiscountRate())
+            .pg(this.getPg())
+            .pgDiscountRate(this.getPgDiscountRate())
+            .naverSearchTag(this.getNaverSearchTag())
+            .naverBrandName(this.getNaverBrandName())
+            .naverMakerName(this.getNaverMakerName())
+            .lft(this.getLft())
+            .rght(this.getRght())
+            .treeId(this.getTreeId())
+            .level(this.getLevel())
+            .store(StoreEntity.builder().id(1L).build());
 
     if (this.parent != null) {
-      builder.parent(this.parent.toEntity());
+      builder.parent(
+          CategoryEntity.builder()
+              .id(this.parent.getId()) // getId()는 프록시에서도 안전하게 조회 가능
+              .build());
     }
 
     return builder.build();

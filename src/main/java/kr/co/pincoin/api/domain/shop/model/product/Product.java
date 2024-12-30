@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
+import kr.co.pincoin.api.infra.shop.entity.product.CategoryEntity;
 import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
 import kr.co.pincoin.api.infra.shop.entity.store.StoreEntity;
 import lombok.Builder;
@@ -181,41 +182,80 @@ public class Product {
 
   // 엔티티 변환 메소드도 동일한 순서로
   public ProductEntity toEntity() {
-    ProductEntity.ProductEntityBuilder builder = ProductEntity.builder()
-        // 핵심 식별 정보 (불변)
-        .id(this.id)
-        .code(this.code)
+    ProductEntity.ProductEntityBuilder builder =
+        ProductEntity.builder()
+            // 핵심 식별 정보 (불변)
+            .id(this.id)
+            .code(this.code)
 
-        // 상품 기본 정보 (불변)
-        .name(this.name)
-        .subtitle(this.subtitle)
-        .pg(this.pg)
+            // 상품 기본 정보 (불변)
+            .name(this.name)
+            .subtitle(this.subtitle)
+            .pg(this.pg)
 
-        // 네이버 관련 정보 (불변)
-        .naverPartner(this.naverPartner)
-        .naverPartnerTitle(this.naverPartnerTitle)
-        .naverPartnerTitlePg(this.naverPartnerTitlePg)
-        .naverAttribute(this.naverAttribute)
-        .store(StoreEntity.builder().id(1L).build())
+            // 네이버 관련 정보 (불변)
+            .naverPartner(this.naverPartner)
+            .naverPartnerTitle(this.naverPartnerTitle)
+            .naverPartnerTitlePg(this.naverPartnerTitlePg)
+            .naverAttribute(this.naverAttribute)
+            .store(StoreEntity.builder().id(1L).build())
 
-        // 상태 및 재고 정보 (가변)
-        .status(this.status)
-        .stock(this.stock)
-        .listPrice(this.listPrice)
-        .sellingPrice(this.sellingPrice)
-        .pgSellingPrice(this.pgSellingPrice)
-        .minimumStockLevel(this.minimumStockLevel)
-        .maximumStockLevel(this.maximumStockLevel)
-        .stockQuantity(this.stockQuantity)
-        .description(this.description)
-        .position(this.position)
+            // 상태 및 재고 정보 (가변)
+            .status(this.status)
+            .stock(this.stock)
+            .listPrice(this.listPrice)
+            .sellingPrice(this.sellingPrice)
+            .pgSellingPrice(this.pgSellingPrice)
+            .minimumStockLevel(this.minimumStockLevel)
+            .maximumStockLevel(this.maximumStockLevel)
+            .stockQuantity(this.stockQuantity)
+            .description(this.description)
+            .position(this.position)
 
-        // 리뷰 카운트 (가변)
-        .reviewCount(this.reviewCount)
-        .reviewCountPg(this.reviewCountPg);
+            // 리뷰 카운트 (가변)
+            .reviewCount(this.reviewCount)
+            .reviewCountPg(this.reviewCountPg);
+
+    // Fetch join 사용하지 않은 경우
+    //
+    // 1. product.getCategory()
+    //  category = product.getCategory();
+    // 결과: 프록시 객체 반환 (예: CategoryProxy@123)
+    // DB 쿼리: 발생하지 않음
+
+    // 2. product.getCategory().getId()
+    //  Long id = product.getCategory().getId();
+    // 결과: ID 값 반환 (예: 1)
+    // DB 쿼리: 발생하지 않음 (프록시도 ID는 가지고 있음)
+
+    // 3. product.getCategory().getName()
+    // String name = product.getCategory().getName();
+    // 결과: 카테고리 이름 반환 (예: "Electronics")
+    // DB 쿼리: 발생함 (SELECT * FROM category WHERE id = ?)
+    // 이때 실제 Category 엔티티가 로딩됨
+
+    // Fetch join 사용한 경우
+    //
+    // 1. product.getCategory()
+    // Category category = product.getCategory();
+    // 결과: 실제 Category 엔티티 반환 (예: Category@456)
+    // DB 쿼리: 이미 조회 시점에 실행되었음
+
+    // 2. product.getCategory().getId()
+    // Long id = product.getCategory().getId();
+    // 결과: ID 값 반환 (예: 1)
+    // DB 쿼리: 발생하지 않음 (이미 로딩되어 있음)
+
+    // 3. product.getCategory().getName()
+    // String name = product.getCategory().getName();
+    // 결과: 카테고리 이름 반환 (예: "Electronics")
+    // DB 쿼리: 발생하지 않음 (이미 로딩되어 있음)
 
     if (this.category != null) {
-      builder.category(this.category.toEntity());
+      builder.category(
+          CategoryEntity.builder()
+              .id(this.category.getId()) // getId()는 프록시에서도 안전하게 조회 가능
+              .build());
     }
 
     return builder.build();
