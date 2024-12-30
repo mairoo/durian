@@ -8,6 +8,7 @@ import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
 import kr.co.pincoin.api.domain.shop.model.order.OrderPaymentDetached;
 
 public interface OrderPaymentRepository {
+
   OrderPayment save(OrderPayment orderPayment);
 
   Optional<OrderPayment> findById(Long id);
