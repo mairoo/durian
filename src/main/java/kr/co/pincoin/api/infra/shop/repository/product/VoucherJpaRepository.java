@@ -20,15 +20,6 @@ public interface VoucherJpaRepository extends JpaRepository<VoucherEntity, Long>
 
   @Query(
       "SELECT v FROM VoucherEntity v "
-          + "WHERE v.product.code = :productCode "
-          + "AND v.status = :status "
-          + "ORDER BY v.id ASC "
-          + "LIMIT :limit")
-  List<VoucherEntity> findTopNByProductCodeAndStatusOrderByIdAsc(
-      String productCode, VoucherStatus status, int limit);
-
-  @Query(
-      "SELECT v FROM VoucherEntity v "
           + "JOIN FETCH v.product p "
           + "JOIN FETCH p.category c "
           + "WHERE p.code IN :productCodes "

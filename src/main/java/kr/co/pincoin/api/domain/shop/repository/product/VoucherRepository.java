@@ -20,9 +20,6 @@ public interface VoucherRepository {
 
   List<Voucher> findAllByCodeIn(Collection<String> codes);
 
-  List<Voucher> findTopNByProductCodeAndStatusOrderByIdAsc(
-      String productCode, VoucherStatus status, int limit);
-
   List<Voucher> findAllByProductCodesAndStatus(
       Collection<String> productCodes, VoucherStatus status);
 

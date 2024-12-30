@@ -93,23 +93,6 @@ public class VoucherRepositoryImpl implements VoucherRepository {
   }
 
   /**
-   * 특정 상품의 상위 N개 바우처를 상태별로 조회합니다
-   *
-   * @param productCode 상품 코드
-   * @param status 바우처 상태
-   * @param limit 조회할 개수
-   * @return 조회된 바우처 목록
-   */
-  @Override
-  public List<Voucher> findTopNByProductCodeAndStatusOrderByIdAsc(
-      String productCode, VoucherStatus status, int limit) {
-    List<VoucherEntity> savedEntities =
-        jpaRepository.findTopNByProductCodeAndStatusOrderByIdAsc(productCode, status, limit);
-
-    return mapper.toModelList(savedEntities);
-  }
-
-  /**
    * 여러 상품의 바우처들을 상태별로 조회합니다
    *
    * @param productCodes 상품 코드 목록
