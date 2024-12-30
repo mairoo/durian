@@ -115,7 +115,7 @@ public class OrderProcessingService {
     Order savedOrder = orderPersistenceService.saveAndFlush(order);
 
     List<OrderProduct> orderProducts = createOrderProductsFromCart(request.getItems(), savedOrder);
-    orderProductPersistenceService.saveOrderProducts(orderProducts);
+    orderProductPersistenceService.saveOrderProductsBatch(orderProducts);
 
     eventPublisher.publishEvent(new OrderCreatedEvent(savedOrder, orderProducts));
 
@@ -167,7 +167,7 @@ public class OrderProcessingService {
                         savedReorder))
             .collect(Collectors.toList());
 
-    orderProductPersistenceService.saveOrderProducts(newOrderProducts);
+    orderProductPersistenceService.saveOrderProductsBatch(newOrderProducts);
 
     return savedReorder;
   }

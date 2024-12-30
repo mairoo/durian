@@ -57,18 +57,7 @@ public class OrderProductPersistenceService {
     return orderProductRepository.findAllWithOrderAndUser(orderNo, userId);
   }
 
-  /** 주문상품 목록 저장 */
-  @Transactional
-  public void saveOrderProducts(List<OrderProduct> orderProducts) {
-    int batchSize = 100;
-    for (int i = 0; i < orderProducts.size(); i += batchSize) {
-      List<OrderProduct> batch =
-          orderProducts.subList(i, Math.min(i + batchSize, orderProducts.size()));
-      orderProductRepository.saveAll(batch);
-    }
-  }
-
-  /** 주문상품 목록 일괄 저장 (배치) */
+  /** 주문상품 목록 저장 (배치) */
   @Transactional
   public void saveOrderProductsBatch(List<OrderProduct> orderProducts) {
     int batchSize = 100;
