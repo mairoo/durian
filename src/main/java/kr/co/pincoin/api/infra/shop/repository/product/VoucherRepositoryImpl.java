@@ -12,11 +12,13 @@ import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.infra.shop.entity.product.VoucherEntity;
 import kr.co.pincoin.api.infra.shop.mapper.product.VoucherMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
 public class VoucherRepositoryImpl implements VoucherRepository {
+
   private final VoucherJpaRepository jpaRepository;
   private final VoucherQueryRepository queryRepository;
   private final VoucherMapper mapper;
@@ -95,15 +97,15 @@ public class VoucherRepositoryImpl implements VoucherRepository {
   /**
    * 여러 상품의 바우처들을 상태별로 조회합니다
    *
-   * @param productCodes 상품 코드 목록
+   * @param productCode 상품 코드 목록
    * @param status 바우처 상태
    * @return 조회된 바우처 목록
    */
   @Override
-  public List<Voucher> findAllByProductCodesAndStatus(
-      Collection<String> productCodes, VoucherStatus status) {
+  public List<Voucher> findAllByProductCodeAndStatus(
+      String productCode, VoucherStatus status, Pageable pageable) {
     List<VoucherEntity> savedEntities =
-        jpaRepository.findAllByProductCodesAndStatus(productCodes, status);
+        jpaRepository.findAllByProductCodeAndStatus(productCode, status, pageable);
 
     return mapper.toModelList(savedEntities);
   }
