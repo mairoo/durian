@@ -24,12 +24,12 @@ public class OrderEventHandler {
   private final OrderVoucherService orderVoucherService;
   private final ApplicationEventPublisher eventPublisher;
 
-  /** 주문 생성 시 처리 - 비동기로 주문 완료 메일 발송 */
+  /** 주문 완료 시 처리 - 비동기로 주문 완료 메일 발송 */
   @Async
   @EventListener
   public void handleOrderCreated(OrderCreatedEvent event) {
     log.info(
-        "[주문생성] 주문번호: {}, 이메일: {}",
+        "[입금확인중] 주문번호: {}, 이메일: {}",
         event.getOrder().getOrderNo(),
         event.getOrder().getUser().getEmail());
 
@@ -53,18 +53,18 @@ public class OrderEventHandler {
     var orderNo = order.getOrderNo();
 
     switch (order.getStatus()) {
+      case PAYMENT_COMPLETED -> {
+        log.info("[입금완료] 주문번호: {}", orderNo);
+      }
       case UNDER_REVIEW -> {
-        log.info("[결제완료-검토중] 주문번호: {}", orderNo);
+        log.info("[인증심사중] 주문번호: {}", orderNo);
         sendAuthenticationSms(order);
       }
-      case PAYMENT_COMPLETED -> {
-        log.info("[결제완료-정상] 주문번호: {}", orderNo);
-      }
       case PAYMENT_VERIFIED -> {
-        log.info("[결제완료-인증완료] 주문번호: {}", orderNo);
+        log.info("[입금인증완료] 주문번호: {}", orderNo);
         publishReadyForShipmentEvent(event);
       }
-      default -> log.warn("[결제완료-미처리상태] 주문번호: {}, 상태: {}", orderNo, order.getStatus());
+      default -> log.warn("[입금완료-미처리상태] 주문번호: {}, 상태: {}", orderNo, order.getStatus());
     }
   }
 
@@ -74,12 +74,12 @@ public class OrderEventHandler {
   @Transactional
   public void handleOrderReadyForShipment(OrderReadyForShipmentEvent event) {
     var order = event.getOrder();
-    log.info("[배송준비시작] 주문번호: {}", order.getOrderNo());
+    log.info("[발권준비시작] 주문번호: {}", order.getOrderNo());
 
     try {
       orderVoucherService.issueVouchers(order, event.getOrderProducts());
     } catch (Exception e) {
-      log.error("[배송준비실패] 주문번호: {}, 오류: {}", order.getOrderNo(), e.getMessage(), e);
+      log.error("[발권준비실패] 주문번호: {}, 오류: {}", order.getOrderNo(), e.getMessage(), e);
       throw e;
     }
   }
