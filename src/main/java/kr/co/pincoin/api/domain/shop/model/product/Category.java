@@ -92,8 +92,6 @@ public class Category {
     this.rght = rght;
     this.treeId = treeId;
     this.level = level;
-
-    validateCategory();
   }
 
   // 팩토리 메소드
@@ -222,17 +220,6 @@ public class Category {
     this.naverSearchTag = searchTag;
     this.naverBrandName = brandName;
     this.naverMakerName = makerName;
-  }
-
-  // 검증 메소드
-  private void validateCategory() {
-    if (title == null || title.trim().isEmpty()) {
-      throw new BusinessException(ErrorCode.INVALID_CATEGORY_TITLE);
-    }
-    if (slug == null || slug.trim().isEmpty()) {
-      throw new BusinessException(ErrorCode.INVALID_CATEGORY_SLUG);
-    }
-    validateDiscountRates(discountRate, pgDiscountRate);
   }
 
   private void validateDiscountRates(BigDecimal discountRate, BigDecimal pgDiscountRate) {
