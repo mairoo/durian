@@ -11,15 +11,11 @@ public interface CategoryRepository {
 
   Optional<Category> findById(Long id);
 
-  Optional<CategoryDetached> findDetachedBySlug(String slug);
+  Optional<Category> findBySlug(String slug);
 
   Optional<CategoryDetached> findDetachedById(Long id);
 
-  void delete(Category category);
-
-  void deleteById(Long id);
-
-  Optional<Category> findBySlug(String slug);
+  Optional<CategoryDetached> findDetachedBySlug(String slug);
 
   List<Category> findAll();
 
@@ -28,4 +24,8 @@ public interface CategoryRepository {
   List<Category> findAllByParentCategory(Category parent);
 
   List<Category> findAllByStoreIdAndParentCategoryIsNull(Long storeId);
+
+  void delete(Category category);
+
+  void deleteById(Long id);
 }

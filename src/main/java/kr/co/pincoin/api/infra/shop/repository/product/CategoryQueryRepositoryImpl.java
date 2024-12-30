@@ -14,18 +14,7 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class CategoryQueryRepositoryImpl implements CategoryQueryRepository {
   private final JPAQueryFactory queryFactory;
-
   private final QCategoryEntity category = QCategoryEntity.categoryEntity;
-
-  @Override
-  public Optional<CategoryDetached> findDetachedBySlug(String slug) {
-    return Optional.ofNullable(
-        queryFactory
-            .select(getCategoryDetachedProjection())
-            .from(category)
-            .where(slugEq(slug))
-            .fetchOne());
-  }
 
   @Override
   public Optional<CategoryDetached> findDetachedById(Long id) {
@@ -34,6 +23,16 @@ public class CategoryQueryRepositoryImpl implements CategoryQueryRepository {
             .select(getCategoryDetachedProjection())
             .from(category)
             .where(idEq(id))
+            .fetchOne());
+  }
+
+  @Override
+  public Optional<CategoryDetached> findDetachedBySlug(String slug) {
+    return Optional.ofNullable(
+        queryFactory
+            .select(getCategoryDetachedProjection())
+            .from(category)
+            .where(slugEq(slug))
             .fetchOne());
   }
 
@@ -62,11 +61,11 @@ public class CategoryQueryRepositoryImpl implements CategoryQueryRepository {
         category.level);
   }
 
-  private BooleanExpression slugEq(String slug) {
-    return slug != null ? category.slug.eq(slug) : null;
-  }
-
   private BooleanExpression idEq(Long id) {
     return id != null ? category.id.eq(id) : null;
+  }
+
+  private BooleanExpression slugEq(String slug) {
+    return slug != null ? category.slug.eq(slug) : null;
   }
 }
