@@ -14,11 +14,9 @@ public interface ProductRepository {
 
   List<Product> saveAll(Collection<Product> products);
 
-  void delete(Product product);
-
-  void deleteById(Long id);
-
   Optional<Product> findById(Long id, ProductStatus status, ProductStock stock);
+
+  Optional<Product> findByIdWithCategory(Long id);
 
   Optional<ProductDetached> findDetachedById(Long id, ProductStatus status, ProductStock stock);
 
@@ -36,10 +34,12 @@ public interface ProductRepository {
   List<ProductDetached> findAllDetachedByCodeIn(
       Collection<String> codes, ProductStatus status, ProductStock stock);
 
-  Optional<Product> findByIdWithCategory(Long id);
-
   List<ProductDetached> findAllByCategory(
       Long categoryId, String categorySlug, ProductStatus status, ProductStock stock);
+
+  void delete(Product product);
+
+  void deleteById(Long id);
 
   void softDelete(Product product);
 

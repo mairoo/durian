@@ -25,6 +25,14 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
 
   private final QProductEntity product = QProductEntity.productEntity;
 
+  /**
+   * ID로 상품을 조회합니다
+   *
+   * @param id 상품 ID
+   * @param status 상품 상태
+   * @param stock 재고 상태
+   * @return 조회된 상품 엔티티 (없을 경우 Optional.empty)
+   */
   @Override
   public Optional<ProductEntity> findById(Long id, ProductStatus status, ProductStock stock) {
     return Optional.ofNullable(
@@ -36,6 +44,14 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
             .fetchOne());
   }
 
+  /**
+   * 코드로 분리된 상품을 조회합니다
+   *
+   * @param code 상품 코드
+   * @param status 상품 상태
+   * @param stock 재고 상태
+   * @return 조회된 분리된 상품 (없을 경우 Optional.empty)
+   */
   @Override
   public Optional<ProductDetached> findDetachedByCode(
       String code, ProductStatus status, ProductStock stock) {
@@ -48,6 +64,14 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
             .fetchOne());
   }
 
+  /**
+   * ID로 분리된 상품을 조회합니다
+   *
+   * @param id 상품 ID
+   * @param status 상품 상태
+   * @param stock 재고 상태
+   * @return 조회된 분리된 상품 (없을 경우 Optional.empty)
+   */
   @Override
   public Optional<ProductDetached> findDetachedById(
       Long id, ProductStatus status, ProductStock stock) {
@@ -60,6 +84,15 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
             .fetchOne());
   }
 
+  /**
+   * 카테고리별 상품 목록을 조회합니다
+   *
+   * @param categoryId 카테고리 ID
+   * @param categorySlug 카테고리 슬러그
+   * @param status 상품 상태
+   * @param stock 재고 상태
+   * @return 카테고리에 속한 상품 목록
+   */
   @Override
   public List<ProductDetached> findAllByCategory(
       Long categoryId, String categorySlug, ProductStatus status, ProductStock stock) {
@@ -75,6 +108,14 @@ public class ProductQueryRepositoryImpl implements ProductQueryRepository {
         .fetch();
   }
 
+  /**
+   * 여러 상품 코드로 분리된 상품 목록을 조회합니다
+   *
+   * @param codes 상품 코드 목록
+   * @param status 상품 상태
+   * @param stock 재고 상태
+   * @return 조회된 분리된 상품 목록
+   */
   @Override
   public List<ProductDetached> findAllDetachedByCodeIn(
       Collection<String> codes, ProductStatus status, ProductStock stock) {
