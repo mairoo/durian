@@ -37,7 +37,7 @@ public class AdminOrderController {
 
   /** 주문 목록 조회 */
   @GetMapping
-  public ResponseEntity<ApiResponse<PageResponse<AdminOrderResponse>>> getOrers(
+  public ResponseEntity<ApiResponse<PageResponse<AdminOrderResponse>>> getOrders(
       @CurrentUser User user,
       @ModelAttribute OrderSearchCondition condition,
       @PageableDefault(size = 20) Pageable pageable) {

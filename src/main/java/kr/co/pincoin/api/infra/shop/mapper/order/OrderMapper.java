@@ -2,6 +2,7 @@ package kr.co.pincoin.api.infra.shop.mapper.order;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.infra.auth.mapper.user.UserMapper;
@@ -15,6 +16,14 @@ public class OrderMapper {
   private final UserMapper userMapper;
 
   public Order toModel(OrderEntity entity) {
+    return toModel(entity, false);
+  }
+
+  public Order toModelDetached(OrderEntity entity) {
+    return toModel(entity, true);
+  }
+
+  private Order toModel(OrderEntity entity, boolean detached) {
     if (entity == null) {
       return null;
     }
@@ -35,8 +44,8 @@ public class OrderMapper {
         .currency(entity.getCurrency())
         .message(entity.getMessage())
         .suspicious(entity.getSuspicious())
-        .parent(entity.getParent() != null ? toModel(entity.getParent()) : null)
-        .user(userMapper.toModel(entity.getUser()))
+        .user(detached ? null : Optional.ofNullable(entity.getUser()).map(userMapper::toModel).orElse(null))
+        .parent(detached ? null : Optional.ofNullable(entity.getParent()).map(this::toModel).orElse(null))
         .created(entity.getCreated())
         .modified(entity.getModified())
         .removed(entity.isRemoved())

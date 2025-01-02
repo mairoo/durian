@@ -107,7 +107,7 @@ public class OrderRepositoryImpl implements OrderRepository {
   public Page<Order> searchOrders(OrderSearchCondition condition, Pageable pageable) {
     Page<OrderEntity> orderEntities = queryRepository.searchOrders(condition, pageable);
     List<Order> orders =
-        orderEntities.getContent().stream().map(mapper::toModel).collect(Collectors.toList());
+        orderEntities.getContent().stream().map(mapper::toModelDetached).collect(Collectors.toList());
     return new PageImpl<>(orders, pageable, orderEntities.getTotalElements());
   }
 }
