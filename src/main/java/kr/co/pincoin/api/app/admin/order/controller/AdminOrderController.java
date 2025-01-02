@@ -2,12 +2,10 @@ package kr.co.pincoin.api.app.admin.order.controller;
 
 import kr.co.pincoin.api.app.admin.order.response.AdminOrderResponse;
 import kr.co.pincoin.api.app.admin.order.service.AdminOrderService;
-import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.global.response.page.PageResponse;
 import kr.co.pincoin.api.global.response.success.ApiResponse;
-import kr.co.pincoin.api.global.security.annotation.CurrentUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -38,9 +36,13 @@ public class AdminOrderController {
   /** 주문 목록 조회 */
   @GetMapping
   public ResponseEntity<ApiResponse<PageResponse<AdminOrderResponse>>> getOrders(
-      @CurrentUser User user,
       @ModelAttribute OrderSearchCondition condition,
       @PageableDefault(size = 20) Pageable pageable) {
+
+    // select auth_user x 1: 로그인/권한 조회
+    // select product x 1: 주문 가능 상품 확인
+    // insert shop_order x 1: 주문 추가
+    // insert shop_orderproduct x 3: 주문 상품 추가
     Page<Order> orders = orderService.getOrders(condition, pageable);
     Page<AdminOrderResponse> responses = orders.map(AdminOrderResponse::from);
 
@@ -49,24 +51,21 @@ public class AdminOrderController {
 
   /** 주문 상세 조회 */
   @GetMapping("/{orderId}")
-  public ResponseEntity<ApiResponse<AdminOrderResponse>> getOrder(
-      @CurrentUser User user, @PathVariable Long orderId) {
+  public ResponseEntity<ApiResponse<AdminOrderResponse>> getOrder(@PathVariable Long orderId) {
     Order order = orderService.getOrder(orderId);
     return ResponseEntity.ok(ApiResponse.of(AdminOrderResponse.from(order)));
   }
 
   /** 주문 삭제 */
   @PostMapping("/{orderId}/delete")
-  public ResponseEntity<ApiResponse<Void>> deleteMyOrder(
-      @CurrentUser User user, @PathVariable Long orderId) {
+  public ResponseEntity<ApiResponse<Void>> deleteMyOrder(@PathVariable Long orderId) {
     orderService.deleteOrder(orderId);
     return ResponseEntity.ok(ApiResponse.of(null, "주문이 삭제되었습니다."));
   }
 
   /** 주문 숨김 처리 */
   @PostMapping("/{orderId}/hide")
-  public ResponseEntity<ApiResponse<Void>> hideMyOrder(
-      @PathVariable Long orderId, @CurrentUser User user) {
+  public ResponseEntity<ApiResponse<Void>> hideMyOrder(@PathVariable Long orderId) {
     orderService.hideOrder(orderId);
     return ResponseEntity.ok(ApiResponse.of(null, "주문이 숨김 처리되었습니다."));
   }

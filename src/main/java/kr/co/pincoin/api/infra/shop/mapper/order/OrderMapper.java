@@ -44,8 +44,14 @@ public class OrderMapper {
         .currency(entity.getCurrency())
         .message(entity.getMessage())
         .suspicious(entity.getSuspicious())
-        .user(detached ? null : Optional.ofNullable(entity.getUser()).map(userMapper::toModel).orElse(null))
-        .parent(detached ? null : Optional.ofNullable(entity.getParent()).map(this::toModel).orElse(null))
+        .user(
+            detached
+                ? null
+                : Optional.ofNullable(entity.getUser()).map(userMapper::toModel).orElse(null))
+        .parent(
+            detached
+                ? null
+                : Optional.ofNullable(entity.getParent()).map(this::toModel).orElse(null))
         .created(entity.getCreated())
         .modified(entity.getModified())
         .removed(entity.isRemoved())

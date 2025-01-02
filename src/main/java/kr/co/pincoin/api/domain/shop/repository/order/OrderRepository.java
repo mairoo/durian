@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
-import kr.co.pincoin.api.domain.shop.model.order.OrderDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import org.springframework.data.domain.Page;
@@ -36,7 +35,7 @@ public interface OrderRepository {
 
   Optional<Order> findByOrderNoAndUserId(String orderNo, Integer userId);
 
-  Optional<OrderDetached> findByOrderDetachedNoAndUserId(String orderNo, Integer userId);
+  Optional<Order> findByOrderDetachedNoAndUserId(String orderNo, Integer userId);
 
   // 상태 기반 조회
   List<Order> findByStatus(OrderStatus status);

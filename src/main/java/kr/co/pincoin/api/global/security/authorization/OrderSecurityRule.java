@@ -1,7 +1,7 @@
 package kr.co.pincoin.api.global.security.authorization;
 
 import kr.co.pincoin.api.domain.auth.model.user.User;
-import kr.co.pincoin.api.domain.shop.model.order.OrderDetached;
+import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
 import kr.co.pincoin.api.global.exception.BusinessException;
 import kr.co.pincoin.api.global.exception.ErrorCode;
@@ -12,18 +12,17 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class OrderSecurityRule {
-
   private final OrderRepository orderRepository;
 
   private final OrderRequestContext orderContext;
 
   public boolean hasOrderAccess(User user, String orderNo) {
-    OrderDetached order =
+    Order order =
         orderRepository
-            .findByOrderDetachedNoAndUserId(orderNo, user.getId())
+            .findByOrderNoAndUserId(orderNo, user.getId())
             .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
 
-    if (!order.getUserId().equals(user.getId())) {
+    if (!order.getUser().getId().equals(user.getId())) {
       throw new BusinessException(ErrorCode.FORBIDDEN);
     }
 

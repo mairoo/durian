@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
-import kr.co.pincoin.api.domain.shop.model.order.OrderDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderSearchCondition;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderRepository;
@@ -83,8 +82,8 @@ public class OrderRepositoryImpl implements OrderRepository {
   }
 
   @Override
-  public Optional<OrderDetached> findByOrderDetachedNoAndUserId(String orderNo, Integer userId) {
-    return queryRepository.findByOrderDetachedNoAndUserId(orderNo, userId);
+  public Optional<Order> findByOrderDetachedNoAndUserId(String orderNo, Integer userId) {
+    return queryRepository.findByOrderNoAndUserId(orderNo, userId).map(mapper::toModelDetached);
   }
 
   // 상태 기반 조회
@@ -107,7 +106,9 @@ public class OrderRepositoryImpl implements OrderRepository {
   public Page<Order> searchOrders(OrderSearchCondition condition, Pageable pageable) {
     Page<OrderEntity> orderEntities = queryRepository.searchOrders(condition, pageable);
     List<Order> orders =
-        orderEntities.getContent().stream().map(mapper::toModelDetached).collect(Collectors.toList());
+        orderEntities.getContent().stream()
+            .map(mapper::toModelDetached)
+            .collect(Collectors.toList());
     return new PageImpl<>(orders, pageable, orderEntities.getTotalElements());
   }
 }
