@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductVoucherEntity;
 import kr.co.pincoin.api.infra.shop.mapper.product.VoucherMapper;
@@ -31,6 +32,24 @@ public class OrderProductVoucherMapper {
             Optional.ofNullable(entity.getOrderProduct())
                 .map(orderProductMapper::toModel)
                 .orElse(null))
+        .voucher(Optional.ofNullable(entity.getVoucher()).map(voucherMapper::toModel).orElse(null))
+        .created(entity.getCreated())
+        .modified(entity.getModified())
+        .isRemoved(entity.isRemoved())
+        .build();
+  }
+
+  public OrderProductVoucher toModel(OrderProductVoucherEntity entity, OrderProduct orderProduct) {
+    if (entity == null) {
+      return null;
+    }
+
+    return OrderProductVoucher.builder()
+        .id(entity.getId())
+        .code(entity.getCode())
+        .revoked(entity.getRevoked())
+        .remarks(entity.getRemarks())
+        .orderProduct(orderProduct)
         .voucher(Optional.ofNullable(entity.getVoucher()).map(voucherMapper::toModel).orElse(null))
         .created(entity.getCreated())
         .modified(entity.getModified())

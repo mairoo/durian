@@ -33,4 +33,8 @@ public class OrderProductVoucherEntity extends BaseRemovalDateTime {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "voucher_id")
   private VoucherEntity voucher;
+
+  public void setOrderProduct(OrderProductEntity orderProduct) {
+    this.orderProduct = orderProduct;
+  }
 }
