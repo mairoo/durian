@@ -3,32 +3,32 @@ package kr.co.pincoin.api.domain.shop.model.order;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.Optional;
+import kr.co.pincoin.api.infra.shop.entity.order.OrderEntity;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.lang.Nullable;
 
 @Getter
 public class OrderProduct {
+  // 핵심 식별 정보 (불변)
   private final Long id;
-
   private final String name;
-
   private final String subtitle;
-
   private final String code;
-
   private final BigDecimal listPrice;
-
   private final BigDecimal sellingPrice;
+  private final Integer quantity;
 
-  private final Order order;
-
+  // 생성/수정 시간 (불변)
   private final LocalDateTime created;
-
   private final LocalDateTime modified;
 
-  private Integer quantity;
+  // 연관 관계 (불변)
+  private final Order order;
 
+  // 상태 정보 (가변)
   private Boolean isRemoved;
 
   @Builder
@@ -40,9 +40,9 @@ public class OrderProduct {
       BigDecimal listPrice,
       BigDecimal sellingPrice,
       Integer quantity,
-      Order order,
       LocalDateTime created,
       LocalDateTime modified,
+      @Nullable Order order,
       Boolean isRemoved) {
     this.id = id;
     this.name = name;
@@ -51,9 +51,9 @@ public class OrderProduct {
     this.listPrice = listPrice;
     this.sellingPrice = sellingPrice;
     this.quantity = quantity;
-    this.order = order;
     this.created = created;
     this.modified = modified;
+    this.order = order;
     this.isRemoved = isRemoved;
 
     validatePrices();
@@ -88,15 +88,11 @@ public class OrderProduct {
         .listPrice(this.getListPrice())
         .sellingPrice(this.getSellingPrice())
         .quantity(this.getQuantity())
-        .order(this.getOrder().toEntity())
+        .order(
+            Optional.ofNullable(this.order)
+                .map(order -> OrderEntity.builder().id(order.getId()).build())
+                .orElse(null))
         .build();
-  }
-
-  public void updateQuantity(Integer quantity) {
-    if (quantity == null || quantity <= 0) {
-      throw new IllegalArgumentException("Quantity must be positive");
-    }
-    this.quantity = quantity;
   }
 
   public void softDelete() {

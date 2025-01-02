@@ -3,55 +3,46 @@ package kr.co.pincoin.api.domain.shop.model.order;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import kr.co.pincoin.api.domain.auth.model.user.User;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderCurrency;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderPaymentMethod;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
 import kr.co.pincoin.api.domain.shop.model.order.enums.OrderVisibility;
+import kr.co.pincoin.api.infra.auth.entity.user.UserEntity;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderEntity;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.lang.Nullable;
 
 @Getter
 public class Order {
+  // 핵심 식별 정보 (불변)
   private final Long id;
-
   private final String orderNo;
-
   private final String fullname;
-
   private final String userAgent;
-
   private final String acceptLanguage;
-
   private final String ipAddress;
-
   private final BigDecimal totalListPrice;
-
   private final BigDecimal totalSellingPrice;
-
   private final OrderCurrency currency;
 
-  private final Order parent;
-
-  private final User user;
-
+  // 생성/수정 시간 (불변)
   private final LocalDateTime created;
-
   private final LocalDateTime modified;
 
+  // 연관 관계 (불변)
+  private final User user;
+  private final Order parent;
+
+  // 상태 정보 (가변)
   private OrderPaymentMethod paymentMethod;
-
   private OrderStatus status;
-
   private OrderVisibility visibility;
-
   private String transactionId;
-
   private String message;
-
   private Boolean suspicious;
-
   private Boolean removed;
 
   @Builder
@@ -65,10 +56,10 @@ public class Order {
       BigDecimal totalListPrice,
       BigDecimal totalSellingPrice,
       OrderCurrency currency,
-      Order parent,
-      User user,
       LocalDateTime created,
       LocalDateTime modified,
+      @Nullable User user,
+      @Nullable Order parent,
       OrderPaymentMethod paymentMethod,
       OrderStatus status,
       OrderVisibility visibility,
@@ -85,10 +76,10 @@ public class Order {
     this.totalListPrice = totalListPrice;
     this.totalSellingPrice = totalSellingPrice;
     this.currency = currency;
-    this.parent = parent;
-    this.user = user;
     this.created = created;
     this.modified = modified;
+    this.user = user;
+    this.parent = parent;
     this.paymentMethod = paymentMethod;
     this.status = status;
     this.visibility = visibility;
@@ -138,8 +129,14 @@ public class Order {
         .totalListPrice(this.getTotalListPrice())
         .totalSellingPrice(this.getTotalSellingPrice())
         .currency(this.getCurrency())
-        .parent(this.getParent() != null ? this.getParent().toEntity() : null)
-        .user(this.getUser().toEntity())
+        .user(
+            Optional.ofNullable(this.user)
+                .map(user -> UserEntity.builder().id(user.getId()).build())
+                .orElse(null))
+        .parent(
+            Optional.ofNullable(this.parent)
+                .map(parent -> OrderEntity.builder().id(parent.getId()).build())
+                .orElse(null))
 
         // 2. 주문 상태
         .paymentMethod(this.getPaymentMethod())

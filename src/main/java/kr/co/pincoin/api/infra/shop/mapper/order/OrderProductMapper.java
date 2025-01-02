@@ -2,6 +2,7 @@ package kr.co.pincoin.api.infra.shop.mapper.order;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
@@ -27,7 +28,7 @@ public class OrderProductMapper {
         .listPrice(entity.getListPrice())
         .sellingPrice(entity.getSellingPrice())
         .quantity(entity.getQuantity())
-        .order(orderMapper.toModel(entity.getOrder()))
+        .order(Optional.ofNullable(entity.getOrder()).map(orderMapper::toModel).orElse(null))
         .created(entity.getCreated())
         .modified(entity.getModified())
         .isRemoved(entity.isRemoved())
@@ -71,7 +72,7 @@ public class OrderProductMapper {
         .listPrice(projection.getOrderProduct().getListPrice())
         .sellingPrice(projection.getOrderProduct().getSellingPrice())
         .quantity(projection.getOrderProduct().getQuantity())
-        .order(orderMapper.toModel(projection.getOrder()))
+        .order(Optional.ofNullable(projection.getOrder()).map(orderMapper::toModel).orElse(null))
         .created(projection.getOrderProduct().getCreated())
         .modified(projection.getOrderProduct().getModified())
         .isRemoved(projection.getOrderProduct().isRemoved())

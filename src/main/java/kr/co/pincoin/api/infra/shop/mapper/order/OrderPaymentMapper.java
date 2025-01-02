@@ -2,6 +2,7 @@ package kr.co.pincoin.api.infra.shop.mapper.order;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.order.OrderPayment;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderPaymentEntity;
@@ -24,7 +25,7 @@ public class OrderPaymentMapper {
         .amount(entity.getAmount())
         .balance(entity.getBalance())
         .received(entity.getReceived())
-        .order(orderMapper.toModel(entity.getOrder()))
+        .order(Optional.ofNullable(entity.getOrder()).map(orderMapper::toModel).orElse(null))
         .created(entity.getCreated())
         .modified(entity.getModified())
         .isRemoved(entity.isRemoved())

@@ -1,19 +1,30 @@
 package kr.co.pincoin.api.domain.shop.model.order;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.Voucher;
+import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductVoucherEntity;
+import kr.co.pincoin.api.infra.shop.entity.product.VoucherEntity;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.lang.Nullable;
 
 @Getter
 public class OrderProductVoucher {
+  // 핵심 식별 정보 (불변)
   private final Long id;
   private final String code;
+
+  // 연관 관계 (불변)
   private final OrderProduct orderProduct;
   private final Voucher voucher;
+
+  // 생성/수정 시간 (불변)
   private final LocalDateTime created;
   private final LocalDateTime modified;
+
+  // 상태 정보 (가변)
   private Boolean revoked;
   private String remarks;
   private Boolean isRemoved;
@@ -24,8 +35,8 @@ public class OrderProductVoucher {
       String code,
       Boolean revoked,
       String remarks,
-      OrderProduct orderProduct,
-      Voucher voucher,
+      @Nullable OrderProduct orderProduct,
+      @Nullable Voucher voucher,
       LocalDateTime created,
       LocalDateTime modified,
       Boolean isRemoved) {
@@ -48,8 +59,14 @@ public class OrderProductVoucher {
         .code(this.getCode())
         .revoked(this.getRevoked())
         .remarks(this.getRemarks())
-        .orderProduct(this.getOrderProduct().toEntity())
-        .voucher(this.getVoucher().toEntity())
+        .orderProduct(
+            Optional.ofNullable(this.orderProduct)
+                .map(orderProduct -> OrderProductEntity.builder().id(orderProduct.getId()).build())
+                .orElse(null))
+        .voucher(
+            Optional.ofNullable(this.voucher)
+                .map(voucher -> VoucherEntity.builder().id(voucher.getId()).build())
+                .orElse(null))
         .build();
   }
 

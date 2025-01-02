@@ -2,6 +2,7 @@ package kr.co.pincoin.api.infra.shop.mapper.order;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductVoucherEntity;
@@ -26,8 +27,11 @@ public class OrderProductVoucherMapper {
         .code(entity.getCode())
         .revoked(entity.getRevoked())
         .remarks(entity.getRemarks())
-        .orderProduct(orderProductMapper.toModel(entity.getOrderProduct()))
-        .voucher(voucherMapper.toModel(entity.getVoucher()))
+        .orderProduct(
+            Optional.ofNullable(entity.getOrderProduct())
+                .map(orderProductMapper::toModel)
+                .orElse(null))
+        .voucher(Optional.ofNullable(entity.getVoucher()).map(voucherMapper::toModel).orElse(null))
         .created(entity.getCreated())
         .modified(entity.getModified())
         .isRemoved(entity.isRemoved())
