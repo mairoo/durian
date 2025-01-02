@@ -3,6 +3,7 @@ package kr.co.pincoin.api.domain.shop.model.product;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStock;
 import kr.co.pincoin.api.domain.shop.model.store.Store;
@@ -37,8 +38,10 @@ public class Product {
   private final LocalDateTime created;
   private final LocalDateTime modified;
 
-  // 상태 및 재고 정보 (가변)
+  // 연관 관계 (가변)
   private Category category;
+
+  // 상태 및 재고 정보 (가변)
   private ProductStatus status;
   private ProductStock stock;
   private BigDecimal listPrice;
@@ -182,40 +185,6 @@ public class Product {
 
   // 엔티티 변환 메소드도 동일한 순서로
   public ProductEntity toEntity() {
-    ProductEntity.ProductEntityBuilder builder =
-        ProductEntity.builder()
-            // 핵심 식별 정보 (불변)
-            .id(this.id)
-            .code(this.code)
-
-            // 상품 기본 정보 (불변)
-            .name(this.name)
-            .subtitle(this.subtitle)
-            .pg(this.pg)
-
-            // 네이버 관련 정보 (불변)
-            .naverPartner(this.naverPartner)
-            .naverPartnerTitle(this.naverPartnerTitle)
-            .naverPartnerTitlePg(this.naverPartnerTitlePg)
-            .naverAttribute(this.naverAttribute)
-            .store(StoreEntity.builder().id(1L).build())
-
-            // 상태 및 재고 정보 (가변)
-            .status(this.status)
-            .stock(this.stock)
-            .listPrice(this.listPrice)
-            .sellingPrice(this.sellingPrice)
-            .pgSellingPrice(this.pgSellingPrice)
-            .minimumStockLevel(this.minimumStockLevel)
-            .maximumStockLevel(this.maximumStockLevel)
-            .stockQuantity(this.stockQuantity)
-            .description(this.description)
-            .position(this.position)
-
-            // 리뷰 카운트 (가변)
-            .reviewCount(this.reviewCount)
-            .reviewCountPg(this.reviewCountPg);
-
     // Fetch join 사용하지 않은 경우
     //
     // 1. product.getCategory()
@@ -251,18 +220,50 @@ public class Product {
     // 결과: 카테고리 이름 반환 (예: "Electronics")
     // DB 쿼리: 발생하지 않음 (이미 로딩되어 있음)
 
-    if (this.category != null) {
-      builder.category(
-          CategoryEntity.builder()
-              .id(this.category.getId()) // getId()는 프록시에서도 안전하게 조회 가능
-              .build());
-    }
+    return ProductEntity.builder()
+        // 핵심 식별 정보 (불변)
+        .id(this.id)
+        .code(this.code)
 
-    return builder.build();
+        // 상품 기본 정보 (불변)
+        .name(this.name)
+        .subtitle(this.subtitle)
+        .pg(this.pg)
+
+        // 네이버 관련 정보 (불변)
+        .naverPartner(this.naverPartner)
+        .naverPartnerTitle(this.naverPartnerTitle)
+        .naverPartnerTitlePg(this.naverPartnerTitlePg)
+        .naverAttribute(this.naverAttribute)
+        .store(StoreEntity.builder().id(1L).build())
+
+        // 상태 및 재고 정보 (가변)
+        .status(this.status)
+        .stock(this.stock)
+        .listPrice(this.listPrice)
+        .sellingPrice(this.sellingPrice)
+        .pgSellingPrice(this.pgSellingPrice)
+        .minimumStockLevel(this.minimumStockLevel)
+        .maximumStockLevel(this.maximumStockLevel)
+        .stockQuantity(this.stockQuantity)
+        .description(this.description)
+        .position(this.position)
+
+        // 리뷰 카운트 (가변)
+        .reviewCount(this.reviewCount)
+        .reviewCountPg(this.reviewCountPg)
+
+        // 카테고리 (Optional 처리)
+        .category(
+            Optional.ofNullable(this.category)
+                .map(category -> CategoryEntity.builder().id(category.getId()).build())
+                .orElse(null))
+        .build();
   }
 
   // 상태 및 재고 정보 (가변)
   public void updateCategory(@Nullable Category category) {
+    validateCategory(category);
     this.category = category;
   }
 
@@ -343,6 +344,12 @@ public class Product {
   }
 
   // Validation 메소드들
+  private void validateCategory(@Nullable Category category) {
+    if (category != null) {
+      // 추가적인 카테고리 유효성 검증 규칙들...
+    }
+  }
+
   private void validatePrices(BigDecimal listPrice, BigDecimal sellingPrice) {
     if (listPrice == null || sellingPrice == null) {
       throw new IllegalArgumentException("Prices cannot be null");

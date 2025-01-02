@@ -1,10 +1,13 @@
 package kr.co.pincoin.api.domain.shop.model.product;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
+import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
 import kr.co.pincoin.api.infra.shop.entity.product.VoucherEntity;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.lang.Nullable;
 
 @Getter
 public class Voucher {
@@ -12,12 +15,12 @@ public class Voucher {
   private final Long id;
   private final String code;
 
-  // 연관 관계 (불변)
-  private final Product product;
-
   // 생성/수정 시간 (불변)
   private final LocalDateTime created;
   private final LocalDateTime modified;
+
+  // 연관 관계 (가변)
+  private Product product;
 
   // 상태 정보 (가변)
   private String remarks;
@@ -30,7 +33,7 @@ public class Voucher {
       String code,
       String remarks,
       VoucherStatus status,
-      Product product,
+      @Nullable Product product,
       LocalDateTime created,
       LocalDateTime modified,
       Boolean isRemoved) {
@@ -59,7 +62,10 @@ public class Voucher {
         .code(this.getCode())
         .remarks(this.getRemarks())
         .status(this.getStatus())
-        .product(this.getProduct().toEntity())
+        .product(
+            Optional.ofNullable(this.product)
+                .map(product -> ProductEntity.builder().id(product.getId()).build())
+                .orElse(null))
         .build();
   }
 
@@ -69,6 +75,10 @@ public class Voucher {
   }
 
   // 상태 변경 메소드
+  public void updateProduct(@Nullable Product product) {
+    this.product = product;
+  }
+
   public void markAsSold() {
     if (this.status != VoucherStatus.PURCHASED) {
       throw new IllegalStateException("판매 가능한 상태의 상품권만 판매할 수 있습니다.");
