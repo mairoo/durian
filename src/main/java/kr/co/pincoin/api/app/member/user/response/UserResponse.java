@@ -24,7 +24,7 @@ public class UserResponse {
   protected UserResponse(User user) {
     this.id = user.getId();
     this.username = user.getUsername();
-    this.isActive = user.isActive();
+    this.isActive = user.getIsActive();
   }
 
   // 도메인 모델 객체에서 응답 객체 초기화

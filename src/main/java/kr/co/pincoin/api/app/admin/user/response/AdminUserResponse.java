@@ -75,8 +75,8 @@ public class AdminUserResponse extends MyUserResponse {
     User user = profile.getUser();
 
     // User 정보
-    this.isSuperuser = user.isSuperuser();
-    this.isStaff = user.isStaff();
+    this.isSuperuser = user.getIsSuperuser();
+    this.isStaff = user.getIsStaff();
 
     // Profile 정보 - 관리자용 기본 정보
     this.photoId = profile.getPhotoId();

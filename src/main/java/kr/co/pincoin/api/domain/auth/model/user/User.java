@@ -26,9 +26,9 @@ public class User {
   private String lastName;
 
   // 4. 권한 정보
-  private boolean isSuperuser;
-  private boolean isStaff;
-  private boolean isActive;
+  private Boolean isSuperuser;
+  private Boolean isStaff;
+  private Boolean isActive;
 
   @Builder
   private User( // 1. 불변 필드
@@ -46,9 +46,9 @@ public class User {
       String lastName,
 
       // 4. 권한 정보
-      boolean isSuperuser,
-      boolean isStaff,
-      boolean isActive) {
+      Boolean isSuperuser,
+      Boolean isStaff,
+      Boolean isActive) {
     // 1. 불변 필드
     this.id = id;
     this.dateJoined = dateJoined != null ? dateJoined : LocalDateTime.now();
@@ -142,9 +142,9 @@ public class User {
         .lastName(this.getLastName())
 
         // 4. 권한 정보
-        .isSuperuser(this.isSuperuser())
-        .isStaff(this.isStaff())
-        .isActive(this.isActive())
+        .isSuperuser(this.getIsSuperuser())
+        .isStaff(this.getIsStaff())
+        .isActive(this.getIsActive())
         .build();
   }
 

@@ -21,7 +21,7 @@ public class UserSecurityRule {
     }
 
     if (authentication.getPrincipal() instanceof UserDetailsAdapter(User user)) {
-      return user.isSuperuser();
+      return user.getIsSuperuser();
     }
 
     return false;
