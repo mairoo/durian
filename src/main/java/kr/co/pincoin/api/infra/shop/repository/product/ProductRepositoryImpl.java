@@ -153,4 +153,9 @@ public class ProductRepositoryImpl implements ProductRepository {
             })
         .orElseThrow(() -> new BusinessException(ErrorCode.PRODUCT_NOT_FOUND));
   }
+
+  @Override
+  public void decreaseStockQuantity(String productCode, int quantity) {
+    jpaRepository.decreaseStockQuantity(productCode, quantity);
+  }
 }

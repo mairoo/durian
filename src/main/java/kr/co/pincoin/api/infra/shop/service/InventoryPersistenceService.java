@@ -12,6 +12,7 @@ import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
 import kr.co.pincoin.api.infra.shop.repository.product.projection.ProductVoucherCount;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -124,5 +125,20 @@ public class InventoryPersistenceService {
       List<Voucher> batch = vouchers.subList(i, Math.min(i + batchSize, vouchers.size()));
       voucherRepository.saveAll(batch);
     }
+  }
+
+  @Transactional
+  public void decreaseStockQuantity(String productCode, int quantity) {
+    productRepository.decreaseStockQuantity(productCode, quantity);
+  }
+
+  public List<Voucher> findAvailableVouchersByProductCode(String productCode, int quantity) {
+    return voucherRepository.findAllVouchersByProductCode(
+        productCode, VoucherStatus.PURCHASED, PageRequest.of(0, quantity));
+  }
+
+  @Transactional
+  public void updateStatusToSold(List<Long> voucherIds) {
+    voucherRepository.updateStatusToSold(voucherIds, VoucherStatus.SOLD);
   }
 }

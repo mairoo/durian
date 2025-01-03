@@ -48,4 +48,6 @@ public interface ProductRepository {
   void restore(Product product);
 
   void restoreById(Long id);
+
+  void decreaseStockQuantity(String productCode, int quantity);
 }

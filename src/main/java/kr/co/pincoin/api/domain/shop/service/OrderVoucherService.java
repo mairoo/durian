@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
+import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
+import kr.co.pincoin.api.domain.shop.model.product.Voucher;
 import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
 import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherCount;
 import kr.co.pincoin.api.infra.shop.repository.product.projection.ProductVoucherCount;
@@ -117,7 +119,39 @@ public class OrderVoucherService {
           }
         });
 
-    // 실제 발권 처리!!!
+    // 실제 발권 처리
+    for (OrderProduct orderProduct : orderProducts) {
+      // 1. 구매 가능한 상품권 코드 조회 (매입 상태 & 주문 수량 만큼)
+      List<Voucher> availableVouchers =
+          inventoryPersistenceService.findAvailableVouchersByProductCode(
+              orderProduct.getCode(), orderProduct.getQuantity());
+
+      // 2. 조회된 상품권 코드의 상태를 "판매"로 변경
+      List<Long> voucherIds =
+          availableVouchers.stream().map(Voucher::getId).collect(Collectors.toList());
+
+      inventoryPersistenceService.updateStatusToSold(voucherIds);
+
+      // 3. OrderProductVoucher 생성 및 벌크 저장
+      List<OrderProductVoucher> orderProductVouchers =
+          availableVouchers.stream()
+              .map(
+                  voucher ->
+                      OrderProductVoucher.builder()
+                          .orderProduct(orderProduct)
+                          .voucher(voucher)
+                          .code(voucher.getCode())
+                          .remarks(voucher.getRemarks())
+                          .revoked(false)
+                          .build())
+              .collect(Collectors.toList());
+
+      orderProductVoucherPersistenceService.saveAll(orderProductVouchers);
+
+      // 4. 상품 재고 감소
+      inventoryPersistenceService.decreaseStockQuantity(
+          orderProduct.getCode(), orderProduct.getQuantity());
+    }
 
     throw new RuntimeException("그냥 종료하자.");
   }

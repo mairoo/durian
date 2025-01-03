@@ -12,6 +12,7 @@ import kr.co.pincoin.api.global.exception.ErrorCode;
 import kr.co.pincoin.api.infra.shop.mapper.product.VoucherMapper;
 import kr.co.pincoin.api.infra.shop.repository.product.projection.ProductVoucherCount;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -94,10 +95,10 @@ public class VoucherRepositoryImpl implements VoucherRepository {
   }
 
   @Override
-  public List<Voucher> findAllByProductCodesAndVoucherStatus(
-      List<String> productCodes, VoucherStatus status) {
+  public List<Voucher> findAllVouchersByProductCode(
+      String productCode, VoucherStatus status, Pageable pageable) {
     return mapper.toModelList(
-        queryRepository.findAllByProductCodesAndVoucherStatus(productCodes, status));
+        jpaRepository.findAllByProductCodeAndStatus(productCode, status, pageable));
   }
 
   @Override
@@ -192,5 +193,10 @@ public class VoucherRepositoryImpl implements VoucherRepository {
               return save(v);
             })
         .orElseThrow(() -> new BusinessException(ErrorCode.VOUCHER_NOT_FOUND));
+  }
+
+  @Override
+  public void updateStatusToSold(List<Long> voucherIds, VoucherStatus status) {
+    jpaRepository.updateStatusToSold(voucherIds, status);
   }
 }

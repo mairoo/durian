@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.infra.shop.entity.product.ProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -30,4 +31,11 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
   @Query(
       "SELECT p FROM ProductEntity p JOIN FETCH p.category WHERE p.category.slug = :categorySlug")
   List<ProductEntity> findAllByCategorySlugWithCategory(@Param("categorySlug") String categorySlug);
+
+  @Modifying
+  @Query(
+      "UPDATE ProductEntity p SET p.stockQuantity = p.stockQuantity - :quantity "
+          + "WHERE p.code = :productCode")
+  void decreaseStockQuantity(
+      @Param("productCode") String productCode, @Param("quantity") int quantity);
 }

@@ -28,21 +28,9 @@ public class OrderProductVoucherPersistenceService {
     return orderProductVoucherRepository.findAllByOrderProductOrderId(orderId);
   }
 
-  /** 주문상품 바우처 목록 일괄 저장 (배치) */
   @Transactional
-  public void saveOrderProductVouchersBatch(List<OrderProductVoucher> vouchers) {
-    // OrderProduct 정보를 한 번만 조회
-    Long orderId = vouchers.getFirst().getOrderProduct().getOrder().getId();
-    List<OrderProductProjection> orderProducts =
-        orderProductRepository.findAllWithOrderByOrderId(orderId);
-    Map<Long, OrderProductEntity> orderProductMap = createOrderProductMap(orderProducts);
-
-    int batchSize = 100;
-    for (int i = 0; i < vouchers.size(); i += batchSize) {
-      List<OrderProductVoucher> batch =
-          vouchers.subList(i, Math.min(i + batchSize, vouchers.size()));
-      orderProductVoucherRepository.saveAllWithMap(batch, orderProductMap);
-    }
+  public void saveAll(List<OrderProductVoucher> orderProductVouchers) {
+    orderProductVoucherRepository.saveAll(orderProductVouchers);
   }
 
   public List<OrderProductVoucherCount> countIssuedVouchersByOrderProducts(
