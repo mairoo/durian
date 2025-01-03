@@ -38,6 +38,11 @@ public class OrderProductVoucherPersistenceService {
         orderProductVouchers, originalOrderProducts, originalVouchers);
   }
 
+  @Transactional
+  public void batchSave(List<OrderProductVoucher> orderProductVouchers) {
+    orderProductVoucherRepository.batchSave(orderProductVouchers);
+  }
+
   public List<OrderProductVoucherCount> countIssuedVouchersByOrderProducts(
       List<OrderProduct> orderProducts) {
     return orderProductVoucherRepository.countIssuedVouchersByOrderProducts(orderProducts);

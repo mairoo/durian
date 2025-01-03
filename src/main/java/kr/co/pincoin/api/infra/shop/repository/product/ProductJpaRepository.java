@@ -32,7 +32,7 @@ public interface ProductJpaRepository extends JpaRepository<ProductEntity, Long>
       "SELECT p FROM ProductEntity p JOIN FETCH p.category WHERE p.category.slug = :categorySlug")
   List<ProductEntity> findAllByCategorySlugWithCategory(@Param("categorySlug") String categorySlug);
 
-  @Modifying
+  @Modifying(clearAutomatically = true)
   @Query(
       "UPDATE ProductEntity p SET p.stockQuantity = p.stockQuantity - :quantity "
           + "WHERE p.code = :productCode")

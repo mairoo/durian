@@ -18,7 +18,13 @@ import org.springframework.stereotype.Repository;
 public class OrderProductVoucherRepositoryImpl implements OrderProductVoucherRepository {
   private final OrderProductVoucherJpaRepository jpaRepository;
   private final OrderProductVoucherQueryRepository queryRepository;
+  private final OrderProductVoucherJdbcRepository jdbcRepository;
   private final OrderProductVoucherMapper mapper;
+
+  @Override
+  public void batchSave(List<OrderProductVoucher> orderProductVouchers) {
+    jdbcRepository.batchInsert(orderProductVouchers);
+  }
 
   @Override
   public List<OrderProductVoucher> saveAll(

@@ -9,6 +9,8 @@ import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVouc
 import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherProjection;
 
 public interface OrderProductVoucherRepository {
+  void batchSave(List<OrderProductVoucher> orderProductVouchers);
+
   List<OrderProductVoucher> saveAll(
       List<OrderProductVoucher> orderProductVouchers,
       Map<Long, OrderProduct> originalOrderProducts,

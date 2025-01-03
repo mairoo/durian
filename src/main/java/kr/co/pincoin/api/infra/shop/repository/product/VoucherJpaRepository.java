@@ -32,7 +32,7 @@ public interface VoucherJpaRepository extends JpaRepository<VoucherEntity, Long>
       @Param("status") VoucherStatus status,
       Pageable pageable);
 
-  @Modifying
+  @Modifying(clearAutomatically = true)
   @Query("UPDATE VoucherEntity v SET v.status = :status WHERE v.id IN :voucherIds")
   void updateStatusToSold(
       @Param("voucherIds") List<Long> voucherIds, @Param("status") VoucherStatus status);
