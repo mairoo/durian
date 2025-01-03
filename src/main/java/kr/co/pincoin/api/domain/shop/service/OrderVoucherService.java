@@ -1,5 +1,6 @@
 package kr.co.pincoin.api.domain.shop.service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -142,6 +143,8 @@ public class OrderVoucherService {
         });
 
     // 모든 검증이 완료된 후 실제 발권 처리 시작
+    List<OrderProductVoucher> allVouchers = new ArrayList<>();
+
     for (OrderProduct orderProduct : orderProducts) {
       // 1. 발권 가능한 바우처 조회
       // - PURCHASED 상태인 바우처 중에서
@@ -171,25 +174,27 @@ public class OrderVoucherService {
       // - revoked 필드 초기값 = false
       List<OrderProductVoucher> orderProductVouchers =
           availableVouchers.stream()
-              .map(
-                  voucher ->
-                      OrderProductVoucher.builder()
-                          .orderProduct(orderProduct)
-                          .voucher(voucher)
-                          .code(voucher.getCode())
-                          .remarks(voucher.getRemarks())
-                          .revoked(false)
-                          .build())
-              .collect(Collectors.toList());
+              .map(voucher ->
+                  OrderProductVoucher.builder()
+                      .orderProduct(orderProduct)
+                      .voucher(voucher)
+                      .code(voucher.getCode())
+                      .remarks(voucher.getRemarks())
+                      .revoked(false)
+                      .created(LocalDateTime.now())
+                      .modified(LocalDateTime.now())
+                      .isRemoved(false)
+                      .build())
+              .toList();
 
-      // 생성된 OrderProductVoucher 엔티티들을 벌크 저장
-      orderProductVoucherPersistenceService.saveAll(
-          orderProductVouchers, orderProductMap, voucherMap);
+      allVouchers.addAll(orderProductVouchers);
 
       // 4. 상품의 재고 수량 차감
       inventoryPersistenceService.decreaseStockQuantity(
           orderProduct.getCode(), orderProduct.getQuantity());
     }
+
+    orderProductVoucherPersistenceService.batchSave(allVouchers);
 
     // 모든 발권 처리가 완료되면 주문 상태를 SHIPPED로 변경
     order.updateStatus(OrderStatus.SHIPPED);
