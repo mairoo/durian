@@ -35,20 +35,20 @@ public class StoreMapper {
         .build();
   }
 
-  public StoreEntity toEntity(Store model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<Store> toModelList(List<StoreEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public StoreEntity toEntity(Store model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<StoreEntity> toEntityList(List<Store> models) {

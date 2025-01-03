@@ -31,20 +31,20 @@ public class VoucherMapper {
         .build();
   }
 
-  public VoucherEntity toEntity(Voucher model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<Voucher> toModelList(List<VoucherEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public VoucherEntity toEntity(Voucher model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<VoucherEntity> toEntityList(List<Voucher> models) {

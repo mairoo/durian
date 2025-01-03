@@ -50,20 +50,20 @@ public class ProfileMapper {
         .build();
   }
 
-  public ProfileEntity toEntity(Profile model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<Profile> toModelList(List<ProfileEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public ProfileEntity toEntity(Profile model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<ProfileEntity> toEntityList(List<Profile> models) {

@@ -23,20 +23,20 @@ public class BannedPhoneMapper {
         .build();
   }
 
-  public BannedPhoneEntity toEntity(BannedPhone model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<BannedPhone> toModelList(List<BannedPhoneEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public BannedPhoneEntity toEntity(BannedPhone model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<BannedPhoneEntity> toEntityList(List<BannedPhone> models) {

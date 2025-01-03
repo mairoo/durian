@@ -27,20 +27,20 @@ public class TestimonialAnswerMapper {
         .build();
   }
 
-  public TestimonialAnswerEntity toEntity(TestimonialAnswer model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<TestimonialAnswer> toModelList(List<TestimonialAnswerEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public TestimonialAnswerEntity toEntity(TestimonialAnswer model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<TestimonialAnswerEntity> toEntityList(List<TestimonialAnswer> models) {

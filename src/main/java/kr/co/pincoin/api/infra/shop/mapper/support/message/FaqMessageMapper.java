@@ -34,20 +34,20 @@ public class FaqMessageMapper {
         .build();
   }
 
-  public FaqMessageEntity toEntity(FaqMessage model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<FaqMessage> toModelList(List<FaqMessageEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public FaqMessageEntity toEntity(FaqMessage model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<FaqMessageEntity> toEntityList(List<FaqMessage> models) {

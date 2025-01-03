@@ -29,20 +29,20 @@ public class PurchaseOrderPaymentMapper {
         .build();
   }
 
-  public PurchaseOrderPaymentEntity toEntity(PurchaseOrderPayment model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<PurchaseOrderPayment> toModelList(List<PurchaseOrderPaymentEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public PurchaseOrderPaymentEntity toEntity(PurchaseOrderPayment model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<PurchaseOrderPaymentEntity> toEntityList(List<PurchaseOrderPayment> models) {

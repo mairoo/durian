@@ -35,20 +35,20 @@ public class OrderProductMapper {
         .build();
   }
 
-  public OrderProductEntity toEntity(OrderProduct model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<OrderProduct> toModelList(List<OrderProductEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public OrderProductEntity toEntity(OrderProduct model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<OrderProductEntity> toEntityList(List<OrderProduct> models) {

@@ -254,6 +254,8 @@ public class Product {
         .reviewCountPg(this.reviewCountPg)
 
         // 카테고리 (Optional 처리)
+        // - 실제 CategoryEntity를 데이터베이스에서 조회하는 것이 아니고
+        // - 단순히 JPA에게 "이 Product는 ID가 category.getId()인 Category와 연관관계가 있다"라는 정보만 알려주는 것
         .category(
             Optional.ofNullable(this.category)
                 .map(category -> CategoryEntity.builder().id(category.getId()).build())

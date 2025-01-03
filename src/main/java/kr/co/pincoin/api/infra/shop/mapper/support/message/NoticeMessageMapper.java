@@ -33,20 +33,20 @@ public class NoticeMessageMapper {
         .build();
   }
 
-  public NoticeMessageEntity toEntity(NoticeMessage model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<NoticeMessage> toModelList(List<NoticeMessageEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public NoticeMessageEntity toEntity(NoticeMessage model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<NoticeMessageEntity> toEntityList(List<NoticeMessage> models) {

@@ -91,9 +91,7 @@ public class OrderVoucherService {
       String message =
           "이미 발권 완료: "
               + issuedCounts.stream()
-                  .map(
-                      count ->
-                          String.format("%s: %d개", count.productCode(), count.issuedCount()))
+                  .map(count -> String.format("%s: %d개", count.productCode(), count.issuedCount()))
                   .collect(Collectors.joining(", "));
 
       throw new RuntimeException(message);

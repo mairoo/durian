@@ -27,20 +27,20 @@ public class CustomerQuestionAnswerMapper {
         .build();
   }
 
-  public CustomerQuestionAnswerEntity toEntity(CustomerQuestionAnswer model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<CustomerQuestionAnswer> toModelList(List<CustomerQuestionAnswerEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public CustomerQuestionAnswerEntity toEntity(CustomerQuestionAnswer model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<CustomerQuestionAnswerEntity> toEntityList(List<CustomerQuestionAnswer> models) {

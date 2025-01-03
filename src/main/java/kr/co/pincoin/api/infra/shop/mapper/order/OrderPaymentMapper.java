@@ -32,20 +32,20 @@ public class OrderPaymentMapper {
         .build();
   }
 
-  public OrderPaymentEntity toEntity(OrderPayment model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<OrderPayment> toModelList(List<OrderPaymentEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public OrderPaymentEntity toEntity(OrderPayment model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<OrderPaymentEntity> toEntityList(List<OrderPayment> models) {

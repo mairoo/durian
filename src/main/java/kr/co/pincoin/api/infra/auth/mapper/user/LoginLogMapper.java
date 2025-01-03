@@ -27,20 +27,20 @@ public class LoginLogMapper {
         .build();
   }
 
-  public LoginLogEntity toEntity(LoginLog model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<LoginLog> toModelList(List<LoginLogEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public LoginLogEntity toEntity(LoginLog model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<LoginLogEntity> toEntityList(List<LoginLog> models) {

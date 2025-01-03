@@ -32,20 +32,20 @@ public class TestimonialMapper {
         .build();
   }
 
-  public TestimonialEntity toEntity(Testimonial model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<Testimonial> toModelList(List<TestimonialEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public TestimonialEntity toEntity(Testimonial model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<TestimonialEntity> toEntityList(List<Testimonial> models) {

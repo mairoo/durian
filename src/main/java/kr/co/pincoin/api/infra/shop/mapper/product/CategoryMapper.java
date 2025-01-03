@@ -40,20 +40,20 @@ public class CategoryMapper {
         .build();
   }
 
-  public CategoryEntity toEntity(Category model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<Category> toModelList(List<CategoryEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public CategoryEntity toEntity(Category model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<CategoryEntity> toEntityList(List<Category> models) {

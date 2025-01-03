@@ -70,15 +70,7 @@ public class OrderProductVoucherMapper {
         .build();
   }
 
-  public OrderProductVoucherEntity toEntity(OrderProductVoucher model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
-  // 일반 저장용
+  // 일반 조회용
   public List<OrderProductVoucher> toModelList(List<OrderProductVoucherEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
@@ -105,6 +97,14 @@ public class OrderProductVoucherMapper {
                     originalOrderProducts.get(entity.getOrderProduct().getId()),
                     originalVouchers.get(entity.getVoucher().getId())))
         .collect(Collectors.toList());
+  }
+
+  public OrderProductVoucherEntity toEntity(OrderProductVoucher model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<OrderProductVoucherEntity> toEntityList(List<OrderProductVoucher> models) {

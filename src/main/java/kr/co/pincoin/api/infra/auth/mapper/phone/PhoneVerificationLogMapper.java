@@ -42,20 +42,20 @@ public class PhoneVerificationLogMapper {
         .build();
   }
 
-  public PhoneVerificationLogEntity toEntity(PhoneVerificationLog model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<PhoneVerificationLog> toModelList(List<PhoneVerificationLogEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public PhoneVerificationLogEntity toEntity(PhoneVerificationLog model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<PhoneVerificationLogEntity> toEntityList(List<PhoneVerificationLog> models) {

@@ -28,20 +28,20 @@ public class CartMapper {
         .build();
   }
 
-  public CartEntity toEntity(Cart model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<Cart> toModelList(List<CartEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public CartEntity toEntity(Cart model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<CartEntity> toEntityList(List<Cart> models) {

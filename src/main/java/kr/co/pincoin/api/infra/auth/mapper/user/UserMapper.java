@@ -29,21 +29,20 @@ public class UserMapper {
         .build();
   }
 
-  public UserEntity toEntity(User model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
-  // 컬렉션 지원
   public List<User> toModelList(List<UserEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public UserEntity toEntity(User model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<UserEntity> toEntityList(List<User> models) {

@@ -36,20 +36,20 @@ public class CustomerQuestionMapper {
         .build();
   }
 
-  public CustomerQuestionEntity toEntity(CustomerQuestion model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<CustomerQuestion> toModelList(List<CustomerQuestionEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public CustomerQuestionEntity toEntity(CustomerQuestion model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<CustomerQuestionEntity> toEntityList(List<CustomerQuestion> models) {

@@ -25,20 +25,20 @@ public class SmsMapper {
         .build();
   }
 
-  public SmsEntity toEntity(Sms model) {
-    if (model == null) {
-      return null;
-    }
-
-    return model.toEntity();
-  }
-
   public List<Sms> toModelList(List<SmsEntity> entities) {
     if (entities == null) {
       return Collections.emptyList();
     }
 
     return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
+  public SmsEntity toEntity(Sms model) {
+    if (model == null) {
+      return null;
+    }
+
+    return model.toEntity();
   }
 
   public List<SmsEntity> toEntityList(List<Sms> models) {
