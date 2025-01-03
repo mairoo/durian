@@ -2,7 +2,6 @@ package kr.co.pincoin.api.domain.shop.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,11 +70,12 @@ public class OrderVoucherService {
     // select shop_orderproductvoucher x 1: 발권 여부 검증
     // select shop_voucher x 1: 재고 수량 검증
 
-    // 각 주문 상품별 발권 처리 (3개 상품)
-    // select shop_voucher x 1: 발권 가능한 바우처 조회
-    // update shop_voucher x 1: 바우처 상태 SOLD로 변경
-    // insert shop_orderproductvoucher x 1: 주문-바우처 매핑 저장
-    // update shop_product x 1: 재고 수량 차감
+    // 각 주문 상품별 발권 처리 (n개 상품)
+    // - select shop_voucher x 1: 발권 가능한 바우처 조회
+    // - update shop_voucher x 1: 바우처 상태 SOLD로 변경
+    // - update shop_product x 1: 재고 수량 차감
+
+    // batch insert shop_orderproductvoucher x 1: 모든 주문-바우처 매핑 일괄 저장
 
     // select shop_order x 1: 주문 정보 조회
     // select auth_user x 1: 주문자 정보 조회
@@ -160,31 +160,24 @@ public class OrderVoucherService {
       inventoryPersistenceService.updateStatusToSold(voucherIds);
 
       // 3. 주문 상품과 바우처를 연결하는 OrderProductVoucher 엔티티 생성 및 저장
-      // 벌크 저장을 위한 OrderProduct Map 생성 (키: ID)
-      Map<Long, OrderProduct> orderProductMap =
-          Collections.singletonMap(orderProduct.getId(), orderProduct);
-
-      // 벌크 저장을 위한 Voucher Map 생성 (키: ID)
-      Map<Long, Voucher> voucherMap =
-          availableVouchers.stream().collect(Collectors.toMap(Voucher::getId, voucher -> voucher));
-
       // OrderProductVoucher 엔티티 생성
       // - orderProduct, voucher 연결
       // - 바우처 코드와 비고 복사
       // - revoked 필드 초기값 = false
       List<OrderProductVoucher> orderProductVouchers =
           availableVouchers.stream()
-              .map(voucher ->
-                  OrderProductVoucher.builder()
-                      .orderProduct(orderProduct)
-                      .voucher(voucher)
-                      .code(voucher.getCode())
-                      .remarks(voucher.getRemarks())
-                      .revoked(false)
-                      .created(LocalDateTime.now())
-                      .modified(LocalDateTime.now())
-                      .isRemoved(false)
-                      .build())
+              .map(
+                  voucher ->
+                      OrderProductVoucher.builder()
+                          .orderProduct(orderProduct)
+                          .voucher(voucher)
+                          .code(voucher.getCode())
+                          .remarks(voucher.getRemarks())
+                          .revoked(false)
+                          .created(LocalDateTime.now())
+                          .modified(LocalDateTime.now())
+                          .isRemoved(false)
+                          .build())
               .toList();
 
       allVouchers.addAll(orderProductVouchers);
@@ -196,7 +189,7 @@ public class OrderVoucherService {
 
     orderProductVoucherPersistenceService.batchSave(allVouchers);
 
-    // 모든 발권 처리가 완료되면 주문 상태를 SHIPPED로 변경
+    // 모든 발권 처리가 완료되면 주문 상태를 "발송완료" 변경
     order.updateStatus(OrderStatus.SHIPPED);
     orderPersistenceService.save(order);
     return order;
