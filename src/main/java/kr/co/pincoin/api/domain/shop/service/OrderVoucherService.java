@@ -91,10 +91,10 @@ public class OrderVoucherService {
       String message =
           "이미 발권 완료: "
               + issuedCounts.stream()
-              .map(
-                  count ->
-                      String.format("%s: %d개", count.getProductCode(), count.getIssuedCount()))
-              .collect(Collectors.joining(", "));
+                  .map(
+                      count ->
+                          String.format("%s: %d개", count.getProductCode(), count.getIssuedCount()))
+                  .collect(Collectors.joining(", "));
 
       throw new RuntimeException(message);
     }
