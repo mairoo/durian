@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
+import kr.co.pincoin.api.domain.shop.model.product.Voucher;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherRepository;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
@@ -29,8 +30,12 @@ public class OrderProductVoucherPersistenceService {
   }
 
   @Transactional
-  public void saveAll(List<OrderProductVoucher> orderProductVouchers) {
-    orderProductVoucherRepository.saveAll(orderProductVouchers);
+  public void saveAll(
+      List<OrderProductVoucher> orderProductVouchers,
+      Map<Long, OrderProduct> originalOrderProducts,
+      Map<Long, Voucher> originalVouchers) {
+    orderProductVoucherRepository.saveAll(
+        orderProductVouchers, originalOrderProducts, originalVouchers);
   }
 
   public List<OrderProductVoucherCount> countIssuedVouchersByOrderProducts(

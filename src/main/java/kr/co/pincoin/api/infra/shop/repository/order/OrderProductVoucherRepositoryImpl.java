@@ -1,8 +1,10 @@
 package kr.co.pincoin.api.infra.shop.repository.order;
 
 import java.util.List;
+import java.util.Map;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
+import kr.co.pincoin.api.domain.shop.model.product.Voucher;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherRepository;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductVoucherEntity;
 import kr.co.pincoin.api.infra.shop.mapper.order.OrderProductVoucherMapper;
@@ -19,12 +21,13 @@ public class OrderProductVoucherRepositoryImpl implements OrderProductVoucherRep
   private final OrderProductVoucherMapper mapper;
 
   @Override
-  public List<OrderProductVoucher> saveAll(List<OrderProductVoucher> orderProductVouchers) {
-    List<OrderProductVoucherEntity> orderProductVoucherEntities =
-        mapper.toEntityList(orderProductVouchers);
-    List<OrderProductVoucherEntity> savedEntities =
-        jpaRepository.saveAll(orderProductVoucherEntities);
-    return mapper.toModelList(savedEntities);
+  public List<OrderProductVoucher> saveAll(
+      List<OrderProductVoucher> orderProductVouchers,
+      Map<Long, OrderProduct> originalOrderProducts,
+      Map<Long, Voucher> originalVouchers) {
+    List<OrderProductVoucherEntity> entities = mapper.toEntityList(orderProductVouchers);
+    List<OrderProductVoucherEntity> savedEntities = jpaRepository.saveAll(entities);
+    return mapper.toModelList(savedEntities, originalOrderProducts, originalVouchers);
   }
 
   /**
