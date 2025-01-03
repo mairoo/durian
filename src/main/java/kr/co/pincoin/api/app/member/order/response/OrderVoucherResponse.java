@@ -29,11 +29,11 @@ public class OrderVoucherResponse {
 
   public static OrderVoucherResponse from(OrderProductVoucherProjection projection) {
     return OrderVoucherResponse.builder()
-        .productName(projection.getProductName())
-        .productSubtitle(projection.getProductSubtitle())
-        .code(projection.getVoucherCode())
-        .remarks(projection.getRemarks())
-        .revoked(projection.getRevoked())
+        .productName(projection.productName())
+        .productSubtitle(projection.productSubtitle())
+        .code(projection.voucherCode())
+        .remarks(projection.remarks())
+        .revoked(projection.revoked())
         .build();
   }
 }

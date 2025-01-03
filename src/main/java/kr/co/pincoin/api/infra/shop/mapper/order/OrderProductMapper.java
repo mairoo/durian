@@ -65,17 +65,17 @@ public class OrderProductMapper {
     }
 
     return OrderProduct.builder()
-        .id(projection.getOrderProduct().getId())
-        .name(projection.getOrderProduct().getName())
-        .subtitle(projection.getOrderProduct().getSubtitle())
-        .code(projection.getOrderProduct().getCode())
-        .listPrice(projection.getOrderProduct().getListPrice())
-        .sellingPrice(projection.getOrderProduct().getSellingPrice())
-        .quantity(projection.getOrderProduct().getQuantity())
-        .order(Optional.ofNullable(projection.getOrder()).map(orderMapper::toModel).orElse(null))
-        .created(projection.getOrderProduct().getCreated())
-        .modified(projection.getOrderProduct().getModified())
-        .isRemoved(projection.getOrderProduct().isRemoved())
+        .id(projection.orderProduct().getId())
+        .name(projection.orderProduct().getName())
+        .subtitle(projection.orderProduct().getSubtitle())
+        .code(projection.orderProduct().getCode())
+        .listPrice(projection.orderProduct().getListPrice())
+        .sellingPrice(projection.orderProduct().getSellingPrice())
+        .quantity(projection.orderProduct().getQuantity())
+        .order(Optional.ofNullable(projection.order()).map(orderMapper::toModel).orElse(null))
+        .created(projection.orderProduct().getCreated())
+        .modified(projection.orderProduct().getModified())
+        .isRemoved(projection.orderProduct().isRemoved())
         .build();
   }
 

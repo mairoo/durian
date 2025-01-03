@@ -93,7 +93,7 @@ public class OrderVoucherService {
               + issuedCounts.stream()
                   .map(
                       count ->
-                          String.format("%s: %d개", count.getProductCode(), count.getIssuedCount()))
+                          String.format("%s: %d개", count.productCode(), count.issuedCount()))
                   .collect(Collectors.joining(", "));
 
       throw new RuntimeException(message);

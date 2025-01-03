@@ -48,7 +48,7 @@ public class OrderProductVoucherPersistenceService {
     return orderProducts.stream()
         .collect(
             Collectors.toMap(
-                projection -> projection.getOrderProduct().getId(),
-                OrderProductProjection::getOrderProduct));
+                projection -> projection.orderProduct().getId(),
+                OrderProductProjection::orderProduct));
   }
 }

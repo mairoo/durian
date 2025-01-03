@@ -82,13 +82,13 @@ public class OrderPaymentProcessingService {
 
     OrderProductProjection firstProjection = projections.getFirst();
 
-    Order order = orderMapper.toModel(firstProjection.getOrder());
+    Order order = orderMapper.toModel(firstProjection.order());
 
-    Profile profile = profileMapper.toModel(firstProjection.getProfile());
+    Profile profile = profileMapper.toModel(firstProjection.profile());
 
     List<OrderProduct> orderProducts =
         projections.stream()
-            .map(projection -> orderProductMapper.toModel(projection.getOrderProduct()))
+            .map(projection -> orderProductMapper.toModel(projection.orderProduct()))
             .collect(Collectors.toList());
 
     // 2. 새로운 OrderPayment 객체 생성 (불변 객체)
