@@ -75,7 +75,9 @@ public class OrderVoucherService {
         });
 
     // 이미 발송되었는지 확인
-    // 주문 상태는 입금완료, 입금인증완료 등 미발송 상태이지만 실제로는 발권 되고 주문 상태 업데이트가 안 된 경우 대비
+    // - 주문 상태는 입금완료, 입금인증완료 등 미발송 상태이지만
+    // - 실제로는 발권 되고 주문 상태 업데이트가 안 된 경우 대비
+    // - OrderProduct를 참조하는 OrderProductVoucher가 존재하고 revoked=false라면 발권이 완료된 상태
     List<OrderProductVoucherCount> issuedCounts =
         orderProductVoucherPersistenceService.countIssuedVouchersByOrderProducts(orderProducts);
 

@@ -1,8 +1,7 @@
 package kr.co.pincoin.api.infra.shop.repository.order;
 
-import static com.querydsl.core.types.Projections.constructor;
-
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,30 +19,31 @@ public class OrderProductVoucherQueryRepositoryImpl implements OrderProductVouch
   private final JPAQueryFactory queryFactory;
 
   public List<OrderProductVoucherProjection> findAllByOrderProductOrderId(Long orderId) {
-    QOrderProductVoucherEntity voucher = QOrderProductVoucherEntity.orderProductVoucherEntity;
-    QOrderProductEntity product = QOrderProductEntity.orderProductEntity;
+    QOrderProductVoucherEntity orderProductVoucher =
+        QOrderProductVoucherEntity.orderProductVoucherEntity;
+    QOrderProductEntity orderProduct = QOrderProductEntity.orderProductEntity;
 
     return queryFactory
         .select(
-            constructor(
+            Projections.constructor(
                 OrderProductVoucherProjection.class,
-                product.name,
-                product.subtitle,
-                voucher.code,
-                voucher.remarks,
-                voucher.revoked))
-        .from(voucher)
-        .join(voucher.orderProduct, product)
-        .where(product.order.id.eq(orderId))
+                orderProduct.name,
+                orderProduct.subtitle,
+                orderProductVoucher.code,
+                orderProductVoucher.remarks,
+                orderProductVoucher.revoked))
+        .from(orderProductVoucher)
+        .join(orderProductVoucher.orderProduct, orderProduct)
+        .where(eqOrderId(orderProduct, orderId))
         .fetch();
   }
 
   @Override
   public List<OrderProductVoucherCount> countIssuedVouchersByOrderProducts(
       List<OrderProduct> orderProducts) {
-    QOrderProductEntity orderProduct = QOrderProductEntity.orderProductEntity;
     QOrderProductVoucherEntity orderProductVoucher =
         QOrderProductVoucherEntity.orderProductVoucherEntity;
+    QOrderProductEntity orderProduct = QOrderProductEntity.orderProductEntity;
 
     List<Long> orderProductIds =
         orderProducts.stream().map(OrderProduct::getId).collect(Collectors.toList());
@@ -57,8 +57,21 @@ public class OrderProductVoucherQueryRepositoryImpl implements OrderProductVouch
         .from(orderProductVoucher)
         .join(orderProduct)
         .on(orderProductVoucher.orderProduct.id.eq(orderProduct.id))
-        .where(orderProduct.id.in(orderProductIds), orderProductVoucher.revoked.eq(false))
+        .where(inOrderProductIds(orderProduct, orderProductIds), isNotRevoked(orderProductVoucher))
         .groupBy(orderProduct.code)
         .fetch();
+  }
+
+  private BooleanExpression eqOrderId(QOrderProductEntity product, Long orderId) {
+    return product.order.id.eq(orderId);
+  }
+
+  private BooleanExpression inOrderProductIds(
+      QOrderProductEntity orderProduct, List<Long> orderProductIds) {
+    return orderProduct.id.in(orderProductIds);
+  }
+
+  private BooleanExpression isNotRevoked(QOrderProductVoucherEntity orderProductVoucher) {
+    return orderProductVoucher.revoked.eq(false);
   }
 }
