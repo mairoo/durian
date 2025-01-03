@@ -2,6 +2,7 @@ package kr.co.pincoin.api.infra.shop.mapper.order;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.order.Cart;
 import kr.co.pincoin.api.infra.auth.mapper.user.UserMapper;
@@ -22,7 +23,7 @@ public class CartMapper {
 
     return Cart.builder()
         .id(entity.getId())
-        .user(userMapper.toModel(entity.getUser()))
+        .user(Optional.ofNullable(entity.getUser()).map(userMapper::toModel).orElse(null))
         .cartData(entity.getCartData())
         .version(entity.getVersion())
         .build();
