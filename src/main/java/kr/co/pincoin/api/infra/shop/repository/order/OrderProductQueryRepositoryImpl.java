@@ -130,7 +130,9 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
   }
 
   private BooleanExpression orderNoEq(String orderNo) {
-    return orderNo != null ? QOrderProductEntity.orderProductEntity.order.orderNo.eq(orderNo) : null;
+    return orderNo != null
+        ? QOrderProductEntity.orderProductEntity.order.orderNo.eq(orderNo)
+        : null;
   }
 
   private BooleanExpression userIdEq(Integer userId) {

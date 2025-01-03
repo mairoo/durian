@@ -71,10 +71,10 @@ public class OrderVoucherService {
     // select shop_voucher x 1: 재고 수량 검증
 
     // 각 주문 상품별 발권 처리 (3개 상품)
-        // select shop_voucher x 1: 발권 가능한 바우처 조회
-        // update shop_voucher x 1: 바우처 상태 SOLD로 변경
-        // insert shop_orderproductvoucher x 1: 주문-바우처 매핑 저장
-        // update shop_product x 1: 재고 수량 차감
+    // select shop_voucher x 1: 발권 가능한 바우처 조회
+    // update shop_voucher x 1: 바우처 상태 SOLD로 변경
+    // insert shop_orderproductvoucher x 1: 주문-바우처 매핑 저장
+    // update shop_product x 1: 재고 수량 차감
 
     // select shop_order x 1: 주문 정보 조회
     // select auth_user x 1: 주문자 정보 조회
@@ -147,7 +147,7 @@ public class OrderVoucherService {
       // - PURCHASED 상태인 바우처 중에서
       // - 주문 수량만큼만 조회
       List<Voucher> availableVouchers =
-          inventoryPersistenceService.findAvailableVouchersByProductCode(
+          inventoryPersistenceService.findAvailableVouchers(
               orderProduct.getCode(), orderProduct.getQuantity());
 
       // 2. 조회된 바우처들의 상태를 SOLD로 변경

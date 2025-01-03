@@ -132,7 +132,7 @@ public class InventoryPersistenceService {
     productRepository.decreaseStockQuantity(productCode, quantity);
   }
 
-  public List<Voucher> findAvailableVouchersByProductCode(String productCode, int quantity) {
+  public List<Voucher> findAvailableVouchers(String productCode, int quantity) {
     return voucherRepository.findAllVouchersByProductCode(
         productCode, VoucherStatus.PURCHASED, PageRequest.of(0, quantity));
   }
