@@ -3,12 +3,14 @@ package kr.co.pincoin.api.infra.shop.repository.order;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
 import kr.co.pincoin.api.domain.shop.repository.order.OrderProductVoucherRepository;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductVoucherEntity;
 import kr.co.pincoin.api.infra.shop.mapper.order.OrderProductMapper;
 import kr.co.pincoin.api.infra.shop.mapper.order.OrderProductVoucherMapper;
+import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherCount;
 import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherProjection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -30,6 +32,12 @@ public class OrderProductVoucherRepositoryImpl implements OrderProductVoucherRep
   @Override
   public List<OrderProductVoucherProjection> findAllByOrderProductOrderId(Long orderId) {
     return queryRepository.findAllByOrderProductOrderId(orderId);
+  }
+
+  @Override
+  public List<OrderProductVoucherCount> countIssuedVouchersByOrderProducts(
+      List<OrderProduct> orderProducts) {
+    return queryRepository.countIssuedVouchersByOrderProducts(orderProducts);
   }
 
   @Override

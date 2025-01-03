@@ -1,9 +1,7 @@
 package kr.co.pincoin.api.infra.shop.service;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.Product;
 import kr.co.pincoin.api.domain.shop.model.product.Voucher;
@@ -11,9 +9,9 @@ import kr.co.pincoin.api.domain.shop.model.product.enums.ProductStatus;
 import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
+import kr.co.pincoin.api.infra.shop.repository.product.projection.ProductVoucherCount;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -89,34 +87,9 @@ public class InventoryPersistenceService {
     return voucherRepository.findAllByIdIn(ids);
   }
 
-  /**
-   * 상품 코드 목록에 해당하는 사용 가능한 상품권을 조회합니다.
-   *
-   * @param productCodes 상품 코드 목록
-   * @param quantityByCode 상품 코드별 필요한 상품권 수량
-   * @return 상품 코드별 사용 가능한 상품권 목록
-   */
-  public Map<String, List<Voucher>> findAvailableVouchersByProductCodes(
-      Collection<String> productCodes, Map<String, Integer> quantityByCode) {
-
-    Map<String, List<Voucher>> result = new HashMap<>();
-
-    // - 단일 쿼리로 모든 상품권 가져오기
-    // - 상품별로 별도 쿼리 실행하고 필요한 수량만 가져오기 (현재)
-    //
-    // 대부분의 구매자는 상품권종을 5가지 이하로 구매하므로 별도 쿼리 실행 방식 도입
-    for (String productCode : productCodes) {
-      int quantity = quantityByCode.get(productCode);
-      PageRequest pageRequest = PageRequest.of(0, quantity);
-
-      List<Voucher> vouchers =
-          voucherRepository.findAllByProductCodeAndStatus(
-              productCode, VoucherStatus.PURCHASED, pageRequest);
-
-      result.put(productCode, vouchers);
-    }
-
-    return result;
+  public List<ProductVoucherCount> countVouchersByProductCodesAndStatus(
+      List<String> productCodes, VoucherStatus status) {
+    return voucherRepository.countByProductCodesAndStatus(productCodes, status);
   }
 
   /**

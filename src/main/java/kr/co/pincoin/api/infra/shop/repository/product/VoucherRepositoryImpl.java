@@ -9,10 +9,9 @@ import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
 import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
 import kr.co.pincoin.api.global.exception.BusinessException;
 import kr.co.pincoin.api.global.exception.ErrorCode;
-import kr.co.pincoin.api.infra.shop.entity.product.VoucherEntity;
 import kr.co.pincoin.api.infra.shop.mapper.product.VoucherMapper;
+import kr.co.pincoin.api.infra.shop.repository.product.projection.ProductVoucherCount;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -94,20 +93,17 @@ public class VoucherRepositoryImpl implements VoucherRepository {
         .collect(Collectors.toList());
   }
 
-  /**
-   * 여러 상품의 바우처들을 상태별로 조회합니다
-   *
-   * @param productCode 상품 코드 목록
-   * @param status 바우처 상태
-   * @return 조회된 바우처 목록
-   */
   @Override
-  public List<Voucher> findAllByProductCodeAndStatus(
-      String productCode, VoucherStatus status, Pageable pageable) {
-    List<VoucherEntity> savedEntities =
-        jpaRepository.findAllByProductCodeAndStatus(productCode, status, pageable);
+  public List<Voucher> findAllByProductCodesAndVoucherStatus(
+      List<String> productCodes, VoucherStatus status) {
+    return mapper.toModelList(
+        queryRepository.findAllByProductCodesAndVoucherStatus(productCodes, status));
+  }
 
-    return mapper.toModelList(savedEntities);
+  @Override
+  public List<ProductVoucherCount> countByProductCodesAndStatus(
+      List<String> productCodes, VoucherStatus status) {
+    return queryRepository.countByProductCodesAndStatus(productCodes, status);
   }
 
   /**

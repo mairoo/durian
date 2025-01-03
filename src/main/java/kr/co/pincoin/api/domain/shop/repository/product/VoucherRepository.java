@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.Voucher;
 import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
-import org.springframework.data.domain.Pageable;
+import kr.co.pincoin.api.infra.shop.repository.product.projection.ProductVoucherCount;
 
 public interface VoucherRepository {
 
@@ -21,8 +21,11 @@ public interface VoucherRepository {
 
   List<Voucher> findAllByCodeIn(Collection<String> codes);
 
-  List<Voucher> findAllByProductCodeAndStatus(
-      String productCode, VoucherStatus status, Pageable pageable);
+  List<Voucher> findAllByProductCodesAndVoucherStatus(
+      List<String> productCodes, VoucherStatus status);
+
+  List<ProductVoucherCount> countByProductCodesAndStatus(
+      List<String> productCodes, VoucherStatus status);
 
   void delete(Voucher voucher);
 

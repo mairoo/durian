@@ -1,16 +1,15 @@
 package kr.co.pincoin.api.domain.shop.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import kr.co.pincoin.api.domain.shop.model.order.Order;
 import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
-import kr.co.pincoin.api.domain.shop.model.order.OrderProductVoucher;
-import kr.co.pincoin.api.domain.shop.model.order.enums.OrderStatus;
-import kr.co.pincoin.api.domain.shop.model.product.Product;
-import kr.co.pincoin.api.domain.shop.model.product.Voucher;
+import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
+import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherCount;
+import kr.co.pincoin.api.infra.shop.repository.product.projection.ProductVoucherCount;
 import kr.co.pincoin.api.infra.shop.service.CatalogPersistenceService;
 import kr.co.pincoin.api.infra.shop.service.InventoryPersistenceService;
 import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
@@ -63,169 +62,61 @@ public class OrderVoucherService {
    */
   @Transactional(propagation = Propagation.REQUIRED, timeout = 30)
   public Order issueVouchers(Order order, List<OrderProduct> orderProducts) {
-    // 상품 코드와 필요 수량 맵 생성
-    Map<String, Integer> quantityByCode =
-        orderProducts.stream()
-            .collect(Collectors.toMap(OrderProduct::getCode, OrderProduct::getQuantity));
+    // 상품 코드와 주문 수량 맵 생성
+    Map<String, Integer> quantityByCode = new HashMap<>();
 
-    // 모든 상품의 상품권을 한 번에 조회
-    Map<String, List<Voucher>> vouchersByProduct =
-        inventoryPersistenceService.findAvailableVouchersByProductCodes(
-            quantityByCode.keySet(), quantityByCode);
+    // 상품 코드 목록 생성
+    List<String> productCodes = new ArrayList<>();
 
-    List<OrderProductVoucher> allVouchers = new ArrayList<>();
-    List<Voucher> vouchersToUpdate = new ArrayList<>();
-    List<Product> productsToUpdate = new ArrayList<>();
+    orderProducts.forEach(
+        product -> {
+          quantityByCode.put(product.getCode(), product.getQuantity());
+          productCodes.add(product.getCode());
+        });
 
-    // 각 주문 상품에 대한 처리
-    for (OrderProduct orderProduct : orderProducts) {
-      List<Voucher> availableVouchers = vouchersByProduct.get(orderProduct.getCode());
-      if (availableVouchers == null || availableVouchers.size() < orderProduct.getQuantity()) {
-        throw new IllegalStateException(
-            String.format(
-                "상품 '%s'의 사용 가능한 상품권이 부족합니다. 필요: %d, 가용: %d",
-                orderProduct.getName(),
-                orderProduct.getQuantity(),
-                availableVouchers == null ? 0 : availableVouchers.size()));
-      }
+    // 이미 발송되었는지 확인
+    // 주문 상태는 입금완료, 입금인증완료 등 미발송 상태이지만 실제로는 발권 되고 주문 상태 업데이트가 안 된 경우 대비
+    List<OrderProductVoucherCount> issuedCounts =
+        orderProductVoucherPersistenceService.countIssuedVouchersByOrderProducts(orderProducts);
 
-      Product product = availableVouchers.getFirst().getProduct();
-      validateVouchersAvailability(orderProduct, availableVouchers, product);
+    if (!issuedCounts.isEmpty()) {
+      String message =
+          "이미 발권 완료: "
+              + issuedCounts.stream()
+                  .map(
+                      count ->
+                          String.format("%s: %d개", count.getProductCode(), count.getIssuedCount()))
+                  .collect(Collectors.joining(", "));
 
-      processVoucherIssue(
-          orderProduct,
-          product,
-          allVouchers,
-          vouchersToUpdate,
-          productsToUpdate,
-          vouchersByProduct);
+      throw new RuntimeException(message);
     }
 
-    orderProductVoucherPersistenceService.saveOrderProductVouchersBatch(allVouchers);
-    inventoryPersistenceService.updateVouchersBatch(vouchersToUpdate);
-    catalogPersistenceService.updateProductsBatch(productsToUpdate);
+    // 재고수량 검증
+    List<ProductVoucherCount> productVoucherCounts =
+        inventoryPersistenceService.countVouchersByProductCodesAndStatus(
+            productCodes, VoucherStatus.PURCHASED);
 
-    order.updateStatus(OrderStatus.SHIPPED);
-    orderPersistenceService.save(order);
+    productVoucherCounts.forEach(
+        (productCodeCount) -> {
+          log.warn(
+              "코드: {}, 남은수량: {}",
+              productCodeCount.getProductCode(),
+              productCodeCount.getAvailableCount());
 
-    return order;
+          Integer orderQuantity = quantityByCode.get(productCodeCount.getProductCode());
+          if (orderQuantity > productCodeCount.getAvailableCount()) {
+            throw new RuntimeException(
+                String.format(
+                    "%s 재고 부족: %d - %d = %d",
+                    productCodeCount.getProductCode(),
+                    productCodeCount.getAvailableCount(),
+                    orderQuantity,
+                    productCodeCount.getAvailableCount() - orderQuantity));
+          }
+        });
+
+    // 실제 발권 처리!!!
+
+    throw new RuntimeException("그냥 종료하자.");
   }
-
-  /**
-   * 주문 상품별 상품권 발행을 처리한다.
-   *
-   * @param orderProduct 상품권을 발행할 주문 상품
-   * @param product 주문 상품에 해당하는 상품 정보
-   * @param allVouchers 발행된 모든 상품권을 담을 리스트
-   * @param vouchersToUpdate 업데이트할 상품권 리스트
-   * @param productsToUpdate 업데이트할 상품 리스트
-   * @throws EntityNotFoundException 상품을 찾을 수 없는 경우
-   * @throws IllegalStateException 상품권 발행이 불가능한 경우
-   */
-  private void processVoucherIssue(
-      OrderProduct orderProduct,
-      Product product,
-      List<OrderProductVoucher> allVouchers,
-      List<Voucher> vouchersToUpdate,
-      List<Product> productsToUpdate,
-      Map<String, List<Voucher>> vouchersByProduct) {
-
-    if (product == null) {
-      throw new EntityNotFoundException("상품을 찾을 수 없습니다: " + orderProduct.getCode());
-    }
-
-    // 이미 조회된 상품권 목록 사용
-    List<Voucher> availableVouchers = vouchersByProduct.get(orderProduct.getCode());
-
-    // 각 상품권에 대한 처리
-    for (Voucher voucher : availableVouchers) {
-      voucher.markAsSold();
-      vouchersToUpdate.add(voucher);
-
-      allVouchers.add(
-          OrderProductVoucher.builder()
-              .orderProduct(orderProduct)
-              .voucher(voucher)
-              .code(voucher.getCode())
-              .remarks(voucher.getRemarks())
-              .revoked(false)
-              .build());
-    }
-
-    product.updateStockQuantity(product.getStockQuantity() - orderProduct.getQuantity());
-    productsToUpdate.add(product);
-  }
-
-  /**
-   * 상품권 발행 가능 여부를 검증한다.
-   *
-   * @param orderProduct 검증할 주문 상품
-   * @param vouchers 발행 가능한 상품권 목록
-   * @param product 상품 정보
-   * @throws IllegalStateException 상품권 발행이 불가능한 경우
-   */
-  private void validateVouchersAvailability(
-      OrderProduct orderProduct, List<Voucher> vouchers, Product product) {
-
-    // 필요한 수량만큼의 상품권이 있는지 검증
-    if (vouchers.size() < orderProduct.getQuantity()) {
-      throw new IllegalStateException(
-          String.format(
-              "상품 '%s'의 사용 가능한 상품권이 부족합니다. 필요: %d, 가용: %d",
-              orderProduct.getName(), orderProduct.getQuantity(), vouchers.size()));
-    }
-
-    // 상품 재고와 상품권 수량이 일치하는지 검증
-    if (product.getStockQuantity() < vouchers.size()) {
-      throw new IllegalStateException(
-          String.format(
-              "상품 '%s'의 재고와 상품권 수량이 불일치합니다. 재고: %d, 상품권: %d",
-              product.getName(), product.getStockQuantity(), vouchers.size()));
-    }
-  }
-
-  /**
-   * 주문의 상품권 발행 상태를 조회한다.
-   *
-   * @param orderId 조회할 주문 ID
-   * @return 상품권 발행 여부
-   */
-  public boolean hasIssuedVouchers(Long orderId) {
-    return !orderProductVoucherPersistenceService.findOrderProductVouchers(orderId).isEmpty();
-  }
-
-  /** 발행된 상품권을 취소한다. */
-  //  @Transactional
-  //  public void revokeVouchers(Long orderId) {
-  //    List<OrderProductVoucher> vouchers = persistenceService.findOrderProductVouchers(orderId);
-  //
-  //    vouchers.forEach(
-  //        voucher -> {
-  //          voucher.revoke();
-  //
-  //          Voucher originalVoucher =
-  //              persistenceService
-  //                  .findVoucherByCode(voucher.getCode())
-  //                  .orElseThrow(
-  //                      () -> new EntityNotFoundException("상품권을 찾을 수 없습니다: " +
-  // voucher.getCode()));
-  //
-  //          originalVoucher.markAsPurchased();
-  //          persistenceService.updateVoucher(originalVoucher);
-  //        });
-  //
-  //    persistenceService.saveOrderProductVouchers(vouchers);
-  //  }
-
-  /** 주문의 상품권이 모두 취소되었는지 확인한다. */
-  //  public boolean allVouchersRevoked(Long orderId) {
-  //    List<OrderProductVoucher> vouchers = persistenceService.findOrderProductVouchers(orderId);
-  //    return !vouchers.isEmpty() && vouchers.stream().allMatch(OrderProductVoucher::getRevoked);
-  //  }
-
-  /** 특정 상품권 코드가 주문에 속해있는지 확인한다. */
-  //  public boolean isVoucherBelongToOrder(String voucherCode, Long orderId) {
-  //    return persistenceService.findOrderProductVouchers(orderId).stream()
-  //        .anyMatch(v -> v.getCode().equals(voucherCode));
-  //  }
 }
