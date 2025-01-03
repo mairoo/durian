@@ -332,7 +332,7 @@ public class OrderProcessingService {
                     item.getName(),
                     item.getSubtitle(),
                     item.getCode(),
-                    item.getSellingPrice(),
+                    item.getListPrice(),
                     item.getSellingPrice(),
                     item.getQuantity(),
                     order))
