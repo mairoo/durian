@@ -14,6 +14,7 @@ import kr.co.pincoin.api.domain.shop.model.product.Voucher;
 import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
 import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVoucherCount;
 import kr.co.pincoin.api.infra.shop.repository.product.projection.ProductVoucherCount;
+import kr.co.pincoin.api.infra.shop.repository.product.projection.VoucherProjection;
 import kr.co.pincoin.api.infra.shop.service.CatalogPersistenceService;
 import kr.co.pincoin.api.infra.shop.service.InventoryPersistenceService;
 import kr.co.pincoin.api.infra.shop.service.OrderPersistenceService;
@@ -65,21 +66,25 @@ public class OrderVoucherService {
    */
   @Transactional(propagation = Propagation.REQUIRED, timeout = 30)
   public Order issueVouchers(Order order, List<OrderProduct> orderProducts) {
+    // 사용자 인증
     // select auth_user x 1: 로그인 사용자 조회
+
+    // 주문 정보 조회 및 검증
     // select shop_orderproduct x 1: 주문 상품 목록 조회
     // select shop_orderproductvoucher x 1: 발권 여부 검증
     // select shop_voucher x 1: 재고 수량 검증
 
     // 각 주문 상품별 발권 처리 (n개 상품)
     // - select shop_voucher x 1: 발권 가능한 바우처 조회
-    // - update shop_voucher x 1: 바우처 상태 SOLD로 변경
+    // - update shop_voucher x 1: 바우처 상태 "판매"로 변경
     // - update shop_product x 1: 재고 수량 차감
 
     // batch insert shop_orderproductvoucher x 1: 모든 주문-바우처 매핑 일괄 저장
 
+    // 주문 상태 업데이트
     // select shop_order x 1: 주문 정보 조회
     // select auth_user x 1: 주문자 정보 조회
-    // update shop_order x 1: 주문 상태 SHIPPED로 변경
+    // update shop_order x 1: 주문 상태 "발송완료"로 변경
 
     // 상품별 주문 수량을 빠르게 조회하기 위한 Map 생성
     // key: 상품 코드, value: 주문 수량
@@ -149,13 +154,13 @@ public class OrderVoucherService {
       // 1. 발권 가능한 바우처 조회
       // - PURCHASED 상태인 바우처 중에서
       // - 주문 수량만큼만 조회
-      List<Voucher> availableVouchers =
+      List<VoucherProjection> availableVouchers =
           inventoryPersistenceService.findAvailableVouchers(
               orderProduct.getCode(), orderProduct.getQuantity());
 
-      // 2. 조회된 바우처들의 상태를 SOLD로 변경
+      // 2. 조회된 바우처들의 상태를 "판매"로 변경
       List<Long> voucherIds =
-          availableVouchers.stream().map(Voucher::getId).collect(Collectors.toList());
+          availableVouchers.stream().map(VoucherProjection::id).collect(Collectors.toList());
 
       inventoryPersistenceService.updateStatusToSold(voucherIds);
 
@@ -169,10 +174,10 @@ public class OrderVoucherService {
               .map(
                   voucher ->
                       OrderProductVoucher.builder()
-                          .orderProduct(orderProduct)
-                          .voucher(voucher)
-                          .code(voucher.getCode())
-                          .remarks(voucher.getRemarks())
+                          .orderProduct(OrderProduct.builder().id(orderProduct.getId()).build())
+                          .voucher(Voucher.builder().id(voucher.id()).build())
+                          .code(voucher.code())
+                          .remarks(voucher.remarks())
                           .revoked(false)
                           .created(LocalDateTime.now())
                           .modified(LocalDateTime.now())

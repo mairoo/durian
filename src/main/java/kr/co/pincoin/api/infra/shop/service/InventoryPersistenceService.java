@@ -10,6 +10,7 @@ import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
 import kr.co.pincoin.api.domain.shop.repository.product.ProductRepository;
 import kr.co.pincoin.api.domain.shop.repository.product.VoucherRepository;
 import kr.co.pincoin.api.infra.shop.repository.product.projection.ProductVoucherCount;
+import kr.co.pincoin.api.infra.shop.repository.product.projection.VoucherProjection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -103,36 +104,12 @@ public class InventoryPersistenceService {
     return !voucherRepository.findAllByCodeIn(codes).isEmpty();
   }
 
-  /**
-   * 상품권 정보를 업데이트합니다.
-   *
-   * @param voucher 업데이트할 상품권
-   */
-  @Transactional
-  public void updateVoucher(Voucher voucher) {
-    voucherRepository.save(voucher);
-  }
-
-  /**
-   * 상품권 목록을 배치 크기(100개)로 나누어 일괄 업데이트합니다.
-   *
-   * @param vouchers 업데이트할 상품권 목록
-   */
-  @Transactional
-  public void updateVouchersBatch(List<Voucher> vouchers) {
-    int batchSize = 100;
-    for (int i = 0; i < vouchers.size(); i += batchSize) {
-      List<Voucher> batch = vouchers.subList(i, Math.min(i + batchSize, vouchers.size()));
-      voucherRepository.saveAll(batch);
-    }
-  }
-
   @Transactional
   public void decreaseStockQuantity(String productCode, int quantity) {
     productRepository.decreaseStockQuantity(productCode, quantity);
   }
 
-  public List<Voucher> findAvailableVouchers(String productCode, int quantity) {
+  public List<VoucherProjection> findAvailableVouchers(String productCode, int quantity) {
     return voucherRepository.findAllVouchersByProductCode(
         productCode, VoucherStatus.PURCHASED, PageRequest.of(0, quantity));
   }

@@ -56,8 +56,8 @@ public class OrderProduct {
     this.order = order;
     this.isRemoved = isRemoved;
 
-    validatePrices();
-    validateQuantity();
+    //    validatePrices();
+    //    validateQuantity();
   }
 
   public static OrderProduct of(

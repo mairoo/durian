@@ -42,6 +42,15 @@ public class OrderProductVoucherMapper {
         .build();
   }
 
+  // 일반 조회용
+  public List<OrderProductVoucher> toModelList(List<OrderProductVoucherEntity> entities) {
+    if (entities == null) {
+      return Collections.emptyList();
+    }
+
+    return entities.stream().map(this::toModel).collect(Collectors.toList());
+  }
+
   // 벌크 저장용
   public OrderProductVoucher toModel(
       OrderProductVoucherEntity entity,
@@ -68,15 +77,6 @@ public class OrderProductVoucherMapper {
         .modified(entity.getModified())
         .isRemoved(entity.isRemoved())
         .build();
-  }
-
-  // 일반 조회용
-  public List<OrderProductVoucher> toModelList(List<OrderProductVoucherEntity> entities) {
-    if (entities == null) {
-      return Collections.emptyList();
-    }
-
-    return entities.stream().map(this::toModel).collect(Collectors.toList());
   }
 
   // 벌크 저장용

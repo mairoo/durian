@@ -47,7 +47,7 @@ public class Voucher {
     this.status = status;
     this.isRemoved = isRemoved;
 
-    validateCode();
+    //    validateCode();
   }
 
   // 팩토리 메소드

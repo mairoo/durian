@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 import kr.co.pincoin.api.domain.shop.model.product.enums.VoucherStatus;
 import kr.co.pincoin.api.infra.shop.entity.product.VoucherEntity;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,19 +19,6 @@ public interface VoucherJpaRepository extends JpaRepository<VoucherEntity, Long>
   List<VoucherEntity> findAllByIdIn(Collection<Long> ids);
 
   List<VoucherEntity> findAllByCodeIn(Collection<String> codes);
-
-  @Query(
-      "SELECT v FROM VoucherEntity v "
-          + "JOIN FETCH v.product p "
-          + "JOIN FETCH p.category c "
-          + "LEFT JOIN FETCH c.parent "
-          + "WHERE v.product.code = :productCode "
-          + "AND v.status = :status "
-          + "ORDER BY v.id")
-  List<VoucherEntity> findAllByProductCodeAndStatus(
-      @Param("productCode") String productCode,
-      @Param("status") VoucherStatus status,
-      Pageable pageable);
 
   @Modifying(clearAutomatically = true)
   @Query("UPDATE VoucherEntity v SET v.status = :status WHERE v.id IN :voucherIds")
