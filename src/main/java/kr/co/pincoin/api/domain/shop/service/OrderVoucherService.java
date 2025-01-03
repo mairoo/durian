@@ -65,6 +65,21 @@ public class OrderVoucherService {
    */
   @Transactional(propagation = Propagation.REQUIRED, timeout = 30)
   public Order issueVouchers(Order order, List<OrderProduct> orderProducts) {
+    // select auth_user x 1: 로그인 사용자 조회
+    // select shop_orderproduct x 1: 주문 상품 목록 조회
+    // select shop_orderproductvoucher x 1: 발권 여부 검증
+    // select shop_voucher x 1: 재고 수량 검증
+
+    // 각 주문 상품별 발권 처리 (3개 상품)
+        // select shop_voucher x 1: 발권 가능한 바우처 조회
+        // update shop_voucher x 1: 바우처 상태 SOLD로 변경
+        // insert shop_orderproductvoucher x 1: 주문-바우처 매핑 저장
+        // update shop_product x 1: 재고 수량 차감
+
+    // select shop_order x 1: 주문 정보 조회
+    // select auth_user x 1: 주문자 정보 조회
+    // update shop_order x 1: 주문 상태 SHIPPED로 변경
+
     // 상품별 주문 수량을 빠르게 조회하기 위한 Map 생성
     // key: 상품 코드, value: 주문 수량
     Map<String, Integer> quantityByCode = new HashMap<>();
