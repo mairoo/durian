@@ -9,7 +9,6 @@ import kr.co.pincoin.api.domain.shop.model.order.OrderProductDetached;
 import kr.co.pincoin.api.domain.shop.model.order.condition.OrderProductSearchCondition;
 import kr.co.pincoin.api.infra.auth.entity.profile.QProfileEntity;
 import kr.co.pincoin.api.infra.auth.entity.user.QUserEntity;
-import kr.co.pincoin.api.infra.shop.entity.order.OrderEntity;
 import kr.co.pincoin.api.infra.shop.entity.order.OrderProductEntity;
 import kr.co.pincoin.api.infra.shop.entity.order.QOrderEntity;
 import kr.co.pincoin.api.infra.shop.entity.order.QOrderProductEntity;
@@ -52,22 +51,6 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
         .fetch();
   }
 
-  private Expression<OrderProductDetached> getOrderProductDetachedProjection() {
-    return Projections.constructor(
-        OrderProductDetached.class,
-        QOrderProductEntity.orderProductEntity.id,
-        QOrderProductEntity.orderProductEntity.order.id,
-        QOrderProductEntity.orderProductEntity.name,
-        QOrderProductEntity.orderProductEntity.subtitle,
-        QOrderProductEntity.orderProductEntity.code,
-        QOrderProductEntity.orderProductEntity.listPrice,
-        QOrderProductEntity.orderProductEntity.sellingPrice,
-        QOrderProductEntity.orderProductEntity.quantity,
-        QOrderProductEntity.orderProductEntity.created,
-        QOrderProductEntity.orderProductEntity.modified,
-        QOrderProductEntity.orderProductEntity.isRemoved);
-  }
-
   @Override
   public List<OrderProductEntity> findAllWithOrderAndUser(String orderNo, Integer userId) {
     return queryFactory
@@ -75,16 +58,6 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
         .innerJoin(QOrderProductEntity.orderProductEntity.order, QOrderEntity.orderEntity)
         .fetchJoin()
         .where(orderNoEq(orderNo), userIdEq(userId))
-        .fetch();
-  }
-
-  @Override
-  public List<OrderProductEntity> findAllWithOrder(OrderEntity order) {
-    return queryFactory
-        .selectFrom(QOrderProductEntity.orderProductEntity)
-        .innerJoin(QOrderProductEntity.orderProductEntity.order, QOrderEntity.orderEntity)
-        .fetchJoin()
-        .where(QOrderEntity.orderEntity.eq(order))
         .fetch();
   }
 
@@ -123,6 +96,22 @@ public class OrderProductQueryRepositoryImpl implements OrderProductQueryReposit
         .fetchJoin()
         .where(QOrderEntity.orderEntity.id.eq(orderId))
         .fetch();
+  }
+
+  private Expression<OrderProductDetached> getOrderProductDetachedProjection() {
+    return Projections.constructor(
+        OrderProductDetached.class,
+        QOrderProductEntity.orderProductEntity.id,
+        QOrderProductEntity.orderProductEntity.order.id,
+        QOrderProductEntity.orderProductEntity.name,
+        QOrderProductEntity.orderProductEntity.subtitle,
+        QOrderProductEntity.orderProductEntity.code,
+        QOrderProductEntity.orderProductEntity.listPrice,
+        QOrderProductEntity.orderProductEntity.sellingPrice,
+        QOrderProductEntity.orderProductEntity.quantity,
+        QOrderProductEntity.orderProductEntity.created,
+        QOrderProductEntity.orderProductEntity.modified,
+        QOrderProductEntity.orderProductEntity.isRemoved);
   }
 
   private BooleanExpression orderIdEq(Long orderId) {

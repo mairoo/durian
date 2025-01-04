@@ -10,6 +10,7 @@ import kr.co.pincoin.api.domain.shop.model.order.OrderProduct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -17,6 +18,11 @@ import org.springframework.stereotype.Repository;
 public class OrderProductJdbcRepository {
   private final JdbcTemplate jdbcTemplate;
 
+  /**
+   * 주문 상품 목록을 데이터베이스에 일괄 삽입합니다. JDBC batch update를 사용하여 대량의 데이터를 효율적으로 처리합니다.
+   *
+   * @param orderProducts 삽입할 주문 상품 목록
+   */
   public void batchInsert(List<OrderProduct> orderProducts) {
     LocalDateTime now = LocalDateTime.now();
 
@@ -29,7 +35,7 @@ public class OrderProductJdbcRepository {
             """,
         new BatchPreparedStatementSetter() {
           @Override
-          public void setValues(PreparedStatement ps, int i) throws SQLException {
+          public void setValues(@NonNull PreparedStatement ps, int i) throws SQLException {
             OrderProduct orderProduct = orderProducts.get(i);
             ps.setString(1, orderProduct.getName());
             ps.setString(2, orderProduct.getSubtitle());
