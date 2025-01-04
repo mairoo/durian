@@ -23,13 +23,32 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class InventoryPersistenceService {
-
   private final VoucherRepository voucherRepository;
-
   private final ProductRepository productRepository;
 
   /**
-   * 상품권을 저장합니다.
+   * ID로 활성화된 상품을 조회합니다.
+   *
+   * @param id 상품 ID
+   * @return 활성화된 상품 정보
+   */
+  public Optional<Product> findProductById(Long id) {
+    return productRepository.findById(id, ProductStatus.ENABLED, null);
+  }
+
+  /**
+   * 상품의 재고 수량을 감소시킵니다.
+   *
+   * @param productCode 상품 코드
+   * @param quantity 감소시킬 수량
+   */
+  @Transactional(propagation = Propagation.REQUIRED)
+  public void decreaseStockQuantity(String productCode, int quantity) {
+    productRepository.decreaseStockQuantity(productCode, quantity);
+  }
+
+  /**
+   * 새로운 상품권을 저장합니다.
    *
    * @param voucher 저장할 상품권
    * @return 저장된 상품권
@@ -48,16 +67,6 @@ public class InventoryPersistenceService {
   @Transactional
   public List<Voucher> saveAllVouchers(List<Voucher> vouchers) {
     return voucherRepository.saveAll(vouchers).stream().toList();
-  }
-
-  /**
-   * ID로 활성화된 상품을 조회합니다.
-   *
-   * @param id 상품 ID
-   * @return 상품 정보
-   */
-  public Optional<Product> findProductById(Long id) {
-    return productRepository.findById(id, ProductStatus.ENABLED, null);
   }
 
   /**
@@ -90,6 +99,25 @@ public class InventoryPersistenceService {
     return voucherRepository.findAllByIdIn(ids);
   }
 
+  /**
+   * 구매 가능한 상품권 목록을 조회합니다.
+   *
+   * @param productCode 상품 코드
+   * @param quantity 조회할 수량
+   * @return 구매 가능한 상품권 목록
+   */
+  public List<VoucherProjection> findAvailableVouchers(String productCode, int quantity) {
+    return voucherRepository.findVouchersByProductStatus(
+        productCode, VoucherStatus.PURCHASED, PageRequest.of(0, quantity));
+  }
+
+  /**
+   * 상품 코드와 상태에 따른 상품권 수를 집계합니다.
+   *
+   * @param productCodes 상품 코드 목록
+   * @param status 상품권 상태
+   * @return 상품별 상품권 수 집계 결과
+   */
   public List<ProductVoucherCount> countVouchersByProductCodesAndStatus(
       List<String> productCodes, VoucherStatus status) {
     return voucherRepository.countByProductCodesAndStatus(productCodes, status);
@@ -105,16 +133,11 @@ public class InventoryPersistenceService {
     return !voucherRepository.findAllByCodeIn(codes).isEmpty();
   }
 
-  @Transactional(propagation = Propagation.REQUIRED)
-  public void decreaseStockQuantity(String productCode, int quantity) {
-    productRepository.decreaseStockQuantity(productCode, quantity);
-  }
-
-  public List<VoucherProjection> findAvailableVouchers(String productCode, int quantity) {
-    return voucherRepository.findVouchersByProductStatus(
-        productCode, VoucherStatus.PURCHASED, PageRequest.of(0, quantity));
-  }
-
+  /**
+   * 지정된 상품권들의 상태를 판매됨으로 업데이트합니다.
+   *
+   * @param voucherIds 상태를 변경할 상품권 ID 목록
+   */
   @Transactional
   public void updateStatusToSold(List<Long> voucherIds) {
     voucherRepository.updateStatus(voucherIds, VoucherStatus.SOLD);
