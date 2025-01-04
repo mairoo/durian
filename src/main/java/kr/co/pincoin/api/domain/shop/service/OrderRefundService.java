@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class OrderRefundService {
-
   private final OrderPersistenceService persistenceService;
 
   private static final Set<OrderStatus> NON_REFUNDABLE_STATUSES =
@@ -26,28 +25,35 @@ public class OrderRefundService {
           OrderStatus.REFUNDED1,
           OrderStatus.REFUNDED2);
 
-  /** 환불 요청을 생성한다. */
+  /**
+   * 주문에 대한 환불을 요청합니다.
+   *
+   * @param user 환불을 요청하는 사용자
+   * @param order 환불할 주문
+   * @param message 환불 요청 메시지
+   * @return 생성된 환불 주문
+   * @throws IllegalStateException 이미 환불 처리되었거나 삭제된 주문인 경우 발생
+   */
   @Transactional
   public Order requestRefund(User user, Order order, String message) {
     validateRefundRequest(order);
 
-    // 원본 주문 상태 업데이트
     order.updateStatus(OrderStatus.REFUND_REQUESTED);
     order.updateMessage(message);
 
-    // 환불 주문 생성
     Order refundOrder = createRefundOrder(order, user, message);
-
-    // 원본 주문과 환불 주문을 저장
     persistenceService.saveOrders(order, refundOrder);
-
-    // 발행된 바우처 취소 처리
-    // orderVoucherService.revokeVouchers(order.getId());
 
     return refundOrder;
   }
 
-  /** 환불을 완료 처리한다. */
+  /**
+   * 환불 처리를 완료합니다.
+   *
+   * @param refundOrder 환불 처리할 주문
+   * @return 완료된 환불 주문
+   * @throws IllegalStateException 환불 처리가 불가능한 상태인 경우 발생
+   */
   @Transactional
   public Order completeRefund(Order refundOrder) {
     validateRefundCompletion(refundOrder);
@@ -62,12 +68,43 @@ public class OrderRefundService {
     return refundOrder;
   }
 
-  /** 환불 가능 여부를 확인한다. */
+  /**
+   * 주문이 환불 가능한 상태인지 확인합니다.
+   *
+   * @param order 확인할 주문
+   * @return 환불 가능 여부
+   */
   public boolean isRefundable(Order order) {
     return !NON_REFUNDABLE_STATUSES.contains(order.getStatus())
         && !Boolean.TRUE.equals(order.getRemoved());
   }
 
+  /**
+   * 주문의 환불 처리가 완료되었는지 확인합니다.
+   *
+   * @param order 확인할 주문
+   * @return 환불 완료 여부
+   */
+  public boolean isRefundCompleted(Order order) {
+    return order.getStatus() == OrderStatus.REFUNDED1 || order.getStatus() == OrderStatus.REFUNDED2;
+  }
+
+  /**
+   * 부분 환불이 가능한지 확인합니다. (향후 구현 예정)
+   *
+   * @param order 확인할 주문
+   * @return 항상 false 반환 (현재 미지원)
+   */
+  public boolean isPartialRefundable(Order order) {
+    return false; // 현재는 부분 환불을 지원하지 않음
+  }
+
+  /**
+   * 환불 요청의 유효성을 검사합니다.
+   *
+   * @param order 검사할 주문
+   * @throws IllegalStateException 유효성 검사 실패 시 발생
+   */
   private void validateRefundRequest(Order order) {
     if (NON_REFUNDABLE_STATUSES.contains(order.getStatus())) {
       throw new IllegalStateException("이미 환불 처리된 주문입니다.");
@@ -78,6 +115,14 @@ public class OrderRefundService {
     }
   }
 
+  /**
+   * 환불 주문을 생성합니다.
+   *
+   * @param originalOrder 원본 주문
+   * @param user 환불 요청 사용자
+   * @param message 환불 메시지
+   * @return 생성된 환불 주문
+   */
   private Order createRefundOrder(Order originalOrder, User user, String message) {
     return Order.builder()
         .orderNo(generateOrderNumber())
@@ -100,6 +145,12 @@ public class OrderRefundService {
         .build();
   }
 
+  /**
+   * 환불 완료 처리의 유효성을 검사합니다.
+   *
+   * @param refundOrder 검사할 환불 주문
+   * @throws IllegalStateException 유효성 검사 실패 시 발생
+   */
   private void validateRefundCompletion(Order refundOrder) {
     if (refundOrder.getStatus() != OrderStatus.REFUND_PENDING) {
       throw new IllegalStateException("환불 처리 대기 상태의 주문이 아닙니다.");
@@ -115,18 +166,12 @@ public class OrderRefundService {
     }
   }
 
+  /**
+   * 새로운 주문 번호를 생성합니다.
+   *
+   * @return 생성된 주문 번호
+   */
   private String generateOrderNumber() {
     return UUID.randomUUID().toString().replace("-", "");
-  }
-
-  /** 환불 처리 상태를 확인한다. */
-  public boolean isRefundCompleted(Order order) {
-    return order.getStatus() == OrderStatus.REFUNDED1 || order.getStatus() == OrderStatus.REFUNDED2;
-  }
-
-  /** 부분 환불이 가능한지 확인한다. (향후 부분 환불 기능 구현시 사용) */
-  public boolean isPartialRefundable(Order order) {
-    // 현재는 부분 환불을 지원하지 않으므로 항상 false 반환
-    return false;
   }
 }

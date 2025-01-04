@@ -18,9 +18,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class InventoryService {
-
   private final InventoryPersistenceService inventoryPersistence;
 
+  /**
+   * 단일 상품권을 생성합니다.
+   *
+   * @param code 상품권 코드
+   * @param productId 연결될 상품 ID
+   * @param remarks 상품권 비고 (선택사항)
+   * @return 생성된 상품권 엔티티
+   * @throws BusinessException 상품을 찾을 수 없거나 중복된 상품권 코드가 존재하는 경우 발생
+   */
   @Transactional
   public Voucher createVoucher(String code, Long productId, String remarks) {
     Product product =
@@ -41,6 +49,14 @@ public class InventoryService {
     return inventoryPersistence.saveVoucher(voucher);
   }
 
+  /**
+   * 여러 상품권을 일괄 생성합니다.
+   *
+   * @param productId 연결될 상품 ID
+   * @param voucherData 생성할 상품권 데이터 목록 (코드와 비고 포함)
+   * @return 생성된 상품권 엔티티 목록
+   * @throws BusinessException 상품을 찾을 수 없거나 중복된 상품권 코드가 존재하는 경우 발생
+   */
   @Transactional
   public List<Voucher> createVouchersBulk(Long productId, List<VoucherCodeData> voucherData) {
     Product product =
@@ -70,6 +86,14 @@ public class InventoryService {
     return inventoryPersistence.saveAllVouchers(vouchers);
   }
 
+  /**
+   * 단일 상품권의 상태를 업데이트합니다.
+   *
+   * @param voucherId 상품권 ID
+   * @param status 변경할 상태 (PURCHASED, SOLD, REVOKED)
+   * @return 업데이트된 상품권 엔티티
+   * @throws BusinessException 상품권을 찾을 수 없거나 유효하지 않은 상태값인 경우 발생
+   */
   @Transactional
   public Voucher updateVoucherStatus(Long voucherId, VoucherStatus status) {
     Voucher voucher =
@@ -87,6 +111,14 @@ public class InventoryService {
     return inventoryPersistence.saveVoucher(voucher);
   }
 
+  /**
+   * 여러 상품권의 상태를 일괄 업데이트합니다.
+   *
+   * @param voucherIds 상품권 ID 목록
+   * @param status 변경할 상태 (PURCHASED, SOLD, REVOKED)
+   * @return 업데이트된 상품권 엔티티 목록
+   * @throws BusinessException 상품권을 찾을 수 없거나 유효하지 않은 상태값인 경우 발생
+   */
   @Transactional
   public List<Voucher> updateVouchersStatus(Collection<Long> voucherIds, VoucherStatus status) {
     List<Voucher> vouchers = inventoryPersistence.findAllVouchersByIds(voucherIds);

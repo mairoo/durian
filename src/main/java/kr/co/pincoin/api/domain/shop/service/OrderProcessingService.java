@@ -46,7 +46,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Slf4j
 public class OrderProcessingService {
-
   private final UserProfilePersistenceService userProfilePersistenceService;
 
   private final OrderPersistenceService orderPersistenceService;
@@ -59,28 +58,15 @@ public class OrderProcessingService {
 
   private final ApplicationEventPublisher eventPublisher;
 
-  // 주문 조회
-  public Page<Order> getOrders(OrderSearchCondition condition, Pageable pageable) {
-    return orderPersistenceService.searchOrders(condition, pageable);
-  }
-
-  public Order getOrder(Long orderId) {
-    return orderPersistenceService.findOrder(orderId);
-  }
-
-  public Order getUserOrder(Integer userId, String orderNo) {
-    return orderPersistenceService.findUserOrder(userId, orderNo);
-  }
-
-  public List<OrderProductDetached> getUserOrderProductsDetached(User user, String orderNo) {
-    return orderProductPersistenceService.findOrderProductsDetachedByUserIdAndOrderNo(
-        user.getId(), orderNo);
-  }
-
-  public User getUser(Integer userId) {
-    return userProfilePersistenceService.findUser(userId);
-  }
-
+  /**
+   * 장바구니에서 주문을 생성합니다.
+   *
+   * @param user 주문하는 사용자
+   * @param request 장바구니 주문 생성 요청 정보
+   * @param clientInfo 클라이언트 정보
+   * @return 생성된 주문
+   * @throws BusinessException 상품을 찾을 수 없거나, 재고가 부족하거나, 가격이 변경된 경우 발생
+   */
   @Transactional
   public Order createOrderFromCart(
       User user, CartOrderCreateRequest request, ClientUtils.ClientInfo clientInfo) {
@@ -122,6 +108,15 @@ public class OrderProcessingService {
     return savedOrder;
   }
 
+  /**
+   * 기존 주문을 기반으로 재주문을 생성합니다.
+   *
+   * @param userId 사용자 ID
+   * @param orderNo 원본 주문 번호
+   * @param clientInfo 클라이언트 정보
+   * @return 생성된 재주문
+   * @throws EntityNotFoundException 원본 주문을 찾을 수 없는 경우 발생
+   */
   @Transactional
   public Order createReorder(Integer userId, String orderNo, ClientUtils.ClientInfo clientInfo) {
     List<OrderProduct> originalOrderProducts =
@@ -172,7 +167,76 @@ public class OrderProcessingService {
     return savedReorder;
   }
 
-  // 주문 상태 관리
+  /**
+   * 조건에 따라 주문 목록을 페이징하여 조회합니다.
+   *
+   * @param condition 검색 조건
+   * @param pageable 페이징 정보
+   * @return 주문 목록 페이지
+   */
+  public Page<Order> getOrders(OrderSearchCondition condition, Pageable pageable) {
+    return orderPersistenceService.searchOrders(condition, pageable);
+  }
+
+  /**
+   * 주문 ID로 주문을 조회합니다.
+   *
+   * @param orderId 주문 ID
+   * @return 주문 정보
+   */
+  public Order getOrder(Long orderId) {
+    return orderPersistenceService.findOrder(orderId);
+  }
+
+  /**
+   * 사용자의 주문을 주문번호로 조회합니다.
+   *
+   * @param userId 사용자 ID
+   * @param orderNo 주문 번호
+   * @return 주문 정보
+   */
+  public Order getUserOrder(Integer userId, String orderNo) {
+    return orderPersistenceService.findUserOrder(userId, orderNo);
+  }
+
+  /**
+   * 사용자의 주문 상품 목록을 조회합니다.
+   *
+   * @param user 사용자
+   * @param orderNo 주문 번호
+   * @return 주문 상품 목록
+   */
+  public List<OrderProductDetached> getUserOrderProductsDetached(User user, String orderNo) {
+    return orderProductPersistenceService.findOrderProductsDetachedByUserIdAndOrderNo(
+        user.getId(), orderNo);
+  }
+
+  /**
+   * 주문의 상품별 바우처 목록을 조회합니다.
+   *
+   * @param orderId 주문 ID
+   * @return 주문 상품별 바우처 목록
+   */
+  public List<OrderProductVoucherProjection> findOrderProductVouchers(Long orderId) {
+    return orderProductVoucherPersistenceService.findOrderProductVouchers(orderId);
+  }
+
+  /**
+   * 사용자 정보를 조회합니다.
+   *
+   * @param userId 사용자 ID
+   * @return 사용자 정보
+   */
+  public User getUser(Integer userId) {
+    return userProfilePersistenceService.findUser(userId);
+  }
+
+  /**
+   * 주문을 검증 완료 상태로 변경합니다.
+   *
+   * @param order 대상 주문
+   * @throws IllegalStateException 주문 상태가 적절하지 않은 경우 발생
+   */
   @Transactional
   public void verifyOrder(Order order) {
     validateOrderStatus(
@@ -184,6 +248,12 @@ public class OrderProcessingService {
     orderPersistenceService.save(order);
   }
 
+  /**
+   * 주문을 검증 해제 상태로 변경합니다.
+   *
+   * @param order 대상 주문
+   * @throws IllegalStateException 주문 상태가 적절하지 않은 경우 발생
+   */
   @Transactional
   public void unverifyOrder(Order order) {
     validateOrderStatus(order, Set.of(OrderStatus.PAYMENT_VERIFIED), "검증 완료 상태의 주문만 변경할 수 있습니다.");
@@ -192,12 +262,24 @@ public class OrderProcessingService {
     orderPersistenceService.save(order);
   }
 
+  /**
+   * 주문 상태를 업데이트합니다.
+   *
+   * @param order 대상 주문
+   * @param newStatus 새로운 상태
+   */
   @Transactional
   public void updateOrderStatus(Order order, OrderStatus newStatus) {
     order.updateStatus(newStatus);
     orderPersistenceService.save(order);
   }
 
+  /**
+   * 주문을 소프트 삭제합니다.
+   *
+   * @param orderId 주문 ID
+   * @throws IllegalStateException 이미 삭제된 주문인 경우 발생
+   */
   @Transactional
   public void softDeleteOrder(Long orderId) {
     Order order = orderPersistenceService.findOrder(orderId);
@@ -205,6 +287,13 @@ public class OrderProcessingService {
     orderPersistenceService.softDeleteOrder(order);
   }
 
+  /**
+   * 사용자의 주문을 소프트 삭제합니다.
+   *
+   * @param userId 사용자 ID
+   * @param orderNo 주문 번호
+   * @throws IllegalStateException 이미 삭제된 주문인 경우 발생
+   */
   @Transactional
   public void softDeleteUserOrder(Integer userId, String orderNo) {
     Order order = orderPersistenceService.findUserOrder(userId, orderNo);
@@ -212,6 +301,12 @@ public class OrderProcessingService {
     orderPersistenceService.softDeleteOrder(order);
   }
 
+  /**
+   * 주문을 숨김 처리합니다.
+   *
+   * @param orderId 주문 ID
+   * @throws IllegalStateException 이미 숨김 처리된 주문인 경우 발생
+   */
   @Transactional
   public void hideOrder(Long orderId) {
     Order order = orderPersistenceService.findOrder(orderId);
@@ -219,6 +314,13 @@ public class OrderProcessingService {
     orderPersistenceService.hideOrder(order);
   }
 
+  /**
+   * 사용자의 주문을 숨김 처리합니다.
+   *
+   * @param userId 사용자 ID
+   * @param orderNo 주문 번호
+   * @throws IllegalStateException 이미 숨김 처리된 주문인 경우 발생
+   */
   @Transactional
   public void hideUserOrder(Integer userId, String orderNo) {
     Order order = orderPersistenceService.findUserOrder(userId, orderNo);
@@ -226,33 +328,61 @@ public class OrderProcessingService {
     orderPersistenceService.hideUserOrder(order);
   }
 
-  public List<OrderProductVoucherProjection> findOrderProductVouchers(Long orderId) {
-    return orderProductVoucherPersistenceService.findOrderProductVouchers(orderId);
-  }
-
-  // Private 헬퍼 메서드들
+  /**
+   * 주문 번호를 생성합니다.
+   *
+   * @return 생성된 주문 번호
+   */
   private String generateOrderNumber() {
     return UUID.randomUUID().toString().replace("-", "");
   }
 
+  /**
+   * 주문 상태의 유효성을 검사합니다.
+   *
+   * @param order 대상 주문
+   * @param validStatuses 유효한 상태 목록
+   * @param message 오류 메시지
+   * @throws IllegalStateException 주문 상태가 유효하지 않은 경우 발생
+   */
   private void validateOrderStatus(Order order, Set<OrderStatus> validStatuses, String message) {
     if (!validStatuses.contains(order.getStatus())) {
       throw new IllegalStateException(message);
     }
   }
 
+  /**
+   * 주문의 소프트 삭제 가능 여부를 검증합니다.
+   *
+   * @param order 검증할 주문
+   * @throws IllegalStateException 이미 삭제된 주문인 경우 발생
+   */
   private void validateSoftDelete(Order order) {
     if (Boolean.TRUE.equals(order.getRemoved())) {
       throw new IllegalStateException("이미 삭제된 주문입니다.");
     }
   }
 
+  /**
+   * 주문의 숨김 처리 가능 여부를 검증합니다.
+   *
+   * @param order 검증할 주문
+   * @throws IllegalStateException 이미 숨김 처리된 주문인 경우 발생
+   */
   private void validateHideOrder(Order order) {
     if (OrderVisibility.HIDDEN.equals(order.getVisibility())) {
       throw new IllegalStateException("이미 숨김 처리된 주문입니다.");
     }
   }
 
+  /**
+   * 장바구니 상품들의 유효성을 검증합니다. 상품의 존재 여부, 판매 상태, 재고 수량을 확인합니다.
+   *
+   * @param items 장바구니 상품 목록
+   * @return 검증된 상품 목록
+   * @throws BusinessException 상품을 찾을 수 없는 경우 발생
+   * @throws IllegalStateException 상품이 판매 중지되었거나 재고가 부족한 경우 발생
+   */
   private List<ProductDetached> validateProductsForCartOrder(List<CartItem> items) {
     // 장바구니에 담긴 상품권 권종 목록 가져오기
     List<String> codes = items.stream().map(CartItem::getCode).distinct().toList();
@@ -302,6 +432,13 @@ public class OrderProcessingService {
     return products;
   }
 
+  /**
+   * 장바구니 상품들의 가격 변동 여부를 검증합니다.
+   *
+   * @param products 실제 상품 목록
+   * @param items 장바구니 상품 목록
+   * @throws IllegalStateException 상품의 가격이 변경된 경우 발생
+   */
   private void validateCartPrices(List<ProductDetached> products, List<CartItem> items) {
     Map<Long, ProductDetached> productMap =
         products.stream().collect(Collectors.toMap(ProductDetached::getId, Function.identity()));
@@ -324,6 +461,13 @@ public class OrderProcessingService {
     }
   }
 
+  /**
+   * 장바구니 상품들을 주문 상품으로 변환합니다.
+   *
+   * @param items 장바구니 상품 목록
+   * @param order 연결될 주문
+   * @return 생성된 주문 상품 목록
+   */
   private List<OrderProduct> createOrderProductsFromCart(List<CartItem> items, Order order) {
     return items.stream()
         .map(
@@ -339,12 +483,24 @@ public class OrderProcessingService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * 장바구니 상품들의 총 정가를 계산합니다.
+   *
+   * @param items 장바구니 상품 목록
+   * @return 총 정가
+   */
   private BigDecimal calculateTotalListPrice(List<CartItem> items) {
     return items.stream()
         .map(item -> item.getListPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
         .reduce(BigDecimal.ZERO, BigDecimal::add);
   }
 
+  /**
+   * 장바구니 상품들의 총 판매가를 계산합니다.
+   *
+   * @param items 장바구니 상품 목록
+   * @return 총 판매가
+   */
   private BigDecimal calculateTotalSellingPrice(List<CartItem> items) {
     return items.stream()
         .map(item -> item.getSellingPrice().multiply(BigDecimal.valueOf(item.getQuantity())))
