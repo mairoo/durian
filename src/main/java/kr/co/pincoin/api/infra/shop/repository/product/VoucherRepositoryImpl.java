@@ -103,10 +103,10 @@ public class VoucherRepositoryImpl implements VoucherRepository {
    * @return 조회된 상품권 프로젝션 목록
    */
   @Override
-  public List<VoucherProjection> findAllVouchersByProductCode(
+  public List<VoucherProjection> findVouchersByProductStatus(
       String productCode, VoucherStatus status, Pageable pageable) {
     return mapper.toProjectionList(
-        jpaRepository.findAllByProductCodeAndStatus(productCode, status, pageable));
+        jpaRepository.findVouchersByProductStatus(productCode, status, pageable));
   }
 
   /**
@@ -129,8 +129,8 @@ public class VoucherRepositoryImpl implements VoucherRepository {
    * @param status 변경할 상품권 상태
    */
   @Override
-  public void updateStatusToSold(List<Long> voucherIds, VoucherStatus status) {
-    jpaRepository.updateStatusToSold(voucherIds, status);
+  public void updateStatus(List<Long> voucherIds, VoucherStatus status) {
+    jpaRepository.updateStatus(voucherIds, status);
   }
 
   /**

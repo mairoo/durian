@@ -111,12 +111,12 @@ public class InventoryPersistenceService {
   }
 
   public List<VoucherProjection> findAvailableVouchers(String productCode, int quantity) {
-    return voucherRepository.findAllVouchersByProductCode(
+    return voucherRepository.findVouchersByProductStatus(
         productCode, VoucherStatus.PURCHASED, PageRequest.of(0, quantity));
   }
 
   @Transactional
   public void updateStatusToSold(List<Long> voucherIds) {
-    voucherRepository.updateStatusToSold(voucherIds, VoucherStatus.SOLD);
+    voucherRepository.updateStatus(voucherIds, VoucherStatus.SOLD);
   }
 }

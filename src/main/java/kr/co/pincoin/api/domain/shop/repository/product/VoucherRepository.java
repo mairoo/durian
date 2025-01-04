@@ -23,13 +23,13 @@ public interface VoucherRepository {
 
   List<Voucher> findAllByCodeIn(Collection<String> codes);
 
-  List<VoucherProjection> findAllVouchersByProductCode(
+  List<VoucherProjection> findVouchersByProductStatus(
       String productCode, VoucherStatus status, Pageable pageable);
 
   List<ProductVoucherCount> countByProductCodesAndStatus(
       List<String> productCodes, VoucherStatus status);
 
-  void updateStatusToSold(List<Long> voucherIds, VoucherStatus status);
+  void updateStatus(List<Long> voucherIds, VoucherStatus status);
 
   void restore(Voucher voucher);
 
