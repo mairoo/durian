@@ -98,7 +98,8 @@ public class VoucherRepositoryImpl implements VoucherRepository {
   @Override
   public List<VoucherProjection> findAllVouchersByProductCode(
       String productCode, VoucherStatus status, Pageable pageable) {
-    return queryRepository.findAllByProductCodeAndStatus(productCode, status, pageable);
+    return mapper.toProjectionList(
+        jpaRepository.findAllByProductCodeAndStatus(productCode, status, pageable));
   }
 
   @Override
