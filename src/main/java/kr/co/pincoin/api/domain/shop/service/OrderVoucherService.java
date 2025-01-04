@@ -66,25 +66,28 @@ public class OrderVoucherService {
    */
   @Transactional(propagation = Propagation.REQUIRED, timeout = 30)
   public Order issueVouchers(Order order, List<OrderProduct> orderProducts) {
-    // 사용자 인증
-    // select auth_user x 1: 로그인 사용자 조회
-
-    // 주문 정보 조회 및 검증
-    // select shop_orderproduct x 1: 주문 상품 목록 조회
-    // select shop_orderproductvoucher x 1: 발권 여부 검증
-    // select shop_voucher x 1: 재고 수량 검증
-
-    // 각 주문 상품별 발권 처리 (n개 상품)
-    // - select shop_voucher x 1: 발권 가능한 상품권 조회
-    // - update shop_voucher x 1: 상품권 상태 "판매"로 변경
-    // - update shop_product x 1: 재고 수량 차감
-
-    // batch insert shop_orderproductvoucher x 1: 모든 주문-상품권 매핑 일괄 저장
-
-    // 주문 상태 업데이트
-    // select shop_order x 1: 주문 정보 조회
-    // select auth_user x 1: 주문자 정보 조회
-    // update shop_order x 1: 주문 상태 "발송완료"로 변경
+    // 1. 사용자 인증
+    // - SELECT User: 사용자 이메일로 로그인 정보 조회
+    //
+    // 2. 주문 결제 정보 저장
+    // - INSERT OrderPayment: 결제 정보 저장
+    // - SELECT OrderPayment: 총 결제 금액 조회
+    // - UPDATE Order: 주문 상태 "입금확인" 변경
+    //
+    // 3. 발권 처리 시작
+    // - SELECT OrderProductVoucher + OrderProduct 발권된 상품권 수량 확인
+    // - SELECT Voucher + Product: 재고 상품권 수량 확인
+    //
+    // 4. 상품별 발권 처리 (n개 상품 for문)
+    // - SELECT Voucher: 발권 가능한 상품권 조회
+    // - UPDATE Voucher: 상태 "판매"로 변경
+    // - UPDATE Product: 재고 수량 -x 차감
+    //
+    // 5. 발권 정보 저장 및 주문 완료 처리
+    // - INSERT OrderProductVoucher: 주문-상품권 매핑 일괄 저장
+    // - SELECT Order: 주문 정보 조회
+    // - SELECT User: 주문자 정보 조회
+    // - UPDATE Order: 주문 상태 "발송완료"로 변경
 
     // 상품별 주문 수량을 빠르게 조회하기 위한 Map 생성
     // key: 상품 코드, value: 주문 수량
