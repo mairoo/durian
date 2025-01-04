@@ -25,7 +25,6 @@ public class OrderRepositoryImpl implements OrderRepository {
 
   private final OrderMapper mapper;
 
-  // 기본 CRUD 작업
   @Override
   public Order save(Order order) {
     return mapper.toModel(jpaRepository.save(mapper.toEntity(order)));
@@ -41,7 +40,6 @@ public class OrderRepositoryImpl implements OrderRepository {
     return mapper.toModelList(jpaRepository.saveAll(mapper.toEntityList(orders.stream().toList())));
   }
 
-  // ID 기반 단일 조회
   @Override
   public Optional<Order> findById(Long id) {
     return jpaRepository.findById(id).map(mapper::toModel);
@@ -57,13 +55,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     return queryRepository.findUserIdByOrderId(id);
   }
 
-  // OrderNo 기반 조회
   @Override
   public Optional<Integer> findUserIdByOrderNo(String orderNo) {
     return queryRepository.findUserIdByOrderNo(orderNo);
   }
 
-  // 사용자 관련 조회
   @Override
   public List<Order> findByUserId(Integer userId) {
     return jpaRepository.findByUserId(userId).stream()
@@ -86,7 +82,6 @@ public class OrderRepositoryImpl implements OrderRepository {
     return queryRepository.findByOrderNoAndUserId(orderNo, userId).map(mapper::toModelDetached);
   }
 
-  // 상태 기반 조회
   @Override
   public List<Order> findByStatus(OrderStatus status) {
     return jpaRepository.findByStatus(status).stream()
@@ -101,7 +96,6 @@ public class OrderRepositoryImpl implements OrderRepository {
         .collect(Collectors.toList());
   }
 
-  // 검색/페이징
   @Override
   public Page<Order> searchOrders(OrderSearchCondition condition, Pageable pageable) {
     Page<OrderEntity> orderEntities = queryRepository.searchOrders(condition, pageable);
