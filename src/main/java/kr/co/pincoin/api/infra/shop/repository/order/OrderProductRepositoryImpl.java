@@ -14,21 +14,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class OrderProductRepositoryImpl implements OrderProductRepository {
-  private final OrderProductJpaRepository jpaRepository;
   private final OrderProductQueryRepository queryRepository;
+  private final OrderProductJdbcRepository jdbcRepository;
   private final OrderProductMapper mapper;
 
-  /**
-   * 주문 상품 목록을 일괄 저장합니다
-   *
-   * @param orderProducts 저장할 주문 상품 목록
-   * @return 저장된 주문 상품 목록
-   */
   @Override
-  public List<OrderProduct> saveAll(List<OrderProduct> orderProducts) {
-    List<OrderProductEntity> orderProductEntities = mapper.toEntityList(orderProducts);
-    List<OrderProductEntity> savedEntities = jpaRepository.saveAll(orderProductEntities);
-    return mapper.toModelList(savedEntities);
+  public void batchInsert(List<OrderProduct> orderProducts) {
+    jdbcRepository.batchInsert(orderProducts);
   }
 
   /**
