@@ -16,9 +16,9 @@ public class OrderProductVoucherRepositoryImpl implements OrderProductVoucherRep
   private final OrderProductVoucherJdbcRepository jdbcRepository;
 
   /**
-   * 주문 상품 바우처 목록을 일괄 저장합니다.
+   * 주문 상품 상품권 목록을 일괄 저장합니다.
    *
-   * @param orderProductVouchers 저장할 주문 상품 바우처 목록
+   * @param orderProductVouchers 저장할 주문 상품 상품권 목록
    */
   @Override
   public void batchSave(List<OrderProductVoucher> orderProductVouchers) {
@@ -26,10 +26,10 @@ public class OrderProductVoucherRepositoryImpl implements OrderProductVoucherRep
   }
 
   /**
-   * 주문 ID로 주문 상품 바우처 목록을 조회합니다.
+   * 주문 ID로 주문 상품 상품권 목록을 조회합니다.
    *
    * @param orderId 주문 ID
-   * @return 조회된 주문 상품 바우처 프로젝션 목록
+   * @return 조회된 주문 상품 상품권 프로젝션 목록
    */
   @Override
   public List<OrderProductVoucherProjection> findAllByOrderProductOrderId(Long orderId) {
@@ -37,10 +37,10 @@ public class OrderProductVoucherRepositoryImpl implements OrderProductVoucherRep
   }
 
   /**
-   * 주문 상품 목록에 대해 발급된 바우처 수를 계산합니다.
+   * 주문 상품 목록에 대해 발급된 상품권 수를 계산합니다.
    *
-   * @param orderProducts 바우처 수를 계산할 주문 상품 목록
-   * @return 각 주문 상품별 발급된 바우처 수 정보
+   * @param orderProducts 상품권 수를 계산할 주문 상품 목록
+   * @return 각 주문 상품별 발급된 상품권 수 정보
    */
   @Override
   public List<OrderProductVoucherCount> countIssuedVouchersByOrderProducts(

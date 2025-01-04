@@ -29,6 +29,12 @@ public interface VoucherRepository {
   List<ProductVoucherCount> countByProductCodesAndStatus(
       List<String> productCodes, VoucherStatus status);
 
+  void updateStatusToSold(List<Long> voucherIds, VoucherStatus status);
+
+  void restore(Voucher voucher);
+
+  void restoreById(Long id);
+
   void delete(Voucher voucher);
 
   void deleteById(Long id);
@@ -36,10 +42,4 @@ public interface VoucherRepository {
   void softDelete(Voucher voucher);
 
   void softDeleteById(Long id);
-
-  void restore(Voucher voucher);
-
-  void restoreById(Long id);
-
-  void updateStatusToSold(List<Long> voucherIds, VoucherStatus status);
 }
