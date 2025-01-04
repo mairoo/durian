@@ -75,11 +75,11 @@ public class OrderVoucherService {
     // select shop_voucher x 1: 재고 수량 검증
 
     // 각 주문 상품별 발권 처리 (n개 상품)
-    // - select shop_voucher x 1: 발권 가능한 바우처 조회
-    // - update shop_voucher x 1: 바우처 상태 "판매"로 변경
+    // - select shop_voucher x 1: 발권 가능한 상품권 조회
+    // - update shop_voucher x 1: 상품권 상태 "판매"로 변경
     // - update shop_product x 1: 재고 수량 차감
 
-    // batch insert shop_orderproductvoucher x 1: 모든 주문-바우처 매핑 일괄 저장
+    // batch insert shop_orderproductvoucher x 1: 모든 주문-상품권 매핑 일괄 저장
 
     // 주문 상태 업데이트
     // select shop_order x 1: 주문 정보 조회
@@ -119,7 +119,7 @@ public class OrderVoucherService {
     }
 
     // 재고 수량 검증 로직
-    // PURCHASED 상태인 바우처의 수량을 상품별로 조회
+    // PURCHASED 상태인 상품권의 수량을 상품별로 조회
     List<ProductVoucherCount> productVoucherCounts =
         inventoryPersistenceService.countVouchersByProductCodesAndStatus(
             productCodes, VoucherStatus.PURCHASED);
@@ -127,12 +127,6 @@ public class OrderVoucherService {
     // 각 상품별로 주문 수량과 재고 수량 비교
     productVoucherCounts.forEach(
         (productCodeCount) -> {
-          // 디버깅을 위한 재고 수량 로깅
-          log.warn(
-              "코드: {}, 남은수량: {}",
-              productCodeCount.getProductCode(),
-              productCodeCount.getAvailableCount());
-
           // 주문 수량이 재고 수량보다 많으면 예외 발생
           // 에러 메시지에 부족한 수량 정보 포함
           Integer orderQuantity = quantityByCode.get(productCodeCount.getProductCode());
@@ -151,23 +145,31 @@ public class OrderVoucherService {
     List<OrderProductVoucher> allVouchers = new ArrayList<>();
 
     for (OrderProduct orderProduct : orderProducts) {
-      // 1. 발권 가능한 바우처 조회
-      // - PURCHASED 상태인 바우처 중에서
+      // 1. 발권 가능한 상품권 조회
+      // - PURCHASED 상태인 상품권 중에서
       // - 주문 수량만큼만 조회
       List<VoucherProjection> availableVouchers =
           inventoryPersistenceService.findAvailableVouchers(
               orderProduct.getCode(), orderProduct.getQuantity());
 
-      // 2. 조회된 바우처들의 상태를 "판매"로 변경
+      // 동시성 문제 - 경쟁상태(race condition): 두 개의 트랜잭션이 동시에 동일한 상품권을 조회하고 발권하려 할 때 문제 발생
+      // Transaction A: findAvailableVouchers() -> 재고 100개 확인
+      // Transaction B: findAvailableVouchers() -> 재고 100개 확인
+      // Transaction A: updateStatusToSold() -> 50개 판매처리
+      // Transaction B: updateStatusToSold() -> 동일한 50개 판매처리 (중복 판매)
+      //
+      // 해결책: 비관적 락 SELECT FOR UPDATE SKIP LOCKED
+
+      // 2. 조회된 상품권들의 상태를 "판매"로 변경
       List<Long> voucherIds =
           availableVouchers.stream().map(VoucherProjection::id).collect(Collectors.toList());
 
       inventoryPersistenceService.updateStatusToSold(voucherIds);
 
-      // 3. 주문 상품과 바우처를 연결하는 OrderProductVoucher 엔티티 생성 및 저장
+      // 3. 주문 상품과 상품권을 연결하는 OrderProductVoucher 엔티티 생성 및 저장
       // OrderProductVoucher 엔티티 생성
       // - orderProduct, voucher 연결
-      // - 바우처 코드와 비고 복사
+      // - 상품권 코드와 비고 복사
       // - revoked 필드 초기값 = false
       List<OrderProductVoucher> orderProductVouchers =
           availableVouchers.stream()
@@ -186,6 +188,15 @@ public class OrderVoucherService {
               .toList();
 
       allVouchers.addAll(orderProductVouchers);
+
+      // 동시성 문제 - 갱신 손실(lost update): decreaseStockQuantity 호출 시 재고 차감에서 문제 발생
+      // Transaction A: 재고 100개 읽음
+      // Transaction B: 재고 100개 읽음
+      // Transaction A: 50개 차감하여 50개로 업데이트
+      // Transaction B: 30개 차감하여 70개로 업데이트 (A의 차감이 무시됨)
+      //
+      // 해결책: 자식 트랜잭션이 부모 트랜잭션에 참여하도록 명시
+      // @Transactional(propagation = Propagation.REQUIRED)
 
       // 4. 상품의 재고 수량 차감
       inventoryPersistenceService.decreaseStockQuantity(

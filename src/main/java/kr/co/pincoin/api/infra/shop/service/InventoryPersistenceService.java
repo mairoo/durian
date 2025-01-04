@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -104,7 +105,7 @@ public class InventoryPersistenceService {
     return !voucherRepository.findAllByCodeIn(codes).isEmpty();
   }
 
-  @Transactional
+  @Transactional(propagation = Propagation.REQUIRED)
   public void decreaseStockQuantity(String productCode, int quantity) {
     productRepository.decreaseStockQuantity(productCode, quantity);
   }
