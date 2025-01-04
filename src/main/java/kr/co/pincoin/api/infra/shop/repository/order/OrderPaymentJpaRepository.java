@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OrderPaymentJpaRepository extends JpaRepository<OrderPaymentEntity, Long> {
-
   @Query(
       "SELECT op "
           + "FROM OrderPaymentEntity op "
