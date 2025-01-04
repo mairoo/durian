@@ -33,7 +33,7 @@ public class OrderProductVoucherPersistenceService {
    * @return 조회된 주문 상품 바우처 프로젝션 목록
    */
   public List<OrderProductVoucherProjection> findOrderProductVouchers(Long orderId) {
-    return orderProductVoucherRepository.findAllByOrderProductOrderId(orderId);
+    return orderProductVoucherRepository.findVoucherDetails(orderId);
   }
 
   /**
@@ -44,6 +44,6 @@ public class OrderProductVoucherPersistenceService {
    */
   public List<OrderProductVoucherCount> countIssuedVouchersByOrderProducts(
       List<OrderProduct> orderProducts) {
-    return orderProductVoucherRepository.countIssuedVouchersByOrderProducts(orderProducts);
+    return orderProductVoucherRepository.countActiveVouchers(orderProducts);
   }
 }

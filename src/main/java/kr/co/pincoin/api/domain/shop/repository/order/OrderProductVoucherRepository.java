@@ -9,8 +9,7 @@ import kr.co.pincoin.api.infra.shop.repository.order.projection.OrderProductVouc
 public interface OrderProductVoucherRepository {
   void batchSave(List<OrderProductVoucher> orderProductVouchers);
 
-  List<OrderProductVoucherProjection> findAllByOrderProductOrderId(Long orderId);
+  List<OrderProductVoucherProjection> findVoucherDetails(Long orderId);
 
-  List<OrderProductVoucherCount> countIssuedVouchersByOrderProducts(
-      List<OrderProduct> orderProducts);
+  List<OrderProductVoucherCount> countActiveVouchers(List<OrderProduct> orderProducts);
 }

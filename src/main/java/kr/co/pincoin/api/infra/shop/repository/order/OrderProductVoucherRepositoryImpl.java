@@ -32,8 +32,8 @@ public class OrderProductVoucherRepositoryImpl implements OrderProductVoucherRep
    * @return 조회된 주문 상품 상품권 프로젝션 목록
    */
   @Override
-  public List<OrderProductVoucherProjection> findAllByOrderProductOrderId(Long orderId) {
-    return queryRepository.findAllByOrderProductOrderId(orderId);
+  public List<OrderProductVoucherProjection> findVoucherDetails(Long orderId) {
+    return queryRepository.findVoucherDetails(orderId);
   }
 
   /**
@@ -43,8 +43,7 @@ public class OrderProductVoucherRepositoryImpl implements OrderProductVoucherRep
    * @return 각 주문 상품별 발급된 상품권 수 정보
    */
   @Override
-  public List<OrderProductVoucherCount> countIssuedVouchersByOrderProducts(
-      List<OrderProduct> orderProducts) {
-    return queryRepository.countIssuedVouchersByOrderProducts(orderProducts);
+  public List<OrderProductVoucherCount> countActiveVouchers(List<OrderProduct> orderProducts) {
+    return queryRepository.countActiveVouchers(orderProducts);
   }
 }

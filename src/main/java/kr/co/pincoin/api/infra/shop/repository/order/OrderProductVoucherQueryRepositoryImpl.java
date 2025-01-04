@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 public class OrderProductVoucherQueryRepositoryImpl implements OrderProductVoucherQueryRepository {
   private final JPAQueryFactory queryFactory;
 
-  public List<OrderProductVoucherProjection> findAllByOrderProductOrderId(Long orderId) {
+  public List<OrderProductVoucherProjection> findVoucherDetails(Long orderId) {
     QOrderProductVoucherEntity orderProductVoucher =
         QOrderProductVoucherEntity.orderProductVoucherEntity;
     QOrderProductEntity orderProduct = QOrderProductEntity.orderProductEntity;
@@ -39,8 +39,7 @@ public class OrderProductVoucherQueryRepositoryImpl implements OrderProductVouch
   }
 
   @Override
-  public List<OrderProductVoucherCount> countIssuedVouchersByOrderProducts(
-      List<OrderProduct> orderProducts) {
+  public List<OrderProductVoucherCount> countActiveVouchers(List<OrderProduct> orderProducts) {
     QOrderProductVoucherEntity orderProductVoucher =
         QOrderProductVoucherEntity.orderProductVoucherEntity;
     QOrderProductEntity orderProduct = QOrderProductEntity.orderProductEntity;
