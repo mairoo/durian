@@ -1,7 +1,5 @@
 package kr.co.pincoin.api.infra.shop.repository.order;
 
-import static kr.co.pincoin.api.infra.shop.entity.order.QOrderEntity.orderEntity;
-
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -28,9 +26,10 @@ import org.springframework.util.StringUtils;
 public class OrderQueryRepositoryImpl implements OrderQueryRepository {
   private final JPAQueryFactory queryFactory;
 
-  // ID/OrderNo 기반 사용자 조회
   @Override
   public Optional<Integer> findUserIdByOrderId(Long id) {
+    QOrderEntity orderEntity = QOrderEntity.orderEntity;
+
     Integer userId =
         queryFactory.select(orderEntity.user.id).from(orderEntity).where(idEquals(id)).fetchOne();
 
@@ -39,6 +38,8 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
 
   @Override
   public Optional<Integer> findUserIdByOrderNo(String orderNo) {
+    QOrderEntity orderEntity = QOrderEntity.orderEntity;
+
     Integer userId =
         queryFactory
             .select(orderEntity.user.id)
@@ -51,6 +52,8 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
 
   @Override
   public Optional<OrderEntity> findByOrderNoAndUserId(String orderNo, Integer userId) {
+    QOrderEntity orderEntity = QOrderEntity.orderEntity;
+
     return Optional.ofNullable(
         queryFactory
             .select(orderEntity)
@@ -59,18 +62,17 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
             .fetchOne());
   }
 
-  // 검색/페이징
   @Override
   public Page<OrderEntity> searchOrders(OrderSearchCondition condition, Pageable pageable) {
-    QOrderEntity order = orderEntity;
+    QOrderEntity orderEntity = QOrderEntity.orderEntity;
     QUserEntity user = QUserEntity.userEntity;
     QProfileEntity profile = QProfileEntity.profileEntity;
 
     // 메인 쿼리
     JPAQuery<OrderEntity> query =
         queryFactory
-            .selectFrom(order)
-            .leftJoin(order.user, user)
+            .selectFrom(orderEntity)
+            .leftJoin(orderEntity.user, user)
             .leftJoin(profile)
             .on(profile.user.eq(user))
             .where(
@@ -95,8 +97,8 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
     // 전체 카운트 쿼리: 불필요한 조인 제거
     Long total =
         queryFactory
-            .select(order.count())
-            .from(order)
+            .select(orderEntity.count())
+            .from(orderEntity)
             .where(
                 fullnameContains(condition.getFullname()),
                 orderNoEquals(condition.getOrderNo()),
@@ -112,21 +114,27 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
     return new PageImpl<>(orders, pageable, count);
   }
 
-  // 기본 조건절
   private BooleanExpression idEquals(Long id) {
+    QOrderEntity orderEntity = QOrderEntity.orderEntity;
+
     return id != null ? orderEntity.id.eq(id) : null;
   }
 
   private BooleanExpression orderNoEquals(String orderNo) {
+    QOrderEntity orderEntity = QOrderEntity.orderEntity;
+
     return StringUtils.hasText(orderNo) ? orderEntity.orderNo.eq(orderNo) : null;
   }
 
-  // 사용자 관련 조건절
   private BooleanExpression userIdEquals(Integer userId) {
+    QOrderEntity orderEntity = QOrderEntity.orderEntity;
+
     return userId != null ? orderEntity.user.id.eq(userId) : null;
   }
 
   private BooleanExpression fullnameContains(String fullname) {
+    QOrderEntity orderEntity = QOrderEntity.orderEntity;
+
     return StringUtils.hasText(fullname) ? orderEntity.fullname.containsIgnoreCase(fullname) : null;
   }
 
@@ -145,36 +153,36 @@ public class OrderQueryRepositoryImpl implements OrderQueryRepository {
     return StringUtils.hasText(phone) ? profile.phone.containsIgnoreCase(phone) : null;
   }
 
-  // 상태 관련 조건절
   private BooleanExpression statusEquals(OrderStatus status) {
+    QOrderEntity orderEntity = QOrderEntity.orderEntity;
+
     return status != null ? orderEntity.status.eq(status) : null;
   }
 
   private BooleanExpression createdBetween(LocalDateTime startDate, LocalDateTime endDate) {
-    QOrderEntity order = orderEntity;
+    QOrderEntity orderEntity = QOrderEntity.orderEntity;
 
     if (startDate != null && endDate != null) {
-      return order.created.between(startDate, endDate);
+      return orderEntity.created.between(startDate, endDate);
     }
     if (startDate != null) {
-      return order.created.goe(startDate);
+      return orderEntity.created.goe(startDate);
     }
     if (endDate != null) {
-      return order.created.loe(endDate);
+      return orderEntity.created.loe(endDate);
     }
     return null;
   }
 
-  // 정렬 처리
-  private OrderSpecifier<?> getOrderSpecifier(Sort.Order order) {
+  private OrderSpecifier<?> getOrderSpecifier(Sort.Order sortOrder) {
     QOrderEntity orderEntity = QOrderEntity.orderEntity;
 
     com.querydsl.core.types.Order direction =
-        order.isAscending()
+        sortOrder.isAscending()
             ? com.querydsl.core.types.Order.ASC
             : com.querydsl.core.types.Order.DESC;
 
-    return switch (order.getProperty()) {
+    return switch (sortOrder.getProperty()) {
       case "created" -> new OrderSpecifier<>(direction, orderEntity.created);
       case "totalListPrice" -> new OrderSpecifier<>(direction, orderEntity.totalListPrice);
       case "totalSellingPrice" -> new OrderSpecifier<>(direction, orderEntity.totalSellingPrice);
