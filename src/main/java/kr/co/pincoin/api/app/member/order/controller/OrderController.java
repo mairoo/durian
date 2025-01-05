@@ -40,7 +40,14 @@ public class OrderController {
   // 재주문 하기
   // 환불 요청하기
 
-  /** 내 주문 목록 조회 */
+  /**
+   * 로그인한 사용자의 주문 목록을 페이지네이션하여 조회합니다.
+   *
+   * @param user 현재 로그인한 사용자
+   * @param condition 주문 검색 조건 (OrderSearchCondition)
+   * @param pageable 페이지네이션 정보 (기본값: 페이지당 20개)
+   * @return 사용자의 주문 목록과 페이지네이션 정보를 포함한 ApiResponse
+   */
   @GetMapping
   public ResponseEntity<ApiResponse<PageResponse<OrderResponse>>> getMyOrders(
       @CurrentUser User user,
@@ -52,7 +59,13 @@ public class OrderController {
     return ResponseEntity.ok(ApiResponse.of(PageResponse.from(responses)));
   }
 
-  /** 내 주문 상세 조회 */
+  /**
+   * 로그인한 사용자의 특정 주문 상세 정보를 조회합니다.
+   *
+   * @param user 현재 로그인한 사용자
+   * @param orderNo 조회할 주문 번호
+   * @return 주문 상세 정보를 포함한 ApiResponse
+   */
   @GetMapping("/{orderNo}")
   public ResponseEntity<ApiResponse<OrderResponse>> getMyOrder(
       @CurrentUser User user, @PathVariable String orderNo) {
@@ -60,6 +73,13 @@ public class OrderController {
     return ResponseEntity.ok(ApiResponse.of(OrderResponse.from(order)));
   }
 
+  /**
+   * 로그인한 사용자의 특정 주문에 포함된 상품 목록을 조회합니다.
+   *
+   * @param user 현재 로그인한 사용자
+   * @param orderNo 조회할 주문 번호
+   * @return 주문 상품 목록을 포함한 ApiResponse
+   */
   @GetMapping("/{orderNo}/items")
   public ResponseEntity<ApiResponse<List<OrderProductResponse>>> getMyOrderProducts(
       @CurrentUser User user, @PathVariable String orderNo) {
@@ -69,7 +89,13 @@ public class OrderController {
     return ResponseEntity.ok(ApiResponse.of(orderProductResponses));
   }
 
-  /** 내 주문 삭제 */
+  /**
+   * 로그인한 사용자의 특정 주문을 삭제 처리합니다.
+   *
+   * @param user 현재 로그인한 사용자
+   * @param orderNo 삭제할 주문 번호
+   * @return 삭제 완료 메시지를 포함한 ApiResponse
+   */
   @PostMapping("/{orderNo}/delete")
   public ResponseEntity<ApiResponse<Void>> deleteMyOrder(
       @CurrentUser User user, @PathVariable String orderNo) {
@@ -77,7 +103,13 @@ public class OrderController {
     return ResponseEntity.ok(ApiResponse.of(null, "주문이 삭제되었습니다."));
   }
 
-  /** 내 주문 숨김 처리 */
+  /**
+   * 로그인한 사용자의 특정 주문을 숨김 처리합니다.
+   *
+   * @param user 현재 로그인한 사용자
+   * @param orderNo 숨길 주문 번호
+   * @return 숨김 처리 완료 메시지를 포함한 ApiResponse
+   */
   @PostMapping("/{orderNo}/hide")
   public ResponseEntity<ApiResponse<Void>> hideMyOrder(
       @CurrentUser User user, @PathVariable String orderNo) {
@@ -85,7 +117,14 @@ public class OrderController {
     return ResponseEntity.ok(ApiResponse.of(null, "주문이 숨김 처리되었습니다."));
   }
 
-  /** 신규 주문 */
+  /**
+   * 장바구니 상품으로 새로운 주문을 생성합니다. 클라이언트 정보(IP, User Agent 등)를 함께 저장합니다.
+   *
+   * @param user 현재 로그인한 사용자
+   * @param request 주문 생성에 필요한 정보를 담은 요청 객체
+   * @param servletRequest 클라이언트 정보를 포함한 HTTP 요청 객체
+   * @return 생성된 주문 정보와 완료 메시지를 포함한 ApiResponse
+   */
   @PostMapping
   public ResponseEntity<ApiResponse<OrderResponse>> createOrder(
       @CurrentUser User user,

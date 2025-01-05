@@ -19,9 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class CategoryController {
-
   private final CategoryService categoryService;
 
+  /**
+   * Slug로 카테고리를 조회합니다.
+   *
+   * @param slug 조회할 카테고리의 slug
+   * @return 카테고리 정보를 포함한 ApiResponse
+   */
   @GetMapping("/{slug}")
   public ResponseEntity<ApiResponse<CategoryResponse>> getCategoryBySlug(
       @PathVariable String slug) {
@@ -29,6 +34,12 @@ public class CategoryController {
     return ResponseEntity.ok(ApiResponse.of(CategoryResponse.from(category)));
   }
 
+  /**
+   * 스토어에 속한 모든 카테고리 목록을 조회합니다.
+   *
+   * @param storeId 스토어 ID
+   * @return 스토어의 카테고리 목록을 포함한 ApiResponse
+   */
   @GetMapping("/store/{storeId}")
   public ResponseEntity<ApiResponse<List<CategoryResponse>>> getCategoryListByStore(
       @PathVariable Long storeId) {
@@ -37,6 +48,12 @@ public class CategoryController {
     return ResponseEntity.ok(ApiResponse.of(responses));
   }
 
+  /**
+   * 스토어의 최상위(루트) 카테고리 목록을 조회합니다.
+   *
+   * @param storeId 스토어 ID
+   * @return 스토어의 최상위 카테고리 목록을 포함한 ApiResponse
+   */
   @GetMapping("/root/{storeId}")
   public ResponseEntity<ApiResponse<List<CategoryResponse>>> getRootCategories(
       @PathVariable Long storeId) {

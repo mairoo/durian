@@ -20,9 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class OrderPaymentController {
-
   private final OrderPaymentService orderPaymentService;
 
+  /**
+   * 로그인한 사용자의 특정 주문에 대한 결제 내역 목록을 조회합니다.
+   *
+   * @param user 현재 로그인한 사용자
+   * @param orderNo 조회할 주문 번호
+   * @return 주문의 결제 내역 목록을 포함한 ApiResponse
+   */
   @GetMapping("/{orderNo}/payments")
   public ResponseEntity<ApiResponse<List<OrderPaymentResponse>>> getMyOrderPayments(
       @CurrentUser User user, @PathVariable String orderNo) {

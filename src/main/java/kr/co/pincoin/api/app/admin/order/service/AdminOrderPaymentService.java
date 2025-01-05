@@ -20,15 +20,22 @@ public class AdminOrderPaymentService {
   private final OrderPaymentProcessingService orderPaymentProcessingService;
 
   /**
-   * 특정 주문에 포함된 입금 내역을 조회한다.
+   * 특정 주문에 포함된 입금 내역을 조회합니다.
    *
    * @param orderId 조회할 주문 번호
-   * @return 주문에 포함된 입금 내역
+   * @return 주문에 포함된 입금 내역 목록
    */
   public List<OrderPaymentDetached> getOrderPayments(Long orderId) {
     return orderPaymentProcessingService.getPayments(orderId);
   }
 
+  /**
+   * 주문에 새로운 결제 내역을 추가하고 주문 상태를 업데이트합니다. 결제 추가 전 유효성 검사를 수행합니다.
+   *
+   * @param orderId 결제를 추가할 주문 번호
+   * @param payment 추가할 결제 정보
+   * @return 저장된 결제 내역
+   */
   @Transactional
   public OrderPayment addPayment(Long orderId, OrderPayment payment) {
     // 결제 추가 전 유효성 검사

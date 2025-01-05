@@ -25,14 +25,25 @@ public class CartController {
 
   private final CartService cartService;
 
-  /** - 장바구니 조회 로그인한 사용자의 장바구니 정보를 조회 - 장바구니가 없는 경우 빈 장바구니를 생성하여 반환 */
+  /**
+   * 로그인한 사용자의 장바구니 정보를 조회합니다. 장바구니가 없는 경우 빈 장바구니를 생성하여 반환합니다.
+   *
+   * @param user 현재 로그인한 사용자
+   * @return 사용자의 장바구니 정보를 포함한 ApiResponse
+   */
   @GetMapping
   public ResponseEntity<ApiResponse<CartResponse>> getCart(@CurrentUser User user) {
     Cart cart = cartService.getCart(user);
     return ResponseEntity.ok(ApiResponse.of(CartResponse.from(cart), "장바구니를 조회했습니다."));
   }
 
-  /** - 장바구니 동기화 클라이언트의 장바구니 상태를 서버와 동기화 - 장바구니 데이터는 JSON 문자열 형태로 전달 */
+  /**
+   * 클라이언트의 장바구니 상태를 서버와 동기화합니다. 장바구니 데이터는 JSON 문자열 형태로 전달됩니다.
+   *
+   * @param user 현재 로그인한 사용자
+   * @param request 동기화할 장바구니 데이터를 포함한 요청 객체
+   * @return 동기화된 장바구니 정보를 포함한 ApiResponse
+   */
   @PutMapping("/sync")
   public ResponseEntity<ApiResponse<CartResponse>> syncCart(
       @CurrentUser User user, @RequestBody CartSyncRequest request) {
@@ -40,7 +51,12 @@ public class CartController {
     return ResponseEntity.ok(ApiResponse.of(CartResponse.from(syncedCart), "장바구니가 동기화되었습니다."));
   }
 
-  /** 장바구니 초기화 사용자의 장바구니를 빈 상태로 초기화 */
+  /**
+   * 사용자의 장바구니를 빈 상태로 초기화합니다.
+   *
+   * @param user 현재 로그인한 사용자
+   * @return 초기화된 장바구니 정보를 포함한 ApiResponse
+   */
   @PostMapping("/clear")
   public ResponseEntity<ApiResponse<CartResponse>> clearCart(@CurrentUser User user) {
     Cart clearedCart = cartService.syncCartData(user, "[]");

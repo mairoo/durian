@@ -20,10 +20,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class OrderVoucherController {
-
   private final OrderService orderService;
 
-  /** 내 주문 상품권 목록 */
+  /**
+   * 로그인한 사용자의 특정 주문에 포함된 상품권 목록을 조회합니다.
+   *
+   * @param user 현재 로그인한 사용자
+   * @param orderNo 조회할 주문 번호
+   * @return 주문의 상품권 목록을 포함한 ApiResponse
+   */
   @GetMapping("/{orderNo}/vouchers")
   public ResponseEntity<ApiResponse<List<OrderVoucherResponse>>> getOrderVouchers(
       @CurrentUser User user, @PathVariable String orderNo) {

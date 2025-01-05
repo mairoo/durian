@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class AdminOrderService {
-
   private final OrderProcessingService orderProcessingService;
 
   private final OrderRefundService orderRefundService;
@@ -118,7 +117,7 @@ public class AdminOrderService {
   }
 
   /**
-   * 주문을 논리적으로 삭제 처리한다. (soft delete)
+   * 주문을 소프트 삭제 처리한다.
    *
    * @param orderId 삭제할 주문 ID
    */
